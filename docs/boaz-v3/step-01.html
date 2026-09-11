@@ -1,0 +1,539 @@
+<title>Boaz V3 Step 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+:root{
+  --paper:#F2F3EF; --panel:#FBFBF9; --ink:#191C1E; --ink-2:#4C5257; --ink-3:#767D83;
+  --rule:#CDD1C9; --rule-2:#E2E5DE;
+  --face:#003087; --face-soft:#E4EAF5;
+  --edge:#A9660A; --edge-soft:#F6EBDA;
+  --steel:#949BA2; --steel-lit:#C9CED3; --steel-dk:#5B6167;
+  --mel:#E7E8E1; --mel-dk:#D3D5CB;
+  --flag:#9E2F26; --flag-soft:#F6E3E1;
+  --ok:#2E6B41;
+  --shadow:0 1px 2px rgba(20,25,30,.06);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#15181A; --panel:#1D2124; --ink:#E9ECE7; --ink-2:#AEB5BA; --ink-3:#848B91;
+    --rule:#343A3E; --rule-2:#272C30;
+    --face:#7FA6E8; --face-soft:#1B2740;
+    --edge:#E0A24E; --edge-soft:#33270F;
+    --steel:#7F868D; --steel-lit:#A9B0B6; --steel-dk:#474D53;
+    --mel:#2A2F33; --mel-dk:#20242700;
+    --mel-dk:#1F2326;
+    --flag:#E38279; --flag-soft:#3A1F1C;
+    --ok:#74B98C;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#15181A; --panel:#1D2124; --ink:#E9ECE7; --ink-2:#AEB5BA; --ink-3:#848B91;
+  --rule:#343A3E; --rule-2:#272C30;
+  --face:#7FA6E8; --face-soft:#1B2740;
+  --edge:#E0A24E; --edge-soft:#33270F;
+  --steel:#7F868D; --steel-lit:#A9B0B6; --steel-dk:#474D53;
+  --mel:#2A2F33; --mel-dk:#1F2326;
+  --flag:#E38279; --flag-soft:#3A1F1C;
+  --ok:#74B98C;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:15px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px; margin:0 auto; padding-inline:20px; padding-block:0 72px}
+h1,h2,h3,.lbl,.tb dt{font-family:Archivo,system-ui,sans-serif}
+.mono,code,.dim,.qty,td.n,th.n{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
+
+/* ---- title block ---- */
+.sheet{border:1.5px solid var(--ink); background:var(--panel); margin-block:24px 40px}
+.sheet-top{padding:22px 22px 16px; border-bottom:1.5px solid var(--ink)}
+.sheet-top h1{
+  margin:0; font-size:clamp(26px,5.2vw,42px); font-weight:800; line-height:1.04;
+  letter-spacing:-.022em; text-transform:uppercase; text-wrap:balance;
+}
+.sheet-top p{margin:10px 0 0; max-width:62ch; color:var(--ink-2); font-size:15px}
+.tb{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0; margin:0}
+.tb div{padding:11px 14px; border-right:1px solid var(--rule); border-top:1px solid var(--rule-2)}
+.tb div:last-child{border-right:0}
+.tb dt{font-size:10.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); margin:0}
+.tb dd{margin:3px 0 0; font-family:"IBM Plex Mono",monospace; font-size:13px; font-variant-numeric:tabular-nums}
+
+/* ---- generic ---- */
+h2{
+  font-size:12px; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--ink-3); margin:0 0 14px; padding-bottom:8px; border-bottom:1px solid var(--rule);
+}
+section{margin-block:44px}
+p{margin:0 0 14px}
+.lede{font-size:16.5px; max-width:66ch; color:var(--ink-2)}
+a{color:var(--face)}
+
+/* ---- legend ---- */
+.legend{display:flex; flex-wrap:wrap; gap:8px 20px; font-size:13px; color:var(--ink-2); margin-bottom:18px}
+.legend span{display:flex; align-items:center; gap:7px}
+.key{width:13px; height:13px; border-radius:2px; flex:none; border:1px solid rgba(0,0,0,.18)}
+
+/* ---- scale tray ---- */
+.tray{background:var(--panel); border:1px solid var(--rule); padding:18px 16px; overflow-x:auto}
+.tray svg{display:block; min-width:560px; width:100%; height:auto}
+
+/* ---- fastener cards ---- */
+.card{
+  background:var(--panel); border:1px solid var(--rule); margin-bottom:22px;
+  box-shadow:var(--shadow);
+}
+.card > header{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 14px;
+  padding:15px 18px; border-bottom:1px solid var(--rule);
+}
+.card > header h3{
+  margin:0; font-size:19px; font-weight:700; letter-spacing:-.012em; flex:1 1 auto; min-width:200px;
+}
+.sku{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--ink-2)}
+.tag{
+  font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600; letter-spacing:.06em;
+  text-transform:uppercase; padding:3px 8px; border-radius:2px; white-space:nowrap;
+}
+.tag.new{background:var(--edge-soft); color:var(--edge); border:1px solid currentColor}
+.tag.same{background:transparent; color:var(--ink-3); border:1px solid var(--rule)}
+.body{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:0}
+@media(max-width:760px){.body{grid-template-columns:1fr}}
+.draw{padding:18px; border-right:1px solid var(--rule-2); display:flex; align-items:center; justify-content:center; background:var(--paper)}
+@media(max-width:760px){.draw{border-right:0; border-bottom:1px solid var(--rule-2)}}
+.draw svg{width:100%; height:auto; max-width:340px}
+.txt{padding:18px}
+.txt p{font-size:14.5px}
+.txt p:last-child{margin-bottom:0}
+.spec{width:100%; border-collapse:collapse; margin:0 0 14px; font-size:13px}
+.spec th,.spec td{text-align:left; padding:5px 0; border-bottom:1px solid var(--rule-2); vertical-align:baseline}
+.spec th{font-weight:500; color:var(--ink-3); width:44%; padding-right:12px}
+.spec td{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+.note{
+  font-size:13px; padding:10px 12px; border-left:3px solid var(--flag);
+  background:var(--flag-soft); color:var(--ink); margin:14px 0 0;
+}
+.note.calm{border-left-color:var(--face); background:var(--face-soft)}
+.note strong{font-weight:600}
+
+/* ---- animation ---- */
+.anim{margin:0; border-top:1px solid var(--rule); background:var(--paper)}
+.anim figcaption{
+  font-size:10.5px; font-weight:700; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--ink-3); padding:11px 18px 0; font-family:Archivo,sans-serif;
+}
+.stage{padding:6px 18px 0; overflow-x:auto}
+.stage svg{display:block; width:100%; max-width:640px; margin:0 auto; height:auto; min-width:300px}
+.ctl{display:flex; align-items:center; gap:12px; padding:10px 18px 14px}
+.ctl button{
+  font-family:Archivo,sans-serif; font-size:11px; font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; padding:7px 13px; border:1px solid var(--ink); border-radius:2px;
+  background:var(--ink); color:var(--panel); cursor:pointer; flex:none;
+}
+.ctl button:hover{opacity:.85}
+.ctl button:focus-visible,.ctl input:focus-visible{outline:2px solid var(--face); outline-offset:2px}
+.ctl input[type=range]{flex:1 1 auto; min-width:80px; accent-color:var(--face); cursor:pointer}
+.ctl .step{
+  font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-2);
+  flex:none; min-width:14ch; text-align:right;
+}
+@media(max-width:520px){.ctl .step{min-width:0; width:100%; text-align:left; order:3}}
+
+/* ---- tables ---- */
+.scroll{overflow-x:auto; border:1px solid var(--rule); background:var(--panel)}
+table.data{border-collapse:collapse; width:100%; min-width:520px; font-size:13.5px}
+table.data th,table.data td{padding:9px 14px; text-align:left; border-bottom:1px solid var(--rule-2)}
+table.data thead th{
+  font-family:Archivo,sans-serif; font-size:10.5px; font-weight:700; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-3); border-bottom:1px solid var(--rule); white-space:nowrap;
+}
+table.data td.n,table.data th.n{text-align:right; font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+table.data tbody tr:last-child td{border-bottom:0}
+.delta{color:var(--edge); font-weight:600}
+
+/* ---- questions ---- */
+ol.q{margin:0; padding:0; list-style:none; counter-reset:q}
+ol.q li{
+  counter-increment:q; position:relative; padding:14px 0 14px 44px;
+  border-bottom:1px solid var(--rule-2); font-size:14.5px;
+}
+ol.q li:last-child{border-bottom:0}
+ol.q li::before{
+  content:"Q" counter(q); position:absolute; left:0; top:15px;
+  font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600; color:var(--edge);
+}
+ol.q b{font-weight:600}
+footer{margin-top:52px; padding-top:18px; border-top:1px solid var(--rule); font-size:13px; color:var(--ink-3)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>
+/* step-sheet additions */
+.stepnum{font-family:Archivo,sans-serif;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--edge);margin:0 0 6px}
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border:1px solid var(--rule);background:var(--panel)}
+.strip > div{padding:14px 16px;border-right:1px solid var(--rule-2);min-width:0}
+.strip > div:last-child{border-right:0}
+@media(max-width:640px){.strip > div{border-right:0;border-bottom:1px solid var(--rule-2)}.strip > div:last-child{border-bottom:0}}
+.strip h4{margin:0 0 8px;font-family:Archivo,sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.strip svg{width:100%;height:auto;display:block}
+.strip .row{display:flex;align-items:center;gap:10px;font-size:13.5px;padding:5px 0;border-top:1px solid var(--rule-2)}
+.strip .row:first-of-type{border-top:0}
+.strip .row svg{width:54px;flex:none}
+.strip .row b{font-family:"IBM Plex Mono",monospace;font-weight:600;min-width:3ch;text-align:right}
+.fig{background:var(--panel);border:1px solid var(--rule);padding:14px 16px 6px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.fig figcaption{font-size:12.5px;color:var(--ink-2);padding:8px 0 6px}
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:st;max-width:66ch}
+ol.steps li{counter-increment:st;position:relative;padding:12px 0 12px 46px;border-bottom:1px solid var(--rule-2);font-size:15.5px;line-height:1.55}
+ol.steps li:last-child{border-bottom:0}
+ol.steps li::before{content:counter(st);position:absolute;left:0;top:10px;width:30px;height:30px;border:1.5px solid var(--ink);border-radius:50%;display:grid;place-items:center;font-family:Archivo,sans-serif;font-weight:700;font-size:13px}
+ol.steps b{font-weight:600}
+.checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.check{border:1px solid var(--rule);background:var(--panel);padding:12px 14px}
+.check .lbl{font-family:Archivo,sans-serif;font-size:12px;font-weight:800;letter-spacing:.06em;margin:0 0 6px}
+.check.ok .lbl{color:var(--ok)}.check.bad .lbl{color:var(--flag)}
+.check svg{width:100%;height:auto;display:block;margin-bottom:6px}
+.check p{font-size:13.5px;margin:0;color:var(--ink-2)}
+.notes{font-size:14px;color:var(--ink-2);max-width:70ch}
+.notes li{margin-bottom:6px}
+</style>
+
+<div class="wrap">
+
+<div class="sheet">
+  <div class="sheet-top">
+    <p class="stepnum">Boaz V3 &middot; Step 1 of 30</p>
+    <h1>Lower pivot arms onto 1A and 1B</h1>
+    <p class="lede">The bookcases swing on two pins. This step bolts the arm that carries each pin to the inside face of the lower bed-cabinet ends, before those ends become part of anything bigger.</p>
+  </div>
+  <dl class="tb">
+    <div><dt>Parts</dt><dd>1A &middot; 1B</dd></div>
+    <div><dt>Hardware</dt><dd>BC1 box</dd></div>
+    <div><dt>People</dt><dd>1</dd></div>
+    <div><dt>Tools</dt><dd>5&nbsp;mm hex key &middot; &frac12;&Prime; socket</dd></div>
+    <div><dt>Source</dt><dd>v1-65 BoazV3 QBZW00</dd></div>
+  </dl>
+</div>
+
+<section>
+  <h2>Parts, hardware and tools</h2>
+  <div class="strip">
+    <div>
+      <h4>1A &middot; Finished Left End, lower</h4>
+      <svg data-plan="1A" aria-label="Plan of part 1A showing every hole"></svg>
+    </div>
+    <div>
+      <h4>1B &middot; Finished Right End, lower</h4>
+      <svg data-plan="1B" aria-label="Plan of part 1B showing every hole, mirror of 1A"></svg>
+    </div>
+    <div>
+      <h4>From the BC1 box</h4>
+      <div class="row"><svg data-icon="arm"></svg><b>2</b> lower pivot arm, pin at one end</div>
+      <div class="row"><svg data-icon="bolt"></svg><b>8</b> 2&Prime; (50&nbsp;mm) countersunk hex bolt</div>
+      <div class="row"><svg data-icon="nut"></svg><b>8</b> nylock nut</div>
+      <h4 style="margin-top:14px">Tools</h4>
+      <div class="row"><svg data-icon="hex"></svg>5&nbsp;mm hex key</div>
+      <div class="row"><svg data-icon="socket"></svg>impact driver, &frac12;&Prime; socket</div>
+    </div>
+  </div>
+  <p class="notes" style="margin-top:12px">Both ends are 476 &times; 178 &times; 19. They are a mirror pair, not two of the same part: laid inside-face up, 1A has its front edge on the left and 1B on the right.</p>
+</section>
+
+<section>
+  <h2>Read the part first</h2>
+  <div class="checks">
+    <div class="check ok"><p class="lbl">Inside face</p><p>The face with three &empty;5 pin holes in a column near the front edge. The arm goes on this face. The outside face is plain.</p></div>
+    <div class="check ok"><p class="lbl">Bottom edge</p><p>The long edge with four &empty;8 through-holes 20&nbsp;mm in. The arm sits flush along it. 4&Prime; apart, 74 from the front.</p></div>
+    <div class="check ok"><p class="lbl">Top edge</p><p>New in V3: six &empty;8 bores in the edge itself &mdash; three bolts, three dowels &mdash; for the joint to the upper end in step 2. Nothing goes in them yet.</p></div>
+    <div class="check ok"><p class="lbl">Front edge</p><p>The short edgebanded edge nearest the pin holes. The pivot pin ends up past this edge, pointing up.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Do this</h2>
+  <ol class="steps">
+    <li><b>Stand 1A on its bottom edge</b> on a blanket, inside face toward you, front edge to your left. The three pin holes are now at the left, near the top.</li>
+    <li><b>Set a pivot arm along the bottom edge</b> on the inside face, tube flat against the panel, pin end past the front edge with the pin pointing up. Line up its four holes with the four &empty;8 holes in the panel.</li>
+    <li><b>Push the four bolts in from the outside face</b>, through the panel and through the tube. Start a nylock nut on each by hand.</li>
+    <li><b>Tighten with the hex key in the bolt and the socket on the nut</b> until each countersunk head pulls itself flush into the outside face. That face gets covered by a side toe later, so nothing may stand proud.</li>
+    <li><b>Repeat for 1B</b>, mirrored: inside face toward you, front edge to your right, pin past the right edge.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>Drawing</h2>
+  <figure class="fig">
+    <svg data-iso="exploded" aria-label="Isometric exploded drawing of part 1A standing on its bottom edge with the pivot arm, four bolts and four nuts"></svg>
+    <figcaption>1A, inside face toward the viewer. Bolts enter from the outside face; nylock nuts go on the tube. Arm profile drawn from the BC1 part; overhang of the pin past the front edge to be taken from the BC1 drawing.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <h2>Animation</h2>
+  <figure class="anim" style="border:1px solid var(--rule);background:var(--panel)">
+    <figcaption>Step 1 &mdash; arm on, bolts through, nuts on, heads pulled flush</figcaption>
+    <div class="stage"><svg data-stage="step1" aria-label="Animated assembly of the lower pivot arm onto part 1A"></svg></div>
+    <div class="ctl">
+      <button type="button" data-play="step1">Replay</button>
+      <input type="range" id="rng-step1" min="0" max="1000" value="1000" aria-label="Scrub the step 1 animation">
+      <span class="step" data-step="step1"></span>
+    </div>
+  </figure>
+</section>
+
+<section>
+  <h2>Right and wrong</h2>
+  <div class="checks">
+    <div class="check ok"><p class="lbl">&#10003; Pin past the front, pointing up</p><svg data-check="ok"></svg><p>Arm on the inside face, flush with the bottom edge, pin beyond the edgebanded front edge and pointing toward the top edge.</p></div>
+    <div class="check bad"><p class="lbl">&#10007; Pin at the back</p><svg data-check="back"></svg><p>The arm fits the holes either way round. With the pin at the back edge the bookcase has nothing to swing on.</p></div>
+    <div class="check bad"><p class="lbl">&#10007; Arm on the outside face</p><svg data-check="outside"></svg><p>The holes go through, so the arm bolts up on the plain face too. The pin then sits outside the cabinet and the side toe cannot fit.</p></div>
+    <div class="check bad"><p class="lbl">&#10007; Same hand twice</p><svg data-check="hand"></svg><p>Two right ends: pins on the same side, one bookcase with no pivot. Check the pin-hole column is on the left for 1A, right for 1B.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Notes for the illustrator</h2>
+  <ul class="notes">
+    <li>Key everything to part codes <span class="mono">1A</span> / <span class="mono">1B</span>, not barcode digits. The V3 labels and every Chisel drawing already use them.</li>
+    <li>Holes are at their real V3 stations: through-holes at height 20, depths 74 / 175.6 / 277.2 / 378.8 from the front edge; pin holes at heights 85 / 117 / 162, 10.5 in; edge bores on the top edge at 60 / 132 / 204 / 276 / 348 / 420 from the front, alternating 13 and 16 deep.</li>
+    <li>Show the front edge banded and the other three raw, as the V2 brief asks. Edgebanding is drawn as the heavy line.</li>
+    <li>30&deg; isometric, 1&nbsp;pt lines, matching the V2 Fusion sheets. The exploded and assembled views above are the two frames to keep.</li>
+    <li>The tube section and pin overhang are drawn from the BC1 photo, not a dimensioned part. Take exact sizes from the BC1 drawing before final art.</li>
+  </ul>
+</section>
+
+<footer>
+  Hole stations read from <span class="mono">v1-65 BoazV3 QBZW00</span>, parts 1A and 1B. Bolt direction and orientation follow the V2 Step 1 Fusion sheet. V2 wording kept where V3 does not change it.
+</footer>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+var NS="http://www.w3.org/2000/svg";
+function E(t,a,p){var e=document.createElementNS(NS,t);for(var k in a){if(a[k]!==null&&a[k]!==undefined)e.setAttribute(k,a[k]);}if(p)p.appendChild(e);return e;}
+function T(x,y,s,a,p){var e=E("text",Object.assign({x:x,y:y},a||{}),p);e.textContent=s;return e;}
+var PAPER="var(--paper)",PANEL="var(--panel)",INK="var(--ink)",INK2="var(--ink-2)",INK3="var(--ink-3)",
+    RULE="var(--rule)",FACE="var(--face)",EDGE="var(--edge)",STEEL="var(--steel)",SLIT="var(--steel-lit)",
+    SDK="var(--steel-dk)",MEL="var(--mel)",MELDK="var(--mel-dk)",FLAG="var(--flag)",OK="var(--ok)";
+var MONO='"IBM Plex Mono",monospace',ARCH='Archivo,sans-serif';
+function fit(svg,pad){try{var b=svg.getBBox();svg.setAttribute("viewBox",(b.x-pad)+" "+(b.y-pad)+" "+(b.width+2*pad)+" "+(b.height+2*pad));}catch(e){}}
+
+/* ---- 1A geometry, mm. Depth measured from the FRONT edge, height from the bottom. ---- */
+var PART={L:476,H:178,TH:19.05,
+  thru:[74,175.6,277.2,378.8], thruZ:20,           /* ⌀8 through, inside face */
+  pinZ:[85,117,162], pinD:10.5,                    /* ⌀5 ×13, inside face */
+  edgeBolt:[60,204,348], edgeDowel:[132,276,420]}; /* top edge, ⌀8 ×13 / ×16 */
+
+/* ---------- plan drawings ---------- */
+function plan(svg,code){
+  var s=.5,L=PART.L*s,H=PART.H*s,ox=14,oy=16;
+  var mirror=code==="1B";
+  var X=function(d){return ox+(mirror?L-d*s:d*s);};
+  svg.setAttribute("viewBox","0 0 "+(L+28)+" "+(H+44));
+  E("rect",{x:ox,y:oy,width:L,height:H,fill:MEL,stroke:INK2,"stroke-width":1},svg);
+  /* banded front edge: heavy line */
+  E("line",{x1:mirror?ox+L:ox,y1:oy,x2:mirror?ox+L:ox,y2:oy+H,stroke:INK,"stroke-width":3},svg);
+  PART.thru.forEach(function(d){E("circle",{cx:X(d),cy:oy+H-PART.thruZ*s,r:4*s,fill:PAPER,stroke:FACE,"stroke-width":1.1},svg);
+    E("line",{x1:X(d)-3,y1:oy+H-PART.thruZ*s,x2:X(d)+3,y2:oy+H-PART.thruZ*s,stroke:FACE,"stroke-width":.7},svg);
+    E("line",{x1:X(d),y1:oy+H-PART.thruZ*s-3,x2:X(d),y2:oy+H-PART.thruZ*s+3,stroke:FACE,"stroke-width":.7},svg);});
+  PART.pinZ.forEach(function(z){E("circle",{cx:X(PART.pinD),cy:oy+H-z*s,r:2.5*s,fill:FACE},svg);});
+  PART.edgeBolt.forEach(function(d){E("circle",{cx:X(d),cy:oy,r:2.4,fill:EDGE},svg);});
+  PART.edgeDowel.forEach(function(d){E("circle",{cx:X(d),cy:oy,r:2.4,fill:PAPER,stroke:EDGE,"stroke-width":1.2},svg);});
+  T(mirror?ox+L-5:ox+5,oy+H-6,"FRONT",{"text-anchor":mirror?"end":"start","font-family":ARCH,"font-size":7,"letter-spacing":"1","font-weight":700,fill:INK},svg);
+  T(ox+L/2,oy-6,"top edge · 3 bolt + 3 dowel bores",{"text-anchor":"middle","font-family":MONO,"font-size":6.5,fill:EDGE},svg);
+  T(ox+L/2,oy+H+12,"476 × 178 · inside face up",{"text-anchor":"middle","font-family":MONO,"font-size":7,fill:INK3},svg);
+  T(mirror?ox+L-14:ox+14,oy+H-PART.pinZ[2]*s-6,"⌀5 pins",{"text-anchor":mirror?"end":"start","font-family":MONO,"font-size":6.5,fill:FACE},svg);
+  T(X(PART.thru[1]),oy+H-PART.thruZ*s-8,"⌀8 through ×4",{"text-anchor":"middle","font-family":MONO,"font-size":6.5,fill:FACE},svg);
+}
+document.querySelectorAll("svg[data-plan]").forEach(function(s){plan(s,s.getAttribute("data-plan"));});
+
+/* ---------- hardware icons ---------- */
+function icon(svg,k){
+  svg.setAttribute("viewBox","0 0 54 26");
+  if(k==="arm"){E("rect",{x:3,y:12,width:46,height:9,fill:STEEL,stroke:SDK,"stroke-width":1},svg);
+    E("rect",{x:41,y:4,width:5,height:8,fill:SLIT,stroke:SDK,"stroke-width":1},svg);}
+  if(k==="bolt"){E("path",{d:"M4,9 l8,0 l3,4 l-3,4 l-8,0 z",fill:STEEL,stroke:SDK,"stroke-width":1},svg);
+    E("rect",{x:15,y:11,width:34,height:4,fill:STEEL,stroke:SDK,"stroke-width":1},svg);
+    for(var i=28;i<48;i+=4)E("line",{x1:i,y1:15,x2:i+2,y2:11,stroke:SDK,"stroke-width":.8},svg);
+    E("path",{d:"M6,11 l4,0 l0,4 l-4,0 z",fill:"none",stroke:SDK,"stroke-width":.8},svg);}
+  if(k==="nut"){E("path",{d:"M19,13 L23,6 L31,6 L35,13 L31,20 L23,20 Z",fill:STEEL,stroke:SDK,"stroke-width":1},svg);
+    E("circle",{cx:27,cy:13,r:3,fill:PAPER,stroke:SDK,"stroke-width":.8},svg);
+    E("path",{d:"M23,6 L31,6 L33,9 L21,9 Z",fill:FLAG,opacity:.5},svg);}
+  if(k==="hex"){E("path",{d:"M10,20 l0,-13 l30,0",fill:"none",stroke:SDK,"stroke-width":4,"stroke-linecap":"round","stroke-linejoin":"round"},svg);}
+  if(k==="socket"){E("path",{d:"M4,8 l26,0 l0,10 l-26,0 z M8,18 l6,0 l0,6 l-6,0 z",fill:STEEL,stroke:SDK,"stroke-width":1},svg);
+    E("rect",{x:30,y:10,width:8,height:6,fill:SDK},svg);E("rect",{x:38,y:8,width:12,height:10,fill:SLIT,stroke:SDK,"stroke-width":1},svg);}
+}
+document.querySelectorAll("svg[data-icon]").forEach(function(s){icon(s,s.getAttribute("data-icon"));});
+
+/* ---------- 30° isometric ---------- */
+var C=Math.cos(Math.PI/6),S=.5;
+function mkP(s){return function(x,y,z){return [((x+y)*C)*s,((y-x)*S-z)*s];};}
+function poly(g,pts,a){return E("polygon",Object.assign({points:pts.map(function(p){return p[0].toFixed(2)+","+p[1].toFixed(2);}).join(" ")},a),g);}
+function box(g,P,x0,y0,z0,L,D,H,f){
+  var st={stroke:f.stroke||INK2,"stroke-width":f.sw||1,"stroke-linejoin":"round"};
+  poly(g,[P(x0,y0,z0+H),P(x0+L,y0,z0+H),P(x0+L,y0+D,z0+H),P(x0,y0+D,z0+H)],Object.assign({fill:f.top},st));
+  poly(g,[P(x0,y0+D,z0),P(x0+L,y0+D,z0),P(x0+L,y0+D,z0+H),P(x0,y0+D,z0+H)],Object.assign({fill:f.front},st));
+  poly(g,[P(x0+L,y0,z0),P(x0+L,y0+D,z0),P(x0+L,y0+D,z0+H),P(x0+L,y0,z0+H)],Object.assign({fill:f.end},st,f.endSt||{}));
+}
+function ring(P,fn,r,n){var o=[];for(var i=0;i<(n||20);i++){var a=i/(n||20)*Math.PI*2;o.push(fn(Math.cos(a)*r,Math.sin(a)*r));}return o;}
+function circXZ(g,P,cx,y,cz,r,a){return poly(g,ring(P,function(u,v){return P(cx+u,y,cz+v);},r),a);}
+function circXY(g,P,cx,cy,z,r,a){return poly(g,ring(P,function(u,v){return P(cx+u,cy+v,z);},r),a);}
+function hexXZ(g,P,cx,y,cz,r,a){return poly(g,ring(P,function(u,v){return P(cx+u,y,cz+v);},r,6),a);}
+
+/* scene in the 1B frame: front edge at +X. Wrap in scale(-1,1) for 1A. */
+var TUBE={w:25.4,h:38,back:8,over:52},PIN={r:6.5,h:25,set:12};
+function panel(g,P,o){
+  o=o||{};
+  var fx=function(d){return PART.L-d;};
+  box(g,P,0,0,0,PART.L,PART.TH,PART.H,{top:o.top||MEL,front:o.front||MELDK,end:o.end||MEL,
+    endSt:{stroke:INK,"stroke-width":2.6}});
+  var y=PART.TH+.01;
+  PART.thru.forEach(function(d){circXZ(g,P,fx(d),y,PART.thruZ,4,{fill:PAPER,stroke:FACE,"stroke-width":1});});
+  PART.pinZ.forEach(function(z){circXZ(g,P,fx(PART.pinD),y,z,2.5,{fill:FACE,stroke:"none"});});
+  PART.edgeBolt.forEach(function(d){circXY(g,P,fx(d),PART.TH/2,PART.H+.01,4,{fill:EDGE,stroke:"none"},12);});
+  PART.edgeDowel.forEach(function(d){circXY(g,P,fx(d),PART.TH/2,PART.H+.01,4,{fill:PAPER,stroke:EDGE,"stroke-width":1},12);});
+}
+function tube(g,P,y0,pinBack){
+  var x0=pinBack?-TUBE.over:TUBE.back, L=PART.L-TUBE.back+TUBE.over;
+  box(g,P,x0,y0,0,L,TUBE.w,TUBE.h,{top:SLIT,front:STEEL,end:SDK,stroke:SDK});
+  var fx=function(d){return PART.L-d;};
+  PART.thru.forEach(function(d){circXZ(g,P,fx(d),y0+TUBE.w+.01,PART.thruZ,4,{fill:PAPER,stroke:SDK,"stroke-width":.9});});
+  var px=pinBack?x0+PIN.set:x0+L-PIN.set,py=y0+TUBE.w/2;
+  poly(g,[P(px-PIN.r,py,TUBE.h),P(px+PIN.r,py,TUBE.h),P(px+PIN.r,py,TUBE.h+PIN.h),P(px-PIN.r,py,TUBE.h+PIN.h)],{fill:STEEL,stroke:SDK,"stroke-width":1});
+  circXY(g,P,px,py,TUBE.h+PIN.h,PIN.r,{fill:SLIT,stroke:SDK,"stroke-width":1},14);
+}
+function nut(g,P,x,y,z){
+  hexXZ(g,P,x,y,z,7.5,{fill:SDK,stroke:SDK,"stroke-width":1});
+  hexXZ(g,P,x,y+6,z,7.5,{fill:STEEL,stroke:SDK,"stroke-width":1});
+  circXZ(g,P,x,y+6.01,z,3.2,{fill:PAPER,stroke:SDK,"stroke-width":.8},12);
+}
+function boltShaft(g,P,x,y1,y2,z,r){
+  return poly(g,[P(x-r,y1,z),P(x+r,y1,z),P(x+r,y2,z),P(x-r,y2,z)],{fill:STEEL,stroke:SDK,"stroke-width":.9});
+}
+function boltFloat(g,P,x,y,z){
+  /* whole bolt lying along Y, head at -Y end */
+  poly(g,[P(x-7,y,z),P(x+7,y,z),P(x+4,y+4,z),P(x-4,y+4,z)],{fill:SDK,stroke:SDK,"stroke-width":.9});
+  boltShaft(g,P,x,y+4,y+50,z,4);
+  for(var i=y+28;i<y+48;i+=4)E("line",{x1:P(x-3,i,z)[0],y1:P(x-3,i,z)[1],x2:P(x+3,i+2,z)[0],y2:P(x+3,i+2,z)[1],stroke:SDK,"stroke-width":.7},g);
+}
+
+/* ---------- exploded drawing (1A) ---------- */
+(function(){
+  var svg=document.querySelector('svg[data-iso="exploded"]');if(!svg)return;
+  var s=.62,P=mkP(s),root=E("g",{},svg),g=E("g",{transform:"scale(-1,1)"},root);
+  var fx=function(d){return PART.L-d;};
+  /* bolts floated above the top edge, leaders down to the holes */
+  PART.thru.forEach(function(d){
+    var x=fx(d),h=P(x,PART.TH,PART.thruZ),a=P(x,-40,PART.H+40);
+    E("line",{x1:a[0],y1:a[1],x2:h[0],y2:h[1],stroke:INK3,"stroke-width":.8,"stroke-dasharray":"4 3"},g);
+    boltFloat(g,P,x,-60,PART.H+40);
+  });
+  panel(g,P);
+  tube(g,P,PART.TH+58,false);
+  PART.thru.forEach(function(d){
+    var x=fx(d),y=PART.TH+58+TUBE.w;
+    var a=P(x,y,PART.thruZ),b=P(x,y+70,PART.thruZ);
+    E("line",{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:INK3,"stroke-width":.8,"stroke-dasharray":"4 3"},g);
+    nut(g,P,x,y+70,PART.thruZ);
+  });
+  /* labels: placed in root (unmirrored) using mirrored coordinates */
+  var M=function(x,y,z){var p=P(x,y,z);return [-p[0],p[1]];};
+  var l;
+  l=M(0,PART.TH/2,PART.H); T(l[0]+10,l[1]-4,"top edge: 3 bolt + 3 dowel bores (step 2)",{"text-anchor":"start","font-family":MONO,"font-size":9,fill:EDGE},root);
+  l=M(PART.L,PART.TH,0); T(l[0]-6,l[1]+22,"front edge, banded",{"text-anchor":"end","font-family":MONO,"font-size":9,fill:INK},root);
+  l=M(fx(PART.thru[0]),-60,PART.H+40); T(l[0]+4,l[1]-24,"4 × 2″ bolts, from the outside face",{"text-anchor":"start","font-family":MONO,"font-size":9,fill:INK2},root);
+  l=M(fx(PART.thru[3]),PART.TH+58+TUBE.w+70,PART.thruZ); T(l[0]+12,l[1]+20,"4 × nylock nuts, on the tube",{"text-anchor":"start","font-family":MONO,"font-size":9,fill:INK2},root);
+  l=M(PART.L+TUBE.over-PIN.set,PART.TH+58+TUBE.w/2,TUBE.h+PIN.h); T(l[0]-10,l[1]-10,"pin up, past the front",{"text-anchor":"end","font-family":MONO,"font-size":9,fill:OK},root);
+  l=M(fx(PART.pinD),PART.TH,PART.pinZ[2]); T(l[0]-10,l[1]-4,"⌀5 pin holes = inside face",{"text-anchor":"end","font-family":MONO,"font-size":9,fill:FACE},root);
+  fit(svg,16);
+  var vb=svg.getAttribute("viewBox").split(" ").map(Number);
+  T(vb[0]+8,vb[1]+22,"1A",{"font-family":ARCH,"font-size":20,"font-weight":800,fill:INK},root);
+})();
+
+/* ---------- right / wrong ---------- */
+document.querySelectorAll("svg[data-check]").forEach(function(svg){
+  var k=svg.getAttribute("data-check"),s=.36,P=mkP(s),root=E("g",{},svg);
+  function one(gx,mirror,pinBack,outside){
+    var g=E("g",{transform:"translate("+gx+",0) scale("+(mirror?-1:1)+",1)"},root);
+    if(outside){tube(g,P,-TUBE.w,false);panel(g,P,{top:MEL,front:MELDK,end:MEL});
+      var x0=TUBE.back,L=PART.L-TUBE.back+TUBE.over,px=x0+L-PIN.set,py=-TUBE.w/2;
+      poly(g,[P(px-PIN.r,py,TUBE.h),P(px+PIN.r,py,TUBE.h),P(px+PIN.r,py,TUBE.h+PIN.h),P(px-PIN.r,py,TUBE.h+PIN.h)],{fill:"none",stroke:FLAG,"stroke-width":1.2,"stroke-dasharray":"3 2"},g);
+      return;}
+    panel(g,P);tube(g,P,PART.TH,pinBack);
+  }
+  if(k==="ok")one(0,true,false,false);
+  if(k==="back")one(0,true,true,false);
+  if(k==="outside")one(0,true,false,true);
+  if(k==="hand"){one(0,false,false,false);one(230,false,false,false);
+    T(60,-8,"1B",{"font-family":ARCH,"font-size":13,"font-weight":800,fill:FLAG},root);T(290,-8,"1B",{"font-family":ARCH,"font-size":13,"font-weight":800,fill:FLAG},root);}
+  fit(svg,10);
+});
+
+/* ---------- animation ---------- */
+function ph(t,a,b){return Math.max(0,Math.min(1,(t-a)/(b-a)));}
+function ez(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
+(function(){
+  var svg=document.querySelector('svg[data-stage="step1"]');if(!svg)return;
+  var steps=[[0,"Arm to the inside face"],[.26,"Bolts in from behind"],[.52,"Nylocks on by hand"],[.76,"Hex key + socket: pull flush"]];
+  var s=.62,P=mkP(s),root=E("g",{},svg),g=E("g",{transform:"scale(-1,1)"},root);
+  var fx=function(d){return PART.L-d;};
+  panel(g,P);
+  var tg=E("g",{},g),ng=[],sg=[];
+  /* tube drawn at final position; group translated along screen vector of +Y */
+  tube(tg,P,PART.TH,false);
+  var ty=PART.TH+TUBE.w;
+  PART.thru.forEach(function(d){
+    var x=fx(d);
+    var sh=E("g",{},g);boltShaft(sh,P,x,ty,ty+14,PART.thruZ,4);sg.push(sh);
+    var n=E("g",{},g);nut(n,P,x,ty,PART.thruZ);ng.push(n);
+  });
+  /* section inset: outside face | panel | tube wall, head pulls flush */
+  var ins=E("g",{},root);
+  E("rect",{x:0,y:0,width:150,height:96,fill:PAPER,stroke:RULE,"stroke-width":1},ins);
+  T(8,14,"SECTION",{"font-family":ARCH,"font-size":8,"letter-spacing":"1.2",fill:INK3},ins);
+  E("rect",{x:60,y:24,width:19*2.2,height:60,fill:MEL,stroke:INK2,"stroke-width":1},ins);         /* panel 19 */
+  E("rect",{x:60+19*2.2,y:24,width:5,height:60,fill:STEEL,stroke:SDK,"stroke-width":.8},ins);       /* tube wall */
+  E("rect",{x:60,y:50,width:19*2.2+5,height:8,fill:PAPER,stroke:FACE,"stroke-width":.8},ins);       /* ⌀8 through */
+  var head=E("g",{},ins);
+  E("path",{d:"M60,46 l-1,0 l0,16 l1,0 l7,-3 l0,-10 z",fill:SDK},head);
+  E("rect",{x:67,y:51,width:19*2.2+5+15,height:6,fill:STEEL,stroke:SDK,"stroke-width":.7},head);
+  var nutI=E("g",{},ins);
+  E("rect",{x:60+19*2.2+5,y:44,width:10,height:20,fill:STEEL,stroke:SDK,"stroke-width":.8},nutI);
+  E("rect",{x:60+19*2.2+5,y:44,width:10,height:4,fill:FLAG,opacity:.5},nutI);
+  T(30,58,"outside",{"text-anchor":"middle","font-family":MONO,"font-size":7.5,fill:INK3},ins);
+  var lab=T(75,92,"",{"text-anchor":"middle","font-family":MONO,"font-size":8,fill:OK},ins);
+  var note=T(0,0,"",{"text-anchor":"middle","font-family":MONO,"font-size":11,fill:INK2},root);
+  var Y=function(dy){var a=P(0,0,0),b=P(0,dy,0);return "translate("+(-(b[0]-a[0])).toFixed(2)+","+(b[1]-a[1]).toFixed(2)+")";};
+  var YM=function(dy){var a=P(0,0,0),b=P(0,dy,0);return "translate("+(b[0]-a[0]).toFixed(2)+","+(b[1]-a[1]).toFixed(2)+")";};
+  function frame(t){
+    var a=ez(ph(t,.02,.26)),b=ez(ph(t,.28,.5)),c=ez(ph(t,.54,.74)),d=ez(ph(t,.78,.96));
+    tg.setAttribute("transform",YM(70*(1-a)));
+    sg.forEach(function(e){e.setAttribute("opacity",b>0?1:0);e.setAttribute("transform",YM(-14*(1-b)));});
+    ng.forEach(function(e,i){e.setAttribute("opacity",c>0?1:0);e.setAttribute("transform",YM(60*(1-c)));});
+    head.setAttribute("transform","translate("+(-14*(1-b)+ -6*(1-d)*b).toFixed(2)+",0)");
+    nutI.setAttribute("opacity",c>0?1:0);nutI.setAttribute("transform","translate("+(40*(1-c)).toFixed(2)+",0)");
+    lab.textContent=d>=1?"✓ head flush":(b>=1?"head proud 6":"");
+    note.textContent=t<.26?"tube flat to the panel, pin end past the front":t<.52?"through the ⌀8 holes and the tube":t<.76?"start each nut by hand":"tighten until the head sinks into the outside face";
+  }
+  ins.setAttribute("opacity",0);frame(1);fit(svg,14);
+  var vb=svg.getAttribute("viewBox").split(" ").map(Number);
+  ins.setAttribute("transform","translate("+(vb[0]+vb[2]-156)+","+(vb[1]+4)+")");ins.setAttribute("opacity",1);
+  note.setAttribute("x",vb[0]+vb[2]/2);note.setAttribute("y",vb[1]+vb[3]+12);
+  svg.setAttribute("viewBox",vb[0]+" "+vb[1]+" "+vb[2]+" "+(vb[3]+20));
+  var rng=document.getElementById("rng-step1"),stepEl=document.querySelector('[data-step="step1"]'),btn=document.querySelector('[data-play="step1"]');
+  function label(t){var s=steps[0][1];steps.forEach(function(p){if(t>=p[0])s=p[1];});return s;}
+  function set(t){frame(t);stepEl.textContent=label(t);rng.value=Math.round(t*1000);}
+  var raf=null,DUR=6000,reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function stop(){if(raf){cancelAnimationFrame(raf);raf=null;}}
+  function play(){stop();var t0=performance.now();(function loop(now){var t=Math.min(1,(now-t0)/DUR);set(t);if(t<1)raf=requestAnimationFrame(loop);else raf=null;})(performance.now());}
+  btn.addEventListener("click",function(){if(reduce){set(1);return;}play();});
+  rng.addEventListener("input",function(){stop();set(rng.value/1000);});
+  set(1);
+})();
+})();
+</script>
