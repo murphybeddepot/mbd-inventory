@@ -199,6 +199,16 @@ ol.steps b{font-weight:600}
 .check p{font-size:13.5px;margin:0;color:var(--ink-2)}
 .notes{font-size:14px;color:var(--ink-2);max-width:70ch}
 .notes li{margin-bottom:6px}
+.render{position:relative;width:100%;background:var(--panel);overflow:hidden}
+.render.sm{aspect-ratio:5/3;margin-bottom:6px;border:1px solid var(--rule-2)}
+.render canvas,.render img,.render svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.render svg{pointer-events:none}
+.render .fallback{position:absolute;inset:0;display:grid;place-items:center;font-size:13px;color:var(--ink-3)}
+.render.ready .fallback{display:none}
+.anote{margin:8px 18px 0;font-size:14px;color:var(--ink-2);text-align:center;min-height:1.6em}
+.key-wrap{display:flex;flex-wrap:wrap;gap:4px 22px;margin-top:12px}
+.kitem{flex:1 1 250px;display:flex;align-items:flex-start;gap:8px;font-size:13.5px;color:var(--ink);padding:3px 0;min-width:0}
+.kitem b{flex:none;display:inline-grid;place-items:center;width:20px;height:20px;border:1.5px solid var(--ink);border-radius:50%;font-family:Archivo,sans-serif;font-size:11px;font-weight:700}
 </style>
 
 <div class="wrap">
@@ -266,16 +276,26 @@ ol.steps b{font-weight:600}
 <section>
   <h2>Drawing</h2>
   <figure class="fig">
-    <svg data-iso="exploded" aria-label="Isometric exploded drawing of part 1A standing on its bottom edge with the pivot arm, four bolts and four nuts"></svg>
-    <figcaption>1A, inside face toward the viewer. Bolts enter from the outside face; nylock nuts go on the tube. Arm profile drawn from the BC1 part; overhang of the pin past the front edge to be taken from the BC1 drawing.</figcaption>
+    <div class="render" data-render="exploded" style="aspect-ratio:4/3"><span class="fallback">Drawing needs WebGL.</span></div>
+    <figcaption>Rendered from the V3 part geometry. Tube section and pin overhang are taken from the BC1 part photo, not a drawing.</figcaption>
   </figure>
+  <div class="key-wrap">
+    <div class="kitem"><b>1</b><span>&empty;5 pin holes &mdash; this is the inside face</span></div>
+    <div class="kitem"><b>2</b><span>front edge, edgebanded</span></div>
+    <div class="kitem"><b>3</b><span>top edge: three bolt and three dowel bores, used in step 2</span></div>
+    <div class="kitem"><b>4</b><span>&empty;8 through-holes, 20 up from the bottom edge</span></div>
+    <div class="kitem"><b>5</b><span>four 2&Prime; bolts, in from the outside face</span></div>
+    <div class="kitem"><b>6</b><span>four nylock nuts, on the tube</span></div>
+    <div class="kitem"><b>7</b><span>pivot pin up, past the front edge</span></div>
+  </div>
 </section>
 
 <section>
   <h2>Animation</h2>
   <figure class="anim" style="border:1px solid var(--rule);background:var(--panel)">
     <figcaption>Step 1 &mdash; arm on, bolts through, nuts on, heads pulled flush</figcaption>
-    <div class="stage"><svg data-stage="step1" aria-label="Animated assembly of the lower pivot arm onto part 1A"></svg></div>
+    <div class="stage" style="padding:6px 18px 0"><div class="render" data-render="anim" style="aspect-ratio:4/3;max-width:760px;margin:0 auto"><span class="fallback">Animation needs WebGL.</span></div></div>
+    <p id="anote" class="anote"></p>
     <div class="ctl">
       <button type="button" data-play="step1">Replay</button>
       <input type="range" id="rng-step1" min="0" max="1000" value="1000" aria-label="Scrub the step 1 animation">
@@ -287,10 +307,10 @@ ol.steps b{font-weight:600}
 <section>
   <h2>Right and wrong</h2>
   <div class="checks">
-    <div class="check ok"><p class="lbl">&#10003; Pin past the front, pointing up</p><svg data-check="ok"></svg><p>Arm on the inside face, flush with the bottom edge, pin beyond the edgebanded front edge and pointing toward the top edge.</p></div>
-    <div class="check bad"><p class="lbl">&#10007; Pin at the back</p><svg data-check="back"></svg><p>The arm fits the holes either way round. With the pin at the back edge the bookcase has nothing to swing on.</p></div>
-    <div class="check bad"><p class="lbl">&#10007; Arm on the outside face</p><svg data-check="outside"></svg><p>The holes go through, so the arm bolts up on the plain face too. The pin then sits outside the cabinet and the side toe cannot fit.</p></div>
-    <div class="check bad"><p class="lbl">&#10007; Same hand twice</p><svg data-check="hand"></svg><p>Two right ends: pins on the same side, one bookcase with no pivot. Check the pin-hole column is on the left for 1A, right for 1B.</p></div>
+    <div class="check ok"><p class="lbl">&#10003; Pin past the front, pointing up</p><div class="render sm" data-render="ok"></div><p>Arm on the inside face, flush with the bottom edge, pin beyond the edgebanded front edge and pointing toward the top edge.</p></div>
+    <div class="check bad"><p class="lbl">&#10007; Pin at the back</p><div class="render sm" data-render="back"></div><p>The arm fits the holes either way round. With the pin at the back edge the bookcase has nothing to swing on.</p></div>
+    <div class="check bad"><p class="lbl">&#10007; Arm on the outside face</p><div class="render sm" data-render="outside"></div><p>Seen from outside the cabinet. The holes go through, so the arm bolts up on the plain face too. The pin then sits outside and the side toe cannot fit.</p></div>
+    <div class="check bad"><p class="lbl">&#10007; Same hand twice</p><div class="render sm" data-render="hand"></div><p>Two right ends: pins on the same side, one bookcase with no pivot. Check the pin-hole column is on the left for 1A, right for 1B.</p></div>
   </div>
 </section>
 
@@ -311,6 +331,7 @@ ol.steps b{font-weight:600}
 
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 (function(){
 "use strict";
@@ -370,170 +391,224 @@ function icon(svg,k){
 }
 document.querySelectorAll("svg[data-icon]").forEach(function(s){icon(s,s.getAttribute("data-icon"));});
 
-/* ---------- 30° isometric ---------- */
-var C=Math.cos(Math.PI/6),S=.5;
-function mkP(s){return function(x,y,z){return [((x+y)*C)*s,((y-x)*S-z)*s];};}
-function poly(g,pts,a){return E("polygon",Object.assign({points:pts.map(function(p){return p[0].toFixed(2)+","+p[1].toFixed(2);}).join(" ")},a),g);}
-function box(g,P,x0,y0,z0,L,D,H,f){
-  var st={stroke:f.stroke||INK2,"stroke-width":f.sw||1,"stroke-linejoin":"round"};
-  poly(g,[P(x0,y0,z0+H),P(x0+L,y0,z0+H),P(x0+L,y0+D,z0+H),P(x0,y0+D,z0+H)],Object.assign({fill:f.top},st));
-  poly(g,[P(x0,y0+D,z0),P(x0+L,y0+D,z0),P(x0+L,y0+D,z0+H),P(x0,y0+D,z0+H)],Object.assign({fill:f.front},st));
-  poly(g,[P(x0+L,y0,z0),P(x0+L,y0+D,z0),P(x0+L,y0+D,z0+H),P(x0+L,y0,z0+H)],Object.assign({fill:f.end},st,f.endSt||{}));
-}
-function ring(P,fn,r,n){var o=[];for(var i=0;i<(n||20);i++){var a=i/(n||20)*Math.PI*2;o.push(fn(Math.cos(a)*r,Math.sin(a)*r));}return o;}
-function circXZ(g,P,cx,y,cz,r,a){return poly(g,ring(P,function(u,v){return P(cx+u,y,cz+v);},r),a);}
-function circXY(g,P,cx,cy,z,r,a){return poly(g,ring(P,function(u,v){return P(cx+u,cy+v,z);},r),a);}
-function hexXZ(g,P,cx,y,cz,r,a){return poly(g,ring(P,function(u,v){return P(cx+u,y,cz+v);},r,6),a);}
+})();
+</script>
 
-/* scene in the 1B frame: front edge at +X. Wrap in scale(-1,1) for 1A. */
-var TUBE={w:25.4,h:38,back:8,over:52},PIN={r:6.5,h:25,set:12};
-function panel(g,P,o){
+<script>
+(function(){
+"use strict";
+if(!window.THREE)return;
+var T=THREE;
+function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||"#888";}
+function theme(){return{paper:cssVar("--panel"),mel:cssVar("--mel"),ink:cssVar("--ink"),steel:cssVar("--steel-lit"),steelDk:cssVar("--steel"),hole:cssVar("--mel-dk"),face:cssVar("--face"),edge:cssVar("--edge"),ink2:cssVar("--ink-2"),ok:cssVar("--ok"),flag:cssVar("--flag")};}
+var MONO='"IBM Plex Mono",monospace',ARCH='Archivo,sans-serif';
+
+/* ---- 1A geometry in mm. x = depth from the FRONT edge, y = height, z = thickness toward the viewer ---- */
+var PART={L:476,H:178,TH:19.05,thru:[74,175.6,277.2,378.8],thruZ:20,pinZ:[85,117,162],pinD:10.5,edgeBolt:[60,204,348],edgeDowel:[132,276,420]};
+var TUBE={w:25.4,h:38,back:8,over:52},PIN={r:6.5,h:25,set:12},BOLT={r:4,len:50.8,headR:7,headL:4},NUT={r:7.5,h:7};
+
+function solid(geom,fill,C,o){
   o=o||{};
-  var fx=function(d){return PART.L-d;};
-  box(g,P,0,0,0,PART.L,PART.TH,PART.H,{top:o.top||MEL,front:o.front||MELDK,end:o.end||MEL,
-    endSt:{stroke:INK,"stroke-width":2.6}});
-  var y=PART.TH+.01;
-  PART.thru.forEach(function(d){circXZ(g,P,fx(d),y,PART.thruZ,4,{fill:PAPER,stroke:FACE,"stroke-width":1});});
-  PART.pinZ.forEach(function(z){circXZ(g,P,fx(PART.pinD),y,z,2.5,{fill:FACE,stroke:"none"});});
-  PART.edgeBolt.forEach(function(d){circXY(g,P,fx(d),PART.TH/2,PART.H+.01,4,{fill:EDGE,stroke:"none"},12);});
-  PART.edgeDowel.forEach(function(d){circXY(g,P,fx(d),PART.TH/2,PART.H+.01,4,{fill:PAPER,stroke:EDGE,"stroke-width":1},12);});
+  var g=new T.Group();
+  var m=new T.Mesh(geom,new T.MeshLambertMaterial({color:fill,side:T.DoubleSide,polygonOffset:true,polygonOffsetFactor:1,polygonOffsetUnits:1,transparent:!!o.alpha,opacity:o.alpha||1}));
+  g.add(m);
+  if(!o.noEdge){g.add(new T.LineSegments(new T.EdgesGeometry(geom,o.thr||20),new T.LineBasicMaterial({color:o.line||C.ink})));}
+  return g;
 }
-function tube(g,P,y0,pinBack){
-  var x0=pinBack?-TUBE.over:TUBE.back, L=PART.L-TUBE.back+TUBE.over;
-  box(g,P,x0,y0,0,L,TUBE.w,TUBE.h,{top:SLIT,front:STEEL,end:SDK,stroke:SDK});
-  var fx=function(d){return PART.L-d;};
-  PART.thru.forEach(function(d){circXZ(g,P,fx(d),y0+TUBE.w+.01,PART.thruZ,4,{fill:PAPER,stroke:SDK,"stroke-width":.9});});
-  var px=pinBack?x0+PIN.set:x0+L-PIN.set,py=y0+TUBE.w/2;
-  poly(g,[P(px-PIN.r,py,TUBE.h),P(px+PIN.r,py,TUBE.h),P(px+PIN.r,py,TUBE.h+PIN.h),P(px-PIN.r,py,TUBE.h+PIN.h)],{fill:STEEL,stroke:SDK,"stroke-width":1});
-  circXY(g,P,px,py,TUBE.h+PIN.h,PIN.r,{fill:SLIT,stroke:SDK,"stroke-width":1},14);
+function box(x0,x1,y0,y1,z0,z1,fill,C,o){
+  var g=solid(new T.BoxGeometry(x1-x0,y1-y0,z1-z0),fill,C,o);g.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);return g;
 }
-function nut(g,P,x,y,z){
-  hexXZ(g,P,x,y,z,7.5,{fill:SDK,stroke:SDK,"stroke-width":1});
-  hexXZ(g,P,x,y+6,z,7.5,{fill:STEEL,stroke:SDK,"stroke-width":1});
-  circXZ(g,P,x,y+6.01,z,3.2,{fill:PAPER,stroke:SDK,"stroke-width":.8},12);
+function cylZ(x,y,z0,z1,r,fill,C,seg,o){
+  var g=solid(new T.CylinderGeometry(r,r,z1-z0,seg||36),fill,C,o);g.rotation.x=Math.PI/2;g.position.set(x,y,(z0+z1)/2);return g;
 }
-function boltShaft(g,P,x,y1,y2,z,r){
-  return poly(g,[P(x-r,y1,z),P(x+r,y1,z),P(x+r,y2,z),P(x-r,y2,z)],{fill:STEEL,stroke:SDK,"stroke-width":.9});
+function cylY(x,z,y0,y1,r,fill,C,seg,o){
+  var g=solid(new T.CylinderGeometry(r,r,y1-y0,seg||36),fill,C,o);g.position.set(x,(y0+y1)/2,z);return g;
 }
-function boltFloat(g,P,x,y,z){
-  /* whole bolt lying along Y, head at -Y end */
-  poly(g,[P(x-7,y,z),P(x+7,y,z),P(x+4,y+4,z),P(x-4,y+4,z)],{fill:SDK,stroke:SDK,"stroke-width":.9});
-  boltShaft(g,P,x,y+4,y+50,z,4);
-  for(var i=y+28;i<y+48;i+=4)E("line",{x1:P(x-3,i,z)[0],y1:P(x-3,i,z)[1],x2:P(x+3,i+2,z)[0],y2:P(x+3,i+2,z)[1],stroke:SDK,"stroke-width":.7},g);
+function coneZ(x,y,z0,z1,r0,r1,fill,C){ /* r0 at z0, r1 at z1 */
+  var g=solid(new T.CylinderGeometry(r1,r0,z1-z0,36),fill,C,{thr:60});g.rotation.x=-Math.PI/2;g.position.set(x,y,(z0+z1)/2);return g;
 }
 
-/* ---------- exploded drawing (1A) ---------- */
-(function(){
-  var svg=document.querySelector('svg[data-iso="exploded"]');if(!svg)return;
-  var s=.62,P=mkP(s),root=E("g",{},svg),g=E("g",{transform:"scale(-1,1)"},root);
-  var fx=function(d){return PART.L-d;};
-  /* bolts floated above the top edge, leaders down to the holes */
-  PART.thru.forEach(function(d){
-    var x=fx(d),h=P(x,PART.TH,PART.thruZ),a=P(x,-40,PART.H+40);
-    E("line",{x1:a[0],y1:a[1],x2:h[0],y2:h[1],stroke:INK3,"stroke-width":.8,"stroke-dasharray":"4 3"},g);
-    boltFloat(g,P,x,-60,PART.H+40);
-  });
-  panel(g,P);
-  tube(g,P,PART.TH+58,false);
-  PART.thru.forEach(function(d){
-    var x=fx(d),y=PART.TH+58+TUBE.w;
-    var a=P(x,y,PART.thruZ),b=P(x,y+70,PART.thruZ);
-    E("line",{x1:a[0],y1:a[1],x2:b[0],y2:b[1],stroke:INK3,"stroke-width":.8,"stroke-dasharray":"4 3"},g);
-    nut(g,P,x,y+70,PART.thruZ);
-  });
-  /* labels: placed in root (unmirrored) using mirrored coordinates */
-  var M=function(x,y,z){var p=P(x,y,z);return [-p[0],p[1]];};
-  var l;
-  l=M(0,PART.TH/2,PART.H); T(l[0]+10,l[1]-4,"top edge: 3 bolt + 3 dowel bores (step 2)",{"text-anchor":"start","font-family":MONO,"font-size":9,fill:EDGE},root);
-  l=M(PART.L,PART.TH,0); T(l[0]-6,l[1]+22,"front edge, banded",{"text-anchor":"end","font-family":MONO,"font-size":9,fill:INK},root);
-  l=M(fx(PART.thru[0]),-60,PART.H+40); T(l[0]+4,l[1]-24,"4 × 2″ bolts, from the outside face",{"text-anchor":"start","font-family":MONO,"font-size":9,fill:INK2},root);
-  l=M(fx(PART.thru[3]),PART.TH+58+TUBE.w+70,PART.thruZ); T(l[0]+12,l[1]+20,"4 × nylock nuts, on the tube",{"text-anchor":"start","font-family":MONO,"font-size":9,fill:INK2},root);
-  l=M(PART.L+TUBE.over-PIN.set,PART.TH+58+TUBE.w/2,TUBE.h+PIN.h); T(l[0]-10,l[1]-10,"pin up, past the front",{"text-anchor":"end","font-family":MONO,"font-size":9,fill:OK},root);
-  l=M(fx(PART.pinD),PART.TH,PART.pinZ[2]); T(l[0]-10,l[1]-4,"⌀5 pin holes = inside face",{"text-anchor":"end","font-family":MONO,"font-size":9,fill:FACE},root);
-  fit(svg,16);
-  var vb=svg.getAttribute("viewBox").split(" ").map(Number);
-  T(vb[0]+8,vb[1]+22,"1A",{"font-family":ARCH,"font-size":20,"font-weight":800,fill:INK},root);
-})();
+/* panel 1A (or 1B mirrored by scale.x = -1 on the group) */
+function panelGroup(C,opts){
+  opts=opts||{};
+  var g=new T.Group();
+  g.add(box(0,PART.L,0,PART.H,0,PART.TH,C.mel,C,{alpha:opts.alpha}));
+  g.add(box(-0.8,0,0,PART.H,0,PART.TH,C.ink,C,{noEdge:true}));                    /* edgebanded front */
+  PART.thru.forEach(function(d){g.add(cylZ(d,PART.thruZ,-0.1,PART.TH+0.1,BOLT.r,C.hole,C));});
+  PART.pinZ.forEach(function(y){g.add(cylZ(PART.pinD,y,PART.TH-13,PART.TH+0.1,2.5,C.hole,C,24));});
+  PART.edgeBolt.forEach(function(d){g.add(cylY(d,PART.TH/2,PART.H-13,PART.H+0.1,4,C.hole,C,24));});
+  PART.edgeDowel.forEach(function(d){g.add(cylY(d,PART.TH/2,PART.H-16,PART.H+0.1,4,C.hole,C,24));});
+  return g;
+}
+function tubeGroup(C,pinBack,zBase){
+  var g=new T.Group(),x0=pinBack?TUBE.back:-TUBE.over,x1=pinBack?PART.L+TUBE.over:PART.L-TUBE.back;
+  var z0=zBase===undefined?PART.TH:zBase,z1=z0+TUBE.w;
+  g.add(box(x0,x1,0,TUBE.h,z0,z1,C.steel,C));
+  /* hollow end at the pin end */
+  var ex=pinBack?x1:x0,inner=box(pinBack?ex-4:ex-0.05,pinBack?ex+0.05:ex+4,2.5,TUBE.h-2.5,z0+2.5,z1-2.5,C.steelDk,C);g.add(inner);
+  PART.thru.forEach(function(d){g.add(cylZ(d,PART.thruZ,z0-0.1,z1+0.1,BOLT.r,C.hole,C));});
+  var px=pinBack?x1-PIN.set:x0+PIN.set;
+  g.add(cylY(px,(z0+z1)/2,TUBE.h-0.1,TUBE.h+PIN.h,PIN.r,C.steel,C));
+  return g;
+}
+function boltGroup(C,x){ /* head at z=0 countersunk into the panel, shaft toward +z */
+  var g=new T.Group();
+  g.add(coneZ(x,PART.thruZ,0,BOLT.headL,BOLT.headR,BOLT.r,C.steelDk,C));
+  g.add(cylZ(x,PART.thruZ,BOLT.headL-0.05,BOLT.len,BOLT.r,C.steel,C));
+  var sock=cylZ(x,PART.thruZ,-0.1,1.5,2.6,C.ink,C,6,{noEdge:true});g.add(sock);
+  return g;
+}
+function nutGroup(C,x,z0){ /* built about its own axis so it can spin; placed by position */
+  var g=new T.Group();
+  g.add(cylZ(0,0,0,NUT.h,NUT.r,C.steel,C,6,{thr:10}));
+  g.add(cylZ(0,0,NUT.h-0.05,NUT.h+2.2,5.8,C.steelDk,C,36));  /* nylon collar */
+  g.add(cylZ(0,0,NUT.h+2.1,NUT.h+2.4,BOLT.r,C.hole,C,24));
+  g.position.set(x,PART.thruZ,z0);g.userData.base=g.position.clone();
+  return g;
+}
 
-/* ---------- right / wrong ---------- */
-document.querySelectorAll("svg[data-check]").forEach(function(svg){
-  var k=svg.getAttribute("data-check"),s=.36,P=mkP(s),root=E("g",{},svg);
-  function one(gx,mirror,pinBack,outside){
-    var g=E("g",{transform:"translate("+gx+",0) scale("+(mirror?-1:1)+",1)"},root);
-    if(outside){tube(g,P,-TUBE.w,false);panel(g,P,{top:MEL,front:MELDK,end:MEL});
-      var x0=TUBE.back,L=PART.L-TUBE.back+TUBE.over,px=x0+L-PIN.set,py=-TUBE.w/2;
-      poly(g,[P(px-PIN.r,py,TUBE.h),P(px+PIN.r,py,TUBE.h),P(px+PIN.r,py,TUBE.h+PIN.h),P(px-PIN.r,py,TUBE.h+PIN.h)],{fill:"none",stroke:FLAG,"stroke-width":1.2,"stroke-dasharray":"3 2"},g);
-      return;}
-    panel(g,P);tube(g,P,PART.TH,pinBack);
+/* ---- scene builders. Return {root, anchors:{name:Vector3}, dir:camera direction, mirror} ---- */
+function sceneStep1(C,mode){
+  var root=new T.Group(),A={};
+  var panel=panelGroup(C);root.add(panel);
+  var tube=tubeGroup(C,false);root.add(tube);
+  var bolts=[],nuts=[];
+  PART.thru.forEach(function(d){var b=boltGroup(C,d);root.add(b);bolts.push(b);var n=nutGroup(C,d,PART.TH+TUBE.w);root.add(n);nuts.push(n);});
+  A.tube=tube;A.bolts=bolts;A.nuts=nuts;
+  A.pin=new T.Vector3(-TUBE.over+PIN.set,TUBE.h+PIN.h,PART.TH+TUBE.w/2);
+  A.pins=new T.Vector3(PART.pinD,PART.pinZ[2],PART.TH);
+  A.front=new T.Vector3(0,PART.H*0.55,PART.TH);
+  A.top=new T.Vector3(PART.edgeDowel[2],PART.H,PART.TH/2);
+  A.thru=new T.Vector3(PART.thru[1],PART.thruZ,PART.TH);
+  return{root:root,A:A,dir:new T.Vector3(-1,0.95,1.15)};
+}
+function applyExplode(S,e){ /* e: 0 assembled .. 1 exploded */
+  S.A.tube.position.set(0,-46*e,56*e);
+  S.A.bolts.forEach(function(b){b.position.set(0,205*e,-70*e);});
+  S.A.nuts.forEach(function(n){n.position.copy(n.userData.base).add(new T.Vector3(0,-46*e,56*e+80*e));});
+}
+function sceneCheck(C,kind){
+  var root=new T.Group(),dir=new T.Vector3(-1,0.95,1.15);
+  if(kind==="ok"){root.add(panelGroup(C));root.add(tubeGroup(C,false));}
+  if(kind==="back"){root.add(panelGroup(C));root.add(tubeGroup(C,true));}
+  if(kind==="outside"){root.add(panelGroup(C));var t=tubeGroup(C,false,-TUBE.w);root.add(t);dir=new T.Vector3(-1,0.95,-1.15);}
+  if(kind==="hand"){var a=panelGroup(C),b=panelGroup(C);a.scale.x=-1;b.scale.x=-1;a.position.x=PART.L;b.position.x=PART.L*2+120;
+    var ta=tubeGroup(C,false),tb=tubeGroup(C,false);ta.scale.x=-1;tb.scale.x=-1;ta.position.x=PART.L;tb.position.x=PART.L*2+120;
+    root.add(a,b,ta,tb);dir=new T.Vector3(1,0.95,1.15);}
+  return{root:root,A:{},dir:dir};
+}
+
+/* ---- renderer with fitted orthographic camera + label overlay ---- */
+function makeView(container,S,opts){
+  opts=opts||{};
+  var C=opts.C,W=opts.w||1400,Hh=Math.round(W/(opts.aspect||4/3));
+  var renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:!!opts.snapshot});
+  renderer.setPixelRatio(1);renderer.setSize(W,Hh,false);
+  var scene=new T.Scene();scene.add(S.root);
+  scene.add(new T.AmbientLight(0xffffff,0.78));
+  var dl=new T.DirectionalLight(0xffffff,0.38);dl.position.set(-0.4,1,0.8);scene.add(dl);
+  var dl2=new T.DirectionalLight(0xffffff,0.16);dl2.position.set(1,-0.3,-0.5);scene.add(dl2);
+  var cam=new T.OrthographicCamera(-1,1,1,-1,-5000,5000);
+  function fit(){
+    var bb=new T.Box3().setFromObject(S.root),c=bb.getCenter(new T.Vector3());
+    cam.position.copy(c).add(S.dir.clone().normalize().multiplyScalar(2000));cam.up.set(0,1,0);cam.lookAt(c);cam.updateMatrixWorld();
+    var inv=cam.matrixWorldInverse,mn=new T.Vector2(1e9,1e9),mx=new T.Vector2(-1e9,-1e9);
+    [[bb.min.x,bb.min.y,bb.min.z],[bb.max.x,bb.min.y,bb.min.z],[bb.min.x,bb.max.y,bb.min.z],[bb.min.x,bb.min.y,bb.max.z],
+     [bb.max.x,bb.max.y,bb.min.z],[bb.max.x,bb.min.y,bb.max.z],[bb.min.x,bb.max.y,bb.max.z],[bb.max.x,bb.max.y,bb.max.z]].forEach(function(p){
+      var v=new T.Vector3(p[0],p[1],p[2]).applyMatrix4(inv);mn.x=Math.min(mn.x,v.x);mn.y=Math.min(mn.y,v.y);mx.x=Math.max(mx.x,v.x);mx.y=Math.max(mx.y,v.y);});
+    var mL=opts.marginX||0.16,mT=opts.marginY||0.12;
+    var w=(mx.x-mn.x),h=(mx.y-mn.y),cx=(mn.x+mx.x)/2,cy=(mn.y+mx.y)/2;
+    w*=1+2*mL;h*=1+2*mT;
+    var asp=W/Hh;if(w/h<asp)w=h*asp;else h=w/asp;
+    cam.left=cx-w/2;cam.right=cx+w/2;cam.top=cy+h/2;cam.bottom=cy-h/2;cam.updateProjectionMatrix();
   }
-  if(k==="ok")one(0,true,false,false);
-  if(k==="back")one(0,true,true,false);
-  if(k==="outside")one(0,true,false,true);
-  if(k==="hand"){one(0,false,false,false);one(230,false,false,false);
-    T(60,-8,"1B",{"font-family":ARCH,"font-size":13,"font-weight":800,fill:FLAG},root);T(290,-8,"1B",{"font-family":ARCH,"font-size":13,"font-weight":800,fill:FLAG},root);}
-  fit(svg,10);
-});
+  function px(v){var p=v.clone().project(cam);return[(p.x+1)/2*W,(1-p.y)/2*Hh];}
+  function render(){renderer.render(scene,cam);}
+  return{renderer:renderer,cam:cam,fit:fit,px:px,render:render,W:W,H:Hh,scene:scene};
+}
+function labelSVG(container,W,H){
+  var svg=document.createElementNS("http://www.w3.org/2000/svg","svg");svg.setAttribute("viewBox","0 0 "+W+" "+H);container.appendChild(svg);return svg;
+}
+function marker(svg,V,anchor,n,dx,dy,color){
+  var a=V.px(anchor),NS="http://www.w3.org/2000/svg",R=26;
+  var x=Math.max(R+6,Math.min(V.W-R-6,a[0]+dx)),y=Math.max(R+6,Math.min(V.H-R-6,a[1]+dy));
+  var l=document.createElementNS(NS,"line");l.setAttribute("x1",a[0]);l.setAttribute("y1",a[1]);l.setAttribute("x2",x);l.setAttribute("y2",y);l.setAttribute("stroke",color);l.setAttribute("stroke-width",2.2);svg.appendChild(l);
+  var d=document.createElementNS(NS,"circle");d.setAttribute("cx",a[0]);d.setAttribute("cy",a[1]);d.setAttribute("r",5);d.setAttribute("fill",color);svg.appendChild(d);
+  var c=document.createElementNS(NS,"circle");c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r",R);c.setAttribute("fill",cssVar("--panel"));c.setAttribute("stroke",color);c.setAttribute("stroke-width",3);svg.appendChild(c);
+  var t=document.createElementNS(NS,"text");t.setAttribute("x",x);t.setAttribute("y",y+10);t.setAttribute("text-anchor","middle");
+  t.setAttribute("font-family",ARCH);t.setAttribute("font-size",28);t.setAttribute("font-weight",800);t.setAttribute("fill",color);t.textContent=n;svg.appendChild(t);
+}
+function text(svg,x,y,s,size,color,weight,anchor){var t=document.createElementNS("http://www.w3.org/2000/svg","text");t.setAttribute("x",x);t.setAttribute("y",y);t.setAttribute("font-family",ARCH);t.setAttribute("font-size",size);t.setAttribute("font-weight",weight||700);t.setAttribute("fill",color);if(anchor)t.setAttribute("text-anchor",anchor);t.textContent=s;svg.appendChild(t);return t;}
 
-/* ---------- animation ---------- */
-function ph(t,a,b){return Math.max(0,Math.min(1,(t-a)/(b-a)));}
-function ez(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
-(function(){
-  var svg=document.querySelector('svg[data-stage="step1"]');if(!svg)return;
-  var steps=[[0,"Arm to the inside face"],[.26,"Bolts in from behind"],[.52,"Nylocks on by hand"],[.76,"Hex key + socket: pull flush"]];
-  var s=.62,P=mkP(s),root=E("g",{},svg),g=E("g",{transform:"scale(-1,1)"},root);
-  var fx=function(d){return PART.L-d;};
-  panel(g,P);
-  var tg=E("g",{},g),ng=[],sg=[];
-  /* tube drawn at final position; group translated along screen vector of +Y */
-  tube(tg,P,PART.TH,false);
-  var ty=PART.TH+TUBE.w;
-  PART.thru.forEach(function(d){
-    var x=fx(d);
-    var sh=E("g",{},g);boltShaft(sh,P,x,ty,ty+14,PART.thruZ,4);sg.push(sh);
-    var n=E("g",{},g);nut(n,P,x,ty,PART.thruZ);ng.push(n);
+/* snapshot a static scene into an <img> so only the animation keeps a live context */
+function snapshot(container,build,labels,opts){
+  var C=theme(),S=build(C);
+  var V=makeView(container,S,Object.assign({C:C,snapshot:true},opts||{}));
+  V.fit();V.render();
+  var img=container.querySelector("img")||document.createElement("img");img.alt="";img.src=V.renderer.domElement.toDataURL("image/png");
+  if(!img.parentNode)container.appendChild(img);
+  var old=container.querySelector("svg");if(old)old.remove();
+  var svg=labelSVG(container,V.W,V.H);if(labels)labels(svg,V,C);
+  container.classList.add("ready");
+  V.renderer.dispose();V.renderer.forceContextLoss();
+}
+
+function buildAll(){
+  var el;
+  /* exploded drawing */
+  el=document.querySelector('[data-render="exploded"]');
+  if(el)snapshot(el,function(C){var S=sceneStep1(C);applyExplode(S,1);return S;},function(svg,V,C){
+    text(svg,28,58,"1A",44,C.ink);
+    marker(svg,V,new T.Vector3(PART.pinD,PART.pinZ[2],PART.TH),"1",-90,-40,C.face);
+    marker(svg,V,new T.Vector3(0,PART.H*0.12,PART.TH),"2",-90,30,C.ink);
+    marker(svg,V,new T.Vector3(PART.edgeDowel[2],PART.H,PART.TH/2),"3",70,-70,C.edge);
+    marker(svg,V,new T.Vector3(PART.thru[2],PART.thruZ,PART.TH),"4",80,-10,C.face);
+    marker(svg,V,new T.Vector3(PART.thru[0],PART.thruZ+205,-70+BOLT.len),"5",-70,-60,C.ink2);
+    marker(svg,V,new T.Vector3(PART.thru[3],PART.thruZ-46,PART.TH+TUBE.w+136+NUT.h),"6",80,40,C.ink2);
+    marker(svg,V,new T.Vector3(-TUBE.over+PIN.set,TUBE.h+PIN.h-46,PART.TH+56+TUBE.w/2),"7",-40,80,C.ok);
+  },{marginX:.16,marginY:.12});
+  /* checks */
+  var lab={ok:"",back:"",outside:"from outside the cabinet",hand:"1B   +   1B"};
+  ["ok","back","outside","hand"].forEach(function(k){
+    var c=document.querySelector('[data-render="'+k+'"]');if(!c)return;
+    snapshot(c,function(C){return sceneCheck(C,k);},function(svg,V,C){if(lab[k])text(svg,V.W/2,V.H-18,lab[k],22,k==="hand"?C.flag:C.ink2,600,"middle");},{w:900,aspect:5/3,marginX:.08,marginY:.1});
   });
-  /* section inset: outside face | panel | tube wall, head pulls flush */
-  var ins=E("g",{},root);
-  E("rect",{x:0,y:0,width:150,height:96,fill:PAPER,stroke:RULE,"stroke-width":1},ins);
-  T(8,14,"SECTION",{"font-family":ARCH,"font-size":8,"letter-spacing":"1.2",fill:INK3},ins);
-  E("rect",{x:60,y:24,width:19*2.2,height:60,fill:MEL,stroke:INK2,"stroke-width":1},ins);         /* panel 19 */
-  E("rect",{x:60+19*2.2,y:24,width:5,height:60,fill:STEEL,stroke:SDK,"stroke-width":.8},ins);       /* tube wall */
-  E("rect",{x:60,y:50,width:19*2.2+5,height:8,fill:PAPER,stroke:FACE,"stroke-width":.8},ins);       /* ⌀8 through */
-  var head=E("g",{},ins);
-  E("path",{d:"M60,46 l-1,0 l0,16 l1,0 l7,-3 l0,-10 z",fill:SDK},head);
-  E("rect",{x:67,y:51,width:19*2.2+5+15,height:6,fill:STEEL,stroke:SDK,"stroke-width":.7},head);
-  var nutI=E("g",{},ins);
-  E("rect",{x:60+19*2.2+5,y:44,width:10,height:20,fill:STEEL,stroke:SDK,"stroke-width":.8},nutI);
-  E("rect",{x:60+19*2.2+5,y:44,width:10,height:4,fill:FLAG,opacity:.5},nutI);
-  T(30,58,"outside",{"text-anchor":"middle","font-family":MONO,"font-size":7.5,fill:INK3},ins);
-  var lab=T(75,92,"",{"text-anchor":"middle","font-family":MONO,"font-size":8,fill:OK},ins);
-  var note=T(0,0,"",{"text-anchor":"middle","font-family":MONO,"font-size":11,fill:INK2},root);
-  var Y=function(dy){var a=P(0,0,0),b=P(0,dy,0);return "translate("+(-(b[0]-a[0])).toFixed(2)+","+(b[1]-a[1]).toFixed(2)+")";};
-  var YM=function(dy){var a=P(0,0,0),b=P(0,dy,0);return "translate("+(b[0]-a[0]).toFixed(2)+","+(b[1]-a[1]).toFixed(2)+")";};
-  function frame(t){
-    var a=ez(ph(t,.02,.26)),b=ez(ph(t,.28,.5)),c=ez(ph(t,.54,.74)),d=ez(ph(t,.78,.96));
-    tg.setAttribute("transform",YM(70*(1-a)));
-    sg.forEach(function(e){e.setAttribute("opacity",b>0?1:0);e.setAttribute("transform",YM(-14*(1-b)));});
-    ng.forEach(function(e,i){e.setAttribute("opacity",c>0?1:0);e.setAttribute("transform",YM(60*(1-c)));});
-    head.setAttribute("transform","translate("+(-14*(1-b)+ -6*(1-d)*b).toFixed(2)+",0)");
-    nutI.setAttribute("opacity",c>0?1:0);nutI.setAttribute("transform","translate("+(40*(1-c)).toFixed(2)+",0)");
-    lab.textContent=d>=1?"✓ head flush":(b>=1?"head proud 6":"");
-    note.textContent=t<.26?"tube flat to the panel, pin end past the front":t<.52?"through the ⌀8 holes and the tube":t<.76?"start each nut by hand":"tighten until the head sinks into the outside face";
+  /* animation: live context */
+  el=document.querySelector('[data-render="anim"]');
+  if(el){
+    var C=theme(),S=sceneStep1(C),V=makeView(el,S,{C:C,w:1200,aspect:4/3,marginX:.14,marginY:.12});
+    applyExplode(S,1);V.fit();
+    el.querySelector("canvas")&&el.querySelector("canvas").remove();
+    el.appendChild(V.renderer.domElement);
+    var svg=labelSVG(el,V.W,V.H),anote=document.getElementById("anote");
+    var arrow=document.createElementNS("http://www.w3.org/2000/svg","text");arrow.setAttribute("font-family",MONO);arrow.setAttribute("font-size",30);arrow.setAttribute("font-weight","600");arrow.setAttribute("fill",C.ok);arrow.setAttribute("text-anchor","middle");svg.appendChild(arrow);
+    el.classList.add("ready");
+    var steps=[[0,"Arm to the inside face"],[.26,"Bolts in from behind"],[.52,"Nylocks on by hand"],[.76,"Hex key + socket: pull flush"]];
+    function ph(t,a,b){return Math.max(0,Math.min(1,(t-a)/(b-a)));}
+    function ez(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
+    function frame(t){
+      var a=ez(ph(t,.02,.26)),b=ez(ph(t,.28,.5)),c=ez(ph(t,.54,.74)),d=ez(ph(t,.78,.96));
+      S.A.tube.position.set(0,-46*(1-a),56*(1-a));
+      S.A.bolts.forEach(function(bl){bl.position.set(0,205*(1-b),-70*(1-b)-6*(1-d)*b);});
+      S.A.nuts.forEach(function(n){n.position.copy(n.userData.base).add(new T.Vector3(0,0,80*(1-c)+2*(1-d)));n.rotation.z=c*Math.PI*4+d*Math.PI;});
+      anote.textContent=t<.26?"Tube flat to the panel, pin end past the front edge.":t<.52?"Bolts through the ⌀8 holes and the tube, from the outside face.":t<.76?"Start each nylock nut by hand.":"Hex key in the bolt, socket on the nut: tighten until the head sits flush in the outside face.";
+      var p=V.px(new T.Vector3(PART.thru[3],PART.thruZ+44,PART.TH+TUBE.w+NUT.h));arrow.setAttribute("x",p[0]);arrow.setAttribute("y",p[1]);arrow.textContent=(t>.78&&t<.97)?"↻ tighten":(t>=.97?"✓ flush":"");
+      V.render();
+    }
+    var rng=document.getElementById("rng-step1"),stepEl=document.querySelector('[data-step="step1"]'),btn=document.querySelector('[data-play="step1"]');
+    function label(t){var s=steps[0][1];steps.forEach(function(p){if(t>=p[0])s=p[1];});return s;}
+    function set(t){frame(t);stepEl.textContent=label(t);rng.value=Math.round(t*1000);}
+    var raf=null,DUR=6500,reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function stop(){if(raf){cancelAnimationFrame(raf);raf=null;}}
+    function play(){stop();var t0=performance.now();(function loop(now){var t=Math.min(1,(now-t0)/DUR);set(t);if(t<1)raf=requestAnimationFrame(loop);else raf=null;})(performance.now());}
+    btn.addEventListener("click",function(){if(reduce){set(1);return;}play();});
+    rng.addEventListener("input",function(){stop();set(rng.value/1000);});
+    set(1);
+    buildAll.animView=V;
   }
-  ins.setAttribute("opacity",0);frame(1);fit(svg,14);
-  var vb=svg.getAttribute("viewBox").split(" ").map(Number);
-  ins.setAttribute("transform","translate("+(vb[0]+vb[2]-156)+","+(vb[1]+4)+")");ins.setAttribute("opacity",1);
-  note.setAttribute("x",vb[0]+vb[2]/2);note.setAttribute("y",vb[1]+vb[3]+12);
-  svg.setAttribute("viewBox",vb[0]+" "+vb[1]+" "+vb[2]+" "+(vb[3]+20));
-  var rng=document.getElementById("rng-step1"),stepEl=document.querySelector('[data-step="step1"]'),btn=document.querySelector('[data-play="step1"]');
-  function label(t){var s=steps[0][1];steps.forEach(function(p){if(t>=p[0])s=p[1];});return s;}
-  function set(t){frame(t);stepEl.textContent=label(t);rng.value=Math.round(t*1000);}
-  var raf=null,DUR=6000,reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  function stop(){if(raf){cancelAnimationFrame(raf);raf=null;}}
-  function play(){stop();var t0=performance.now();(function loop(now){var t=Math.min(1,(now-t0)/DUR);set(t);if(t<1)raf=requestAnimationFrame(loop);else raf=null;})(performance.now());}
-  btn.addEventListener("click",function(){if(reduce){set(1);return;}play();});
-  rng.addEventListener("input",function(){stop();set(rng.value/1000);});
-  set(1);
-})();
+}
+buildAll();
+/* re-snapshot on theme change so the line colour follows the page */
+try{window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change",function(){setTimeout(buildAll,50);});}catch(e){}
 })();
 </script>
