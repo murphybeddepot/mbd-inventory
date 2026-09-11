@@ -9,7 +9,7 @@
   --face:#003087; --face-soft:#E4EAF5;
   --edge:#A9660A; --edge-soft:#F6EBDA;
   --steel:#949BA2; --steel-lit:#C9CED3; --steel-dk:#5B6167;
-  --mel:#E7E8E1; --mel-dk:#D3D5CB;
+  --mel:#E7E8E1; --mel-dk:#D3D5CB; --band:#FFFFFF;
   --flag:#9E2F26; --flag-soft:#F6E3E1;
   --ok:#2E6B41;
   --shadow:0 1px 2px rgba(20,25,30,.06);
@@ -21,8 +21,7 @@
     --face:#7FA6E8; --face-soft:#1B2740;
     --edge:#E0A24E; --edge-soft:#33270F;
     --steel:#7F868D; --steel-lit:#A9B0B6; --steel-dk:#474D53;
-    --mel:#2A2F33; --mel-dk:#20242700;
-    --mel-dk:#1F2326;
+    --mel:#2A2F33; --mel-dk:#1F2326; --band:#3C4247;
     --flag:#E38279; --flag-soft:#3A1F1C;
     --ok:#74B98C;
     --shadow:0 1px 2px rgba(0,0,0,.4);
@@ -34,7 +33,7 @@
   --face:#7FA6E8; --face-soft:#1B2740;
   --edge:#E0A24E; --edge-soft:#33270F;
   --steel:#7F868D; --steel-lit:#A9B0B6; --steel-dk:#474D53;
-  --mel:#2A2F33; --mel-dk:#1F2326;
+  --mel:#2A2F33; --mel-dk:#1F2326; --band:#3C4247;
   --flag:#E38279; --flag-soft:#3A1F1C;
   --ok:#74B98C;
   --shadow:0 1px 2px rgba(0,0,0,.4);
@@ -319,7 +318,7 @@ ol.steps b{font-weight:600}
   <ul class="notes">
     <li>Key everything to part codes <span class="mono">1A</span> / <span class="mono">1B</span>, not barcode digits. The V3 labels and every Chisel drawing already use them.</li>
     <li>Holes are at their real V3 stations: through-holes at height 20, depths 74 / 175.6 / 277.2 / 378.8 from the front edge; pin holes at heights 85 / 117 / 162, 10.5 in; edge bores on the top edge at 60 / 132 / 204 / 276 / 348 / 420 from the front, alternating 13 and 16 deep.</li>
-    <li>Show the front edge banded and the other three raw, as the V2 brief asks. Edgebanding is drawn as the heavy line.</li>
+    <li>Show the front edge banded and the other three raw, as the V2 brief asks. Edgebanding is drawn as a double line, white PVC on a white bed &mdash; never a dark edge.</li>
     <li>30&deg; isometric, 1&nbsp;pt lines, matching the V2 Fusion sheets. The exploded and assembled views above are the two frames to keep.</li>
     <li>The tube section and pin overhang are drawn from the BC1 photo, not a dimensioned part. Take exact sizes from the BC1 drawing before final art.</li>
   </ul>
@@ -358,7 +357,9 @@ function plan(svg,code){
   svg.setAttribute("viewBox","0 0 "+(L+28)+" "+(H+44));
   E("rect",{x:ox,y:oy,width:L,height:H,fill:MEL,stroke:INK2,"stroke-width":1},svg);
   /* banded front edge: heavy line */
-  E("line",{x1:mirror?ox+L:ox,y1:oy,x2:mirror?ox+L:ox,y2:oy+H,stroke:INK,"stroke-width":3},svg);
+  var bx=mirror?ox+L:ox,bo=mirror?-2.5:2.5;
+  E("line",{x1:bx,y1:oy,x2:bx,y2:oy+H,stroke:INK,"stroke-width":1.2},svg);
+  E("line",{x1:bx+bo,y1:oy,x2:bx+bo,y2:oy+H,stroke:INK,"stroke-width":1.2},svg);
   PART.thru.forEach(function(d){E("circle",{cx:X(d),cy:oy+H-PART.thruZ*s,r:4*s,fill:PAPER,stroke:FACE,"stroke-width":1.1},svg);
     E("line",{x1:X(d)-3,y1:oy+H-PART.thruZ*s,x2:X(d)+3,y2:oy+H-PART.thruZ*s,stroke:FACE,"stroke-width":.7},svg);
     E("line",{x1:X(d),y1:oy+H-PART.thruZ*s-3,x2:X(d),y2:oy+H-PART.thruZ*s+3,stroke:FACE,"stroke-width":.7},svg);});
@@ -400,12 +401,12 @@ document.querySelectorAll("svg[data-icon]").forEach(function(s){icon(s,s.getAttr
 if(!window.THREE)return;
 var T=THREE;
 function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||"#888";}
-function theme(){return{paper:cssVar("--panel"),mel:cssVar("--mel"),ink:cssVar("--ink"),steel:cssVar("--steel-lit"),steelDk:cssVar("--steel"),hole:cssVar("--mel-dk"),face:cssVar("--face"),edge:cssVar("--edge"),ink2:cssVar("--ink-2"),ok:cssVar("--ok"),flag:cssVar("--flag")};}
+function theme(){return{paper:cssVar("--panel"),mel:cssVar("--mel"),ink:cssVar("--ink"),steel:cssVar("--steel-lit"),steelDk:cssVar("--steel"),hole:cssVar("--mel-dk"),band:cssVar("--band"),face:cssVar("--face"),edge:cssVar("--edge"),ink2:cssVar("--ink-2"),ok:cssVar("--ok"),flag:cssVar("--flag")};}
 var MONO='"IBM Plex Mono",monospace',ARCH='Archivo,sans-serif';
 
 /* ---- 1A geometry in mm. x = depth from the FRONT edge, y = height, z = thickness toward the viewer ---- */
 var PART={L:476,H:178,TH:19.05,thru:[74,175.6,277.2,378.8],thruZ:20,pinZ:[85,117,162],pinD:10.5,edgeBolt:[60,204,348],edgeDowel:[132,276,420]};
-var TUBE={w:25.4,h:38,back:8,over:52},PIN={r:6.5,h:25,set:12},BOLT={r:4,len:50.8,headR:7,headL:4},NUT={r:7.5,h:7};
+var TUBE={w:25.4,h:38,back:8,over:52},PIN={r:6.5,h:25,set:12},BOLT={r:4,len:50.8,headR:8,headL:4.4},NUT={r:7.5,h:7};
 
 function solid(geom,fill,C,o){
   o=o||{};
@@ -425,7 +426,7 @@ function cylY(x,z,y0,y1,r,fill,C,seg,o){
   var g=solid(new T.CylinderGeometry(r,r,y1-y0,seg||36),fill,C,o);g.position.set(x,(y0+y1)/2,z);return g;
 }
 function coneZ(x,y,z0,z1,r0,r1,fill,C){ /* r0 at z0, r1 at z1 */
-  var g=solid(new T.CylinderGeometry(r1,r0,z1-z0,36),fill,C,{thr:60});g.rotation.x=-Math.PI/2;g.position.set(x,y,(z0+z1)/2);return g;
+  var g=solid(new T.CylinderGeometry(r1,r0,z1-z0,36),fill,C,{thr:60});g.rotation.x=Math.PI/2;g.position.set(x,y,(z0+z1)/2);return g;
 }
 
 /* panel 1A (or 1B mirrored by scale.x = -1 on the group) */
@@ -433,7 +434,7 @@ function panelGroup(C,opts){
   opts=opts||{};
   var g=new T.Group();
   g.add(box(0,PART.L,0,PART.H,0,PART.TH,C.mel,C,{alpha:opts.alpha}));
-  g.add(box(-0.8,0,0,PART.H,0,PART.TH,C.ink,C,{noEdge:true}));                    /* edgebanded front */
+  g.add(box(-1,0,0,PART.H,0,PART.TH,C.band,C));                                 /* edgebanded front: 1 mm PVC, reads as a double line */
   PART.thru.forEach(function(d){g.add(cylZ(d,PART.thruZ,-0.1,PART.TH+0.1,BOLT.r,C.hole,C));});
   PART.pinZ.forEach(function(y){g.add(cylZ(PART.pinD,y,PART.TH-13,PART.TH+0.1,2.5,C.hole,C,24));});
   PART.edgeBolt.forEach(function(d){g.add(cylY(d,PART.TH/2,PART.H-13,PART.H+0.1,4,C.hole,C,24));});
@@ -455,7 +456,8 @@ function boltGroup(C,x){ /* head at z=0 countersunk into the panel, shaft toward
   var g=new T.Group();
   g.add(coneZ(x,PART.thruZ,0,BOLT.headL,BOLT.headR,BOLT.r,C.steelDk,C));
   g.add(cylZ(x,PART.thruZ,BOLT.headL-0.05,BOLT.len,BOLT.r,C.steel,C));
-  var sock=cylZ(x,PART.thruZ,-0.1,1.5,2.6,C.ink,C,6,{noEdge:true});g.add(sock);
+  var sock=cylZ(x,PART.thruZ,-0.15,1.8,2.6,C.steelDk,C,6,{thr:10});g.add(sock);
+  g.add(cylZ(x,PART.thruZ,BOLT.headL+20,BOLT.len,BOLT.r+0.02,C.steelDk,C,36,{noEdge:true})); /* threaded length reads darker */
   return g;
 }
 function nutGroup(C,x,z0){ /* built about its own axis so it can spin; placed by position */
