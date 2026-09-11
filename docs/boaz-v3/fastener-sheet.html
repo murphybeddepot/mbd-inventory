@@ -244,7 +244,7 @@ footer{margin-top:52px; padding-top:18px; border-top:1px solid var(--rule); font
       <div class="txt">
         <table class="spec">
           <tr><th>Hole</th><td>&empty;15 &times; 15 deep, face</td></tr>
-          <tr><th>Centre from mating edge</th><td>34 &nbsp;<span style="color:var(--edge)">(43 on the Top&rarr;End joint)</span></td></tr>
+          <tr><th>Centre from mating edge</th><td>34 &nbsp;<span style="color:var(--edge)">(24 inside the Top&rsquo;s notch)</span></td></tr>
           <tr><th>Bolt run into it</th><td>&empty;8 &times; 34 edge bore</td></tr>
           <tr><th>Count in V3</th><td>146</td></tr>
           <tr><th>Drive</th><td>#3 Phillips, half turn</td></tr>
@@ -299,28 +299,30 @@ footer{margin-top:52px; padding-top:18px; border-top:1px solid var(--rule); font
 
   <article class="card">
     <header>
-      <h3>Connecting bolt, &empty;5 thread &mdash; 43&nbsp;reach</h3>
-      <span class="sku">length to be sourced</span>
+      <h3>Connecting bolt, &empty;5 thread &mdash; 24&nbsp;reach</h3>
+      <span class="sku">item to confirm</span>
       <span class="tag new">New in V3</span>
     </header>
     <div class="body">
-      <div class="draw"><svg data-el="bolt5_43" aria-label="Long connecting bolt elevation compared to the standard one"></svg></div>
+      <div class="draw"><svg data-el="bolt5_24" aria-label="Short connecting bolt elevation with reach and embed dimensions"></svg></div>
       <div class="txt">
         <table class="spec">
           <tr><th>Screws into</th><td>&empty;5 face hole, 13 deep</td></tr>
-          <tr><th>Reach, face to head centre</th><td class="delta">43 &mdash; 9 longer</td></tr>
-          <tr><th>Bolt run into it</th><td>&empty;8 &times; 40 edge bore</td></tr>
+          <tr><th>Reach, face to head centre</th><td class="delta">24 &mdash; 10 shorter</td></tr>
+          <tr><th>Cam centre from notched edge</th><td>24 &nbsp;<span style="color:var(--ink-3)">(43 from the raw blank)</span></td></tr>
+          <tr><th>Bolt run</th><td>&empty;8 &times; 40 from the raw edge &mdash; 21 past the notch</td></tr>
           <tr><th>Count in V3</th><td>8 &mdash; four per side</td></tr>
           <tr><th>Joint</th><td>2A Top &rarr; 1D / 1E Upper Ends</td></tr>
         </table>
-        <p>V3 moved the Top-to-End cams from 34&nbsp;mm in to 43&nbsp;mm in, and deepened the bolt run from 34 to 40. A 34-reach bolt dropped into this joint stops 9&nbsp;mm short of the cam &mdash; the head never enters the spiral, and the cam spins freely with nothing in it.</p>
-        <p>Stations on both parts match exactly: 1D carries its four bolts at 56 / 184 / 333 / 461 and 2A its four cams at 264 / 392 / 541 / 669, the same 128 / 149 / 128 spacing off each datum. So the joint is real and deliberate &mdash; it just needs a bolt the V2 pack does not carry.</p>
-        <div class="note"><strong>Open item:</strong> hardware pack 450.81.593 lists one pin only. Either a second, longer pin joins the pack, or these eight cams move back to 34.</div>
+        <p>The Top's ends are notched 19 deep over the rear 500&nbsp;mm, from 225 to 725. Drilling is measured from the raw blank, so the four end cams read 43 in and the bolt run reads 40 deep &mdash; but the panel that actually meets the End is the notched edge, and from there the cam sits at 24 and the run is 21. That is the standard short Minifix distance, and it takes the short bolt.</p>
+        <p>Stations on both parts match exactly: 1D carries its four bolts at 56 / 184 / 333 / 461 and 2A its four cams at 264 / 392 / 541 / 669, the same 128 / 149 / 128 spacing off each datum. V2's Top was 1690 wide, flat, and held these cams at 34. V3's is 1728, notched, and holds them at 24.</p>
+        <div class="note calm"><strong>Why the file alone misleads:</strong> from v1-59 the Top is stored as a flat blank and the drill cuts the notch from the v1-58 reference. A hole census read off the blank reports 43 and 40. Read the outline first.</div>
+        <div class="note"><strong>Open item:</strong> pack 450.81.593 lists one pin. V3 needs 138 at 34 and 8 at 24 &mdash; which one is 262.28.624, and what is the other?</div>
       </div>
     </div>
     <figure class="anim" data-fig="reach">
-      <figcaption>Why 34 will not reach &mdash; both bolts in the same 43&nbsp;mm joint</figcaption>
-      <div class="stage"><svg data-stage="reach" aria-label="Animated comparison of a 34 mm and 43 mm reach bolt in the same joint"></svg></div>
+      <figcaption>Why 34 will not fit &mdash; both bolts in the notched Top joint</figcaption>
+      <div class="stage"><svg data-stage="reach" aria-label="Animated comparison of a 24 mm and 34 mm reach bolt in the notched Top joint"></svg></div>
       <div class="ctl">
         <button type="button" data-play="reach">Replay</button>
         <input type="range" id="rng-reach" min="0" max="1000" value="1000" aria-label="Scrub the reach comparison">
@@ -632,14 +634,14 @@ footer{margin-top:52px; padding-top:18px; border-top:1px solid var(--rule); font
 
 <section>
   <h2>What changed from V2 to V3</h2>
-  <p class="lede">Counted by reading both production files the same way. V2 is v1-50, V3 is v1-65. Everything V3 added lives in one place: the joint between the lower and upper bed ends, plus a deeper reach on the Top.</p>
+  <p class="lede">Counted by reading both production files the same way. V2 is v1-50, V3 is v1-65. Everything V3 added lives in two places: the joint between the lower and upper bed ends, and the Top, which grew 19 each end, gained a 19-deep notch, and moved its four end cams per side to the short 24 distance.</p>
   <div class="scroll">
     <table class="data">
       <thead><tr><th>Hole class</th><th>What goes in it</th><th class="n">V2</th><th class="n">V3</th><th class="n">&Delta;</th></tr></thead>
       <tbody>
         <tr><td class="mono">&empty;15 &times; 15 face</td><td>Cam housing</td><td class="n">136</td><td class="n">146</td><td class="n delta">+10</td></tr>
         <tr><td class="mono">&empty;8 &times; 34 edge</td><td>Bolt run, standard</td><td class="n">136</td><td class="n">138</td><td class="n delta">+2</td></tr>
-        <tr><td class="mono">&empty;8 &times; 40 edge</td><td>Bolt run, 43 reach</td><td class="n">0</td><td class="n">8</td><td class="n delta">+8</td></tr>
+        <tr><td class="mono">&empty;8 &times; 40 edge</td><td>Bolt run, 24 reach, in the Top&rsquo;s notch</td><td class="n">0</td><td class="n">8</td><td class="n delta">+8</td></tr>
         <tr><td class="mono">&empty;8 &times; 13 edge</td><td>&empty;8-thread bolt</td><td class="n">0</td><td class="n">6</td><td class="n delta">+6</td></tr>
         <tr><td class="mono">&empty;8 &times; 16 edge</td><td>Dowel</td><td class="n">0</td><td class="n">12</td><td class="n delta">+12</td></tr>
         <tr><td class="mono">&empty;8 through</td><td>Pivot arm bolt</td><td class="n">14</td><td class="n">16</td><td class="n delta">+2</td></tr>
@@ -664,7 +666,7 @@ footer{margin-top:52px; padding-top:18px; border-top:1px solid var(--rule); font
       <tbody>
         <tr><td class="mono">262.26.535</td><td>Cam housing &empty;15</td><td class="n">140</td><td class="n">146</td><td class="delta">6 short</td></tr>
         <tr><td class="mono">262.28.624</td><td>Connecting bolt, 34 reach</td><td class="n">140</td><td class="n">138</td><td style="color:var(--ok)">covers it</td></tr>
-        <tr><td class="mono">&mdash;</td><td>Connecting bolt, 43 reach</td><td class="n">0</td><td class="n">8</td><td class="delta">not carried</td></tr>
+        <tr><td class="mono">&mdash;</td><td>Connecting bolt, 24 reach</td><td class="n">0</td><td class="n">8</td><td class="delta">not carried</td></tr>
         <tr><td class="mono">&mdash;</td><td>Connecting bolt, &empty;8 thread</td><td class="n">0</td><td class="n">6</td><td class="delta">not carried</td></tr>
         <tr><td class="mono">&mdash;</td><td>Dowel &empty;8 &times; 30</td><td class="n">0</td><td class="n">6</td><td class="delta">not carried</td></tr>
         <tr><td class="mono">282.04.711</td><td>Shelf support pin &empty;5</td><td class="n">48</td><td class="n">48</td><td style="color:var(--ok)">exact</td></tr>
@@ -682,7 +684,7 @@ footer{margin-top:52px; padding-top:18px; border-top:1px solid var(--rule); font
   <h2>Before the drawings get made</h2>
   <p class="lede">Six things worth settling first, because each one changes what gets drawn.</p>
   <ol class="q">
-    <li><b>The 43&nbsp;mm reach.</b> Source a longer pin for the eight Top-to-End cams, or move those cams back to 34 and keep one pin in the pack? Drawing a second pin commits the pack to two.</li>
+    <li><b>The 24&nbsp;mm reach.</b> The eight Top-to-End cams sit at the short Minifix distance inside the notch. Is a short pin already in the pack under 262.28.624, or does it need its own line? Drawing a second pin commits the pack to two.</li>
     <li><b>The &empty;8-thread bolt.</b> Six per bed, and no item number on file. Which H&auml;fele part is it, so the drawing shows the right head?</li>
     <li><b>The dowels.</b> Six &empty;8&nbsp;&times;&nbsp;30 per bed. Confirm the length &mdash; 16 into each part leaves 2&nbsp;mm, which is right, but only if the bores really are 16 on both sides.</li>
     <li><b>Cam count.</b> 140 in the pack, 146 on the file. Bump the pack, or has V3's end joint not been priced yet?</li>
@@ -693,7 +695,7 @@ footer{margin-top:52px; padding-top:18px; border-top:1px solid var(--rule); font
 
 <footer>
   Hole counts read directly from <span class="mono">v1-65 BoazV3 QBZW00</span> and <span class="mono">v1-50 BoazV2 QBZW00</span> — 844 operations across 66 parts, and 808 across 68.
-  Fastener overall lengths marked <em>derived</em> are calculated from the hole geometry, not measured off a sample.
+  Outlines for the Top and front toe come from <span class="mono">v1-58</span>, the last version that stores them shaped. Fastener overall lengths marked <em>derived</em> are calculated from the hole geometry, not measured off a sample.
   Drawn to the house convention: millimetres, 19&nbsp;mm melamine, edgebanded edges shown solid.
 </footer>
 
@@ -716,8 +718,8 @@ var FAST={
   cam15:{name:"Cam housing",len:13,bespoke:"cam"},
   bolt5_34:{name:"Bolt, 34 reach",reach:34,face:36,segs:[
     {l:4,d:7,d2:7,t:"dome"},{l:29,d:5},{l:3,d:8.5},{l:13,d:5,t:"thread"}]},
-  bolt5_43:{name:"Bolt, 43 reach",reach:43,face:45,segs:[
-    {l:4,d:7,d2:7,t:"dome"},{l:38,d:5},{l:3,d:8.5},{l:13,d:5,t:"thread"}]},
+  bolt5_24:{name:"Bolt, 24 reach",reach:24,face:26,segs:[
+    {l:4,d:7,d2:7,t:"dome"},{l:19,d:5},{l:3,d:8.5},{l:13,d:5,t:"thread"}]},
   bolt8_13:{name:"Bolt, ⌀8 thread",reach:34,face:36,segs:[
     {l:4,d:9,d2:9,t:"dome"},{l:29,d:6},{l:3,d:10},{l:13,d:8,t:"thread"}]},
   dowel8:{name:"Dowel ⌀8×30",segs:[
@@ -899,18 +901,18 @@ document.querySelectorAll("svg[data-el]").forEach(function(s){
 (function(){
   var svg=document.getElementById("tray");if(!svg)return;
   gradDefs(svg,"tray");
-  var order=["cam15","shelfpin5","screw_075","dowel8","screw_125","screw_175","bolt5_34","bolt8_13","bolt5_43"];
+  var order=["cam15","shelfpin5","screw_075","dowel8","screw_125","bolt5_24","screw_175","bolt5_34","bolt8_13"];
   var labels={cam15:"Cam ⌀15",shelfpin5:"Shelf pin ⌀5",screw_075:"¾″ #6 screw",
     dowel8:"Dowel ⌀8×30",screw_125:"1¼″ #6 screw",screw_175:"1¾″ #8 screw",
-    bolt5_34:"Bolt ⌀5 · 34 reach",bolt8_13:"Bolt ⌀8 · 34 reach",bolt5_43:"Bolt ⌀5 · 43 reach"};
+    bolt5_24:"Bolt ⌀5 · 24 reach",bolt5_34:"Bolt ⌀5 · 34 reach",bolt8_13:"Bolt ⌀8 · 34 reach"};
   var skus={cam15:"262.26.535",shelfpin5:"282.04.711",screw_075:"010.22.952",dowel8:"new",
-    screw_125:"010.72.948",screw_175:"010.23.122",bolt5_34:"262.28.624",bolt8_13:"new",bolt5_43:"new"};
+    screw_125:"010.72.948",screw_175:"010.23.122",bolt5_24:"confirm",bolt5_34:"262.28.624",bolt8_13:"new"};
   var s=8.6,LB=176,rowH=44,top=16,W=LB+60*s+30,H=top+order.length*rowH+54;
   svg.setAttribute("viewBox","0 0 "+W+" "+H);
   order.forEach(function(k,i){
     var f=FAST[k],y=top+i*rowH+rowH/2;
     T(LB-14,y-2,labels[k],{"text-anchor":"end","font-family":ARCH,"font-size":12.5,"font-weight":600,fill:INK},svg);
-    T(LB-14,y+12,skus[k],{"text-anchor":"end","font-family":MONO,"font-size":10,fill:skus[k]==="new"?EDGE:INK3},svg);
+    T(LB-14,y+12,skus[k],{"text-anchor":"end","font-family":MONO,"font-size":10,fill:(skus[k]==="new"||skus[k]==="confirm")?EDGE:INK3},svg);
     var g=E("g",{transform:"translate("+LB+","+y+")"},svg);
     if(k==="cam15"){
       E("rect",{x:0,y:-7.5*s/2,width:13*s,height:7.5*s,rx:2,fill:"url(#tray-steel)",stroke:SDK,"stroke-width":1},g);
@@ -1022,32 +1024,33 @@ frame:function(r,t){
   r.note.textContent=t<.25?"square to the face":t<.72?"#3 Phillips on the collar":t<.86?"stop at the collar":"all bolts now stand at 34";
 }};
 
-SC.reach={steps:[[0,"Two bolts, one 43 joint"],[.3,"Panel lands on both"],[.66,"43 finds the cam"],[.85,"34 is 9 mm short"]],
-build:function(s){gradDefs(s,"reach");s.setAttribute("viewBox","0 0 480 210");var r={};
-  [[0,"43 reach",OK],[104,"34 reach",FLAG]].forEach(function(row,i){
-    var y=34+row[0];
+SC.reach={steps:[[0,"Two bolts, one notched joint"],[.3,"Top slides onto both"],[.66,"24 sits in the cam"],[.85,"34 bottoms out first"]],
+build:function(s){gradDefs(s,"reach");s.setAttribute("viewBox","0 0 480 220");var r={};
+  [[0,"24 reach",OK,48],[104,"34 reach",FLAG,68]].forEach(function(row,i){
+    var y=34+row[0],reach=row[3];
     ttl(s,14,y-14,row[1].toUpperCase());
     mel(s,40,y,34,76,"reach",["r"]);
     var g=E("g",{},s);
-    E("rect",{x:74,y:y+32,width:(i?68:86),height:6,fill:"url(#reach-steel)",stroke:SDK,"stroke-width":.8},g);
-    E("circle",{cx:74+(i?68:86)+6,cy:y+35,r:6.5,fill:"url(#reach-steel)",stroke:SDK,"stroke-width":.9},g);
-    r["b"+i]=g;
+    E("rect",{x:74,y:y+32,width:reach-6,height:6,fill:"url(#reach-steel)",stroke:SDK,"stroke-width":.8},g);
+    E("circle",{cx:74+reach,cy:y+35,r:6.5,fill:"url(#reach-steel)",stroke:SDK,"stroke-width":.9},g);
     var tp=E("g",{},s);
+    /* notched Top: real edge at x=74, ghost of the 19 cut away behind it */
     mel(tp,74,y+16,210,38,"reach",["r"]);
-    E("rect",{x:160,y:y+16,width:30,height:30,fill:"url(#reach-steel)",stroke:SDK,"stroke-width":1,rx:3},tp);
-    E("rect",{x:74,y:y+32,width:86,height:6,fill:PAPER,stroke:EDGE,"stroke-width":1},tp);
+    E("rect",{x:36,y:y+16,width:38,height:38,fill:"none",stroke:INK3,"stroke-width":1,"stroke-dasharray":"3 3"},tp);
+    E("rect",{x:74,y:y+32,width:42,height:6,fill:PAPER,stroke:EDGE,"stroke-width":1},tp);
+    E("rect",{x:107,y:y+16,width:30,height:30,fill:"url(#reach-steel)",stroke:SDK,"stroke-width":1,rx:3},tp);
     r["t"+i]=tp;
-    r["m"+i]=T(296,y+40,"",{"font-family":MONO,"font-size":12,fill:row[2],"font-weight":600},s);
+    r["m"+i]=T(296,y+40,"",{"font-family":MONO,"font-size":11,fill:row[2],"font-weight":600},s);
   });
-  cap(s,175,205,"cam centre 43 from the edge · bolt run ⌀8 × 40",INK3);
+  cap(s,170,190,"19 notch",INK3);
+  cap(s,240,212,"cam 24 from the notched edge · run 21 past it · 43 / 40 on the raw blank",INK3);
   return r;},
 frame:function(r,t){
   var sl=ez(ph(t,.3,.66));
-  [0,1].forEach(function(i){
-    r["t"+i].setAttribute("transform","translate("+(70*(1-sl))+",0)");
-  });
+  r.t0.setAttribute("transform","translate("+(70*(1-sl)).toFixed(2)+",0)");
+  r.t1.setAttribute("transform","translate("+(20+50*(1-sl)).toFixed(2)+",0)");
   r.m0.textContent=t>.7?"✓ head in the spiral":"";
-  r.m1.textContent=t>.85?"✗ 9 short — spins empty":"";
+  r.m1.textContent=t>.85?"✗ 10 long — stands off":"";
 }};
 
 SC.edgebolt={steps:[[0,"⌀8 × 13 bore in the edge"],[.28,"Heavier thread for edge grain"],[.75,"Seated — 34 reach"]],

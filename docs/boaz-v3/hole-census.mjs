@@ -1,5 +1,8 @@
 import { readFileSync } from 'node:fs';
 // Usage: node hole-census.mjs "<path to product .moz>"
+// NOTE: from v1-59 the Boaz Top (2A) and front toe (2E) are stored as flat blanks and the
+// drill cuts their notches from the v1-58 reference. Holes are measured from the raw blank,
+// so a bore that reads 40 deep near a 19 notch is 21 past the real edge. Read the outline first.
 // Counts every OperationHole by role (cam, bolt run, shelf ladder, pilots, dowels) so a
 // hardware pack can be checked against what the file actually drills.
 const F=process.argv[2]; if(!F){console.error('usage: node hole-census.mjs <product.moz>');process.exit(1);}
