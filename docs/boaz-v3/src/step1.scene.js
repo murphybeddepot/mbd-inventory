@@ -35,7 +35,7 @@ var checks={
   hand:function(V){[0,1].forEach(function(i){var g=new T.Group();g.add(panel1A());g.add(arm(false,false));g.scale.x=-1;g.position.x=PART.L*(i+1)+i*120;V.root.add(g);});return{dir:new T.Vector3(1,.95,1.15),mx:.06,my:.1,groundY:-.4};}
 };
 Object.keys(checks).forEach(function(k){var c=document.querySelector('[data-render="'+k+'"]');if(!c)return;
-  B.snapshot(c,checks[k],function(svg,V){var lab={outside:"seen from outside the cabinet",hand:"1B  +  1B"}[k];if(lab)B.text(svg,V.W/2,V.H-20,lab,24,k==="hand"?cssVar("--flag"):cssVar("--ink-2"),600,"middle");},{w:1000,aspect:5/3});});
+  B.snapshot(c,checks[k],function(svg,V){var lab={outside:"seen from outside the cabinet",hand:"1B  +  1B"}[k];if(lab)B.text(svg,V.W/2,V.H-20,lab,24,k==="hand"?cssVar("--flag"):cssVar("--ink-2"),600,"middle");B.verdict(svg,V,k==="ok"?"ok":"bad");},{w:1000,aspect:5/3});});
 /* animation */
 var an=document.querySelector('[data-render="anim"]');
 if(an){

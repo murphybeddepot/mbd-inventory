@@ -74,7 +74,7 @@ var checks={
   fronts:function(V){var A=build(V,{});return{A:A,dir:new T.Vector3(-.9,1.3,.5),mx:.1,my:.12,groundY:-.4,box:wbox(380,560,120,260,0,60)};}
 };
 Object.keys(checks).forEach(function(k){var c=document.querySelector('[data-render="'+k+'"]');if(!c)return;
-  B.snapshot(c,checks[k],function(svg,V){var lab={proud:"dowel in the 13 bore: 3 mm proud",fronts:"1D runs 19 past 1A at the back"}[k];B.text(svg,V.W/2,V.H-20,lab,24,k==="proud"?C.flag:C.ok,600,"middle");},{w:1000,aspect:5/3});});
+  B.snapshot(c,checks[k],function(svg,V){var lab={proud:"dowel in the 13 bore: 3 mm proud",fronts:"1D runs 19 past 1A at the back"}[k];B.text(svg,V.W/2,V.H-20,lab,24,k==="proud"?C.flag:C.ok,600,"middle");B.verdict(svg,V,k==="proud"?"bad":"ok");},{w:1000,aspect:5/3});});
 /* animation */
 var an=document.querySelector('[data-render="anim"]');
 if(an){

@@ -4,6 +4,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
 <style>
 
+
 :root{
   --paper:#F2F3EF; --panel:#FBFBF9; --ink:#191C1E; --ink-2:#4C5257; --ink-3:#767D83;
   --rule:#CDD1C9; --rule-2:#E2E5DE;
@@ -193,8 +194,10 @@ ol.steps li::before{content:counter(st);position:absolute;left:0;top:10px;width:
 ol.steps b{font-weight:600}
 .checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
 .check{border:1px solid var(--rule);background:var(--panel);padding:12px 14px}
-.check .lbl{font-family:Archivo,sans-serif;font-size:12px;font-weight:800;letter-spacing:.06em;margin:0 0 6px}
-.check.ok .lbl{color:var(--ok)}.check.bad .lbl{color:var(--flag)}
+.check .lbl{font-family:Archivo,sans-serif;font-size:13px;font-weight:800;letter-spacing:.06em;margin:-12px -14px 10px;padding:9px 14px;color:#fff;text-transform:uppercase}
+.check.ok .lbl{background:var(--ok)}.check.bad .lbl{background:var(--flag)}
+.check.ok{border-color:var(--ok)}.check.bad{border-color:var(--flag);border-width:2px}
+.check.info .lbl{background:transparent;color:var(--face);padding:0;margin:0 0 6px;text-transform:none;font-size:12.5px}
 .check svg{width:100%;height:auto;display:block;margin-bottom:6px}
 .check p{font-size:13.5px;margin:0;color:var(--ink-2)}
 .notes{font-size:14px;color:var(--ink-2);max-width:70ch}
@@ -209,6 +212,7 @@ ol.steps b{font-weight:600}
 .key-wrap{display:flex;flex-wrap:wrap;gap:4px 22px;margin-top:12px}
 .kitem{flex:1 1 250px;display:flex;align-items:flex-start;gap:8px;font-size:13.5px;color:var(--ink);padding:3px 0;min-width:0}
 .kitem b{flex:none;display:inline-grid;place-items:center;width:20px;height:20px;border:1.5px solid var(--ink);border-radius:50%;font-family:Archivo,sans-serif;font-size:11px;font-weight:700}
+
 
 </style>
 
@@ -256,10 +260,10 @@ ol.steps b{font-weight:600}
 <section>
   <h2>Read the part first</h2>
   <div class="checks">
-    <div class="check ok"><p class="lbl">Inside face</p><p>The face with three &empty;5 pin holes in a column near the front edge. The arm goes on this face. The outside face is plain.</p></div>
-    <div class="check ok"><p class="lbl">Bottom edge</p><p>The long edge with four &empty;8 through-holes 20&nbsp;mm in. The arm sits flush along it. 4&Prime; apart, 74 from the front.</p></div>
-    <div class="check ok"><p class="lbl">Top edge</p><p>New in V3: six &empty;8 bores in the edge itself &mdash; three bolts, three dowels &mdash; for the joint to the upper end in step 2. Nothing goes in them yet.</p></div>
-    <div class="check ok"><p class="lbl">Front edge</p><p>The short edgebanded edge nearest the pin holes. The pivot pin ends up past this edge, pointing up.</p></div>
+    <div class="check info"><p class="lbl">Inside face</p><p>The face with three &empty;5 pin holes in a column near the front edge. The arm goes on this face. The outside face is plain.</p></div>
+    <div class="check info"><p class="lbl">Bottom edge</p><p>The long edge with four &empty;8 through-holes 20&nbsp;mm in. The arm sits flush along it. 4&Prime; apart, 74 from the front.</p></div>
+    <div class="check info"><p class="lbl">Top edge</p><p>New in V3: six &empty;8 bores in the edge itself &mdash; three bolts, three dowels &mdash; for the joint to the upper end in step 2. Nothing goes in them yet.</p></div>
+    <div class="check info"><p class="lbl">Front edge</p><p>The short edgebanded edge nearest the pin holes. The pivot pin ends up past this edge, pointing up.</p></div>
   </div>
 </section>
 
@@ -561,6 +565,21 @@ function marker(svg,V,anchor,n,dx,dy,color,bg){
   var c=document.createElementNS(NS,"circle");c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r",R);c.setAttribute("fill",bg);c.setAttribute("stroke",color);c.setAttribute("stroke-width",3);svg.appendChild(c);
   var t=document.createElementNS(NS,"text");t.setAttribute("x",x);t.setAttribute("y",y+10);t.setAttribute("text-anchor","middle");t.setAttribute("font-family","Archivo,sans-serif");t.setAttribute("font-size",28);t.setAttribute("font-weight",800);t.setAttribute("fill",color);t.textContent=n;svg.appendChild(t);
 }
+function verdict(svg,V,kind){
+  var W=V.W,H=V.H,red="#C8281E",green="#2E8B4A";
+  if(kind==="bad"){
+    var m=Math.min(W,H)*.14,sw=Math.min(W,H)*.075;
+    [[m,m,W-m,H-m],[W-m,m,m,H-m]].forEach(function(p){
+      var l=document.createElementNS(NS,"line");l.setAttribute("x1",p[0]);l.setAttribute("y1",p[1]);l.setAttribute("x2",p[2]);l.setAttribute("y2",p[3]);
+      l.setAttribute("stroke",red);l.setAttribute("stroke-width",sw);l.setAttribute("stroke-linecap","round");l.setAttribute("opacity",.88);svg.appendChild(l);});
+    var r=document.createElementNS(NS,"rect");r.setAttribute("x",0);r.setAttribute("y",0);r.setAttribute("width",W);r.setAttribute("height",H);r.setAttribute("fill","none");r.setAttribute("stroke",red);r.setAttribute("stroke-width",Math.min(W,H)*.03);svg.appendChild(r);
+  } else {
+    var s=Math.min(W,H)*.34,cx=W-s*.75,cy=H-s*.75;
+    var c=document.createElementNS(NS,"circle");c.setAttribute("cx",cx);c.setAttribute("cy",cy);c.setAttribute("r",s*.5);c.setAttribute("fill",green);svg.appendChild(c);
+    var t=document.createElementNS(NS,"path");t.setAttribute("d","M"+(cx-s*.24)+","+cy+" l"+(s*.16)+","+(s*.16)+" l"+(s*.32)+","+(-s*.34));
+    t.setAttribute("fill","none");t.setAttribute("stroke","#fff");t.setAttribute("stroke-width",s*.11);t.setAttribute("stroke-linecap","round");t.setAttribute("stroke-linejoin","round");svg.appendChild(t);
+  }
+}
 function text(svg,x,y,s,size,color,weight,anchor){var t=document.createElementNS(NS,"text");t.setAttribute("x",x);t.setAttribute("y",y);t.setAttribute("font-family","Archivo,sans-serif");t.setAttribute("font-size",size);t.setAttribute("font-weight",weight||700);t.setAttribute("fill",color);if(anchor)t.setAttribute("text-anchor",anchor);t.textContent=s;svg.appendChild(t);return t;}
 
 /* snapshot: render once to an <img>, release the context */
@@ -574,7 +593,7 @@ function snapshot(container,build,labels,opts){
   container.classList.add("ready");
   V.renderer.dispose();V.renderer.forceContextLoss();
 }
-return{MAT:MAT,panel:panel,boltFlat:boltFlat,nylock:nylock,cam15:cam15,camBolt:camBolt,dowel:dowel,screwCsk:screwCsk,pivotArm:pivotArm,view:view,overlay:overlay,marker:marker,text:text,snapshot:snapshot};
+return{MAT:MAT,verdict:verdict,panel:panel,boltFlat:boltFlat,nylock:nylock,cam15:cam15,camBolt:camBolt,dowel:dowel,screwCsk:screwCsk,pivotArm:pivotArm,view:view,overlay:overlay,marker:marker,text:text,snapshot:snapshot};
 })();
 
 </script>
@@ -639,7 +658,7 @@ var checks={
   hand:function(V){[0,1].forEach(function(i){var g=new T.Group();g.add(panel1A());g.add(arm(false,false));g.scale.x=-1;g.position.x=PART.L*(i+1)+i*120;V.root.add(g);});return{dir:new T.Vector3(1,.95,1.15),mx:.06,my:.1,groundY:-.4};}
 };
 Object.keys(checks).forEach(function(k){var c=document.querySelector('[data-render="'+k+'"]');if(!c)return;
-  B.snapshot(c,checks[k],function(svg,V){var lab={outside:"seen from outside the cabinet",hand:"1B  +  1B"}[k];if(lab)B.text(svg,V.W/2,V.H-20,lab,24,k==="hand"?cssVar("--flag"):cssVar("--ink-2"),600,"middle");},{w:1000,aspect:5/3});});
+  B.snapshot(c,checks[k],function(svg,V){var lab={outside:"seen from outside the cabinet",hand:"1B  +  1B"}[k];if(lab)B.text(svg,V.W/2,V.H-20,lab,24,k==="hand"?cssVar("--flag"):cssVar("--ink-2"),600,"middle");B.verdict(svg,V,k==="ok"?"ok":"bad");},{w:1000,aspect:5/3});});
 /* animation */
 var an=document.querySelector('[data-render="anim"]');
 if(an){
