@@ -1,0 +1,120 @@
+<div class="wrap">
+
+<div class="sheet">
+  <div class="sheet-top">
+    <p class="stepnum">Boaz V3 &middot; Step 1 of 30</p>
+    <h1>Lower pivot arms onto 1A and 1B</h1>
+    <p class="lede">The bookcases swing on two pins. This step bolts the arm that carries each pin to the inside face of the lower bed-cabinet ends, before those ends become part of anything bigger.</p>
+  </div>
+  <dl class="tb">
+    <div><dt>Parts</dt><dd>1A &middot; 1B</dd></div>
+    <div><dt>Hardware</dt><dd>BC1 box</dd></div>
+    <div><dt>People</dt><dd>1</dd></div>
+    <div><dt>Tools</dt><dd>5&nbsp;mm hex key &middot; &frac12;&Prime; socket</dd></div>
+    <div><dt>Source</dt><dd>v1-65 BoazV3 QBZW00</dd></div>
+  </dl>
+</div>
+
+<section>
+  <h2>Parts, hardware and tools</h2>
+  <div class="strip">
+    <div>
+      <h4>1A &middot; Finished Left End, lower</h4>
+      <svg data-plan="1A" aria-label="Plan of part 1A showing every hole"></svg>
+    </div>
+    <div>
+      <h4>1B &middot; Finished Right End, lower</h4>
+      <svg data-plan="1B" aria-label="Plan of part 1B showing every hole, mirror of 1A"></svg>
+    </div>
+    <div>
+      <h4>From the BC1 box</h4>
+      <div class="row"><svg data-icon="arm"></svg><b>2</b> lower pivot arm, pin at one end</div>
+      <div class="row"><svg data-icon="bolt"></svg><b>8</b> 2&Prime; (50&nbsp;mm) countersunk hex bolt</div>
+      <div class="row"><svg data-icon="nut"></svg><b>8</b> nylock nut</div>
+      <h4 style="margin-top:14px">Tools</h4>
+      <div class="row"><svg data-icon="hex"></svg>5&nbsp;mm hex key</div>
+      <div class="row"><svg data-icon="socket"></svg>impact driver, &frac12;&Prime; socket</div>
+    </div>
+  </div>
+  <p class="notes" style="margin-top:12px">Both ends are 476 &times; 178 &times; 19. They are a mirror pair, not two of the same part: laid inside-face up, 1A has its front edge on the left and 1B on the right.</p>
+</section>
+
+<section>
+  <h2>Read the part first</h2>
+  <div class="checks">
+    <div class="check ok"><p class="lbl">Inside face</p><p>The face with three &empty;5 pin holes in a column near the front edge. The arm goes on this face. The outside face is plain.</p></div>
+    <div class="check ok"><p class="lbl">Bottom edge</p><p>The long edge with four &empty;8 through-holes 20&nbsp;mm in. The arm sits flush along it. 4&Prime; apart, 74 from the front.</p></div>
+    <div class="check ok"><p class="lbl">Top edge</p><p>New in V3: six &empty;8 bores in the edge itself &mdash; three bolts, three dowels &mdash; for the joint to the upper end in step 2. Nothing goes in them yet.</p></div>
+    <div class="check ok"><p class="lbl">Front edge</p><p>The short edgebanded edge nearest the pin holes. The pivot pin ends up past this edge, pointing up.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Do this</h2>
+  <ol class="steps">
+    <li><b>Stand 1A on its bottom edge</b> on a blanket, inside face toward you, front edge to your left. The three pin holes are now at the left, near the top.</li>
+    <li><b>Set a pivot arm along the bottom edge</b> on the inside face, tube flat against the panel, pin end past the front edge with the pin pointing up. Line up its four holes with the four &empty;8 holes in the panel.</li>
+    <li><b>Push the four bolts in from the outside face</b>, through the panel and through the tube. Start a nylock nut on each by hand.</li>
+    <li><b>Tighten with the hex key in the bolt and the socket on the nut</b> until each countersunk head pulls itself flush into the outside face. That face gets covered by a side toe later, so nothing may stand proud.</li>
+    <li><b>Repeat for 1B</b>, mirrored: inside face toward you, front edge to your right, pin past the right edge.</li>
+  </ol>
+</section>
+
+<section>
+  <h2>Drawing</h2>
+  <figure class="fig">
+    <div class="render" data-render="exploded" style="aspect-ratio:4/3"><span class="fallback">Drawing needs WebGL.</span></div>
+    <figcaption>Rendered from the V3 part geometry. Tube section and pin overhang are taken from the BC1 part photo, not a drawing.</figcaption>
+  </figure>
+  <div class="key-wrap">
+    <div class="kitem"><b>1</b><span>&empty;5 pin holes &mdash; this is the inside face</span></div>
+    <div class="kitem"><b>2</b><span>front edge, edgebanded</span></div>
+    <div class="kitem"><b>3</b><span>top edge: three bolt and three dowel bores, used in step 2</span></div>
+    <div class="kitem"><b>4</b><span>&empty;8 through-holes, 20 up from the bottom edge</span></div>
+    <div class="kitem"><b>5</b><span>four 2&Prime; bolts, in from the outside face</span></div>
+    <div class="kitem"><b>6</b><span>four nylock nuts, on the tube</span></div>
+    <div class="kitem"><b>7</b><span>pivot pin up, past the front edge</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>Animation</h2>
+  <figure class="anim" style="border:1px solid var(--rule);background:var(--panel)">
+    <figcaption>Step 1 &mdash; arm on, bolts through, nuts on, heads pulled flush</figcaption>
+    <div class="stage" style="padding:6px 18px 0"><div class="render" data-render="anim" style="aspect-ratio:4/3;max-width:820px;margin:0 auto"><span class="fallback">Animation needs WebGL.</span></div></div>
+    <p id="anote" class="anote"></p>
+    <div class="ctl">
+      <button type="button" data-play="step1">Replay</button>
+      <input type="range" id="rng-step1" min="0" max="1000" value="1000" aria-label="Scrub the step 1 animation">
+      <span class="step" data-step="step1"></span>
+    </div>
+  </figure>
+</section>
+
+<section>
+  <h2>Right and wrong</h2>
+  <div class="checks">
+    <div class="check ok"><p class="lbl">&#10003; Pin past the front, pointing up</p><div class="render sm" data-render="ok"></div><p>Arm on the inside face, flush with the bottom edge, pin beyond the edgebanded front edge and pointing toward the top edge.</p></div>
+    <div class="check bad"><p class="lbl">&#10007; Pin at the back</p><div class="render sm" data-render="back"></div><p>The arm fits the holes either way round. With the pin at the back edge the bookcase has nothing to swing on.</p></div>
+    <div class="check bad"><p class="lbl">&#10007; Arm on the outside face</p><div class="render sm" data-render="outside"></div><p>Seen from outside the cabinet. The holes go through, so the arm bolts up on the plain face too. The pin then sits outside and the side toe cannot fit.</p></div>
+    <div class="check bad"><p class="lbl">&#10007; Same hand twice</p><div class="render sm" data-render="hand"></div><p>Two right ends: pins on the same side, one bookcase with no pivot. Check the pin-hole column is on the left for 1A, right for 1B.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Notes for the illustrator</h2>
+  <ul class="notes">
+    <li>Key everything to part codes <span class="mono">1A</span> / <span class="mono">1B</span>, not barcode digits. The V3 labels and every Chisel drawing already use them.</li>
+    <li>Holes are at their real V3 stations: through-holes at height 20, depths 74 / 175.6 / 277.2 / 378.8 from the front edge; pin holes at heights 85 / 117 / 162, 10.5 in; edge bores on the top edge at 60 / 132 / 204 / 276 / 348 / 420 from the front, alternating 13 and 16 deep.</li>
+    <li>Show the front edge banded and the other three raw, as the V2 brief asks. Edgebanding is drawn as a double line, white PVC on a white bed &mdash; never a dark edge.</li>
+    <li>30&deg; isometric, 1&nbsp;pt lines, matching the V2 Fusion sheets. The exploded and assembled views above are the two frames to keep.</li>
+    <li>The tube section and pin overhang are drawn from the BC1 photo, not a dimensioned part. Take exact sizes from the BC1 drawing before final art.</li>
+  </ul>
+</section>
+
+<footer>
+  Hole stations read from <span class="mono">v1-65 BoazV3 QBZW00</span>, parts 1A and 1B. Bolt direction and orientation follow the V2 Step 1 Fusion sheet. V2 wording kept where V3 does not change it.
+</footer>
+
+</div>
+
