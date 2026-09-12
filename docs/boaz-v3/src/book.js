@@ -24,7 +24,7 @@ function buildScene(V,st,opts){
     var off=ex?new T.Vector3(ex[0],ex[1],ex[2]).applyMatrix3(Rinv):new T.Vector3();
     if(opts.turn&&lookup(opts.turn,p))turnPart(g,lookup(opts.turn,p),p);
     items.push({obj:g,home:g.position.clone(),off:off,grp:grp,part:p});
-    var hw=st.hw||{},hwOff=function(o){return{obj:o,home:o.position.clone(),off:off.clone(),n:o.userData.n||null,grp:grp,hwGrp:st.hwGroup||0,hwAmt:st.hwExplode||0};};
+    var hw=st.hw||{},hwOff=function(o){return{obj:o,home:o.position.clone(),off:off.clone(),n:o.userData.n||null,grp:grp,hwGrp:st.hwGroup||0,hwAmt:st.hwExplode||0,onPart:p};};
     var inSet=function(list){return list&&list.some(function(r){return resolve(r).indexOf(p)>=0;});};
     if(inSet(hw.cams))A.placeCams(p).forEach(function(o){world.add(o);items.push(hwOff(o));});
     if(inSet(hw.pins))A.placePins(p,p.code==="1D"||p.code==="1E"?null:null).forEach(function(o){world.add(o);items.push(hwOff(o));});
@@ -72,6 +72,16 @@ function drawMarkers(svg,V,S,st){var c=C();(st.markers||[]).forEach(function(mk)
 
 function hasHardware(st){var hw=st.hw||{};return !!((hw.cams&&hw.cams.length)||(hw.pins&&hw.pins.length)||(hw.edgeBolts&&hw.edgeBolts.length)||(hw.dowels&&hw.dowels.length)||(hw.screws&&hw.screws.length)||st.extras);}
 /* the hardware item to zoom on: prefer a cam, then a pin, then a screw, then anything with a normal */
+/* bbox centres come out in display space already (the world group carries the display matrix);
+   the object's own displacement from home is scene-local, so rotate it into display space to find where home is */
+function centreOf(it,S){var now=new T.Box3().setFromObject(it.obj).getCenter(new T.Vector3());
+  var d=it.obj.position.clone().sub(it.home).applyMatrix3(new T.Matrix3().setFromMatrix4(S.M));return{now:now,home:now.clone().sub(d)};}
+function drawLeaders(svg,V,S,c){S.items.forEach(function(it){if(!(it.off.lengthSq()>1||(it.n&&it.hwAmt)))return;var q=centreOf(it,S);
+  B.leader(svg,V,q.now,q.home,it.part?c.ink2:c.edge);});}
+function drawChips(svg,V,S,c){var done={};S.items.forEach(function(it){if(!it.part)return;var code=it.part.code;if(done[code])return;done[code]=1;
+  var ctr=new T.Box3().setFromObject(it.obj).getCenter(new T.Vector3());B.chip(svg,V,ctr,code,c.ink,c.bg);});}
+function faceDir(st,S,it){var d=new T.Vector3(st.dir[0],st.dir[1],st.dir[2]);if(!it||!it.n)return d;var n=it.n.clone().applyMatrix3(new T.Matrix3().setFromMatrix4(S.M));
+  if(d.dot(n)<-.05){d.x=-d.x;d.z=-d.z;if(d.dot(n)<-.05)d.y=-d.y;}return d;}
 function focusItem(S){var hw=S.items.filter(function(i){return i.n;});if(!hw.length)return null;
   var pick=hw.filter(function(i){return i.obj.userData.mouthDir;})[0]||hw.filter(function(i){return i.obj.userData.hole;})[0]||hw[Math.floor(hw.length/2)];return pick;}
 function detailBox(S,it,r){var c=it.home.clone().applyMatrix4(S.M);return new T.Box3(c.clone().add(new T.Vector3(-r,-r*.7,-r)),c.clone().add(new T.Vector3(r,r,r)));}
@@ -95,9 +105,13 @@ if(host){host.innerHTML=STEPS.map(stepHTML).join("");
   var idx=document.getElementById("index");if(idx)idx.innerHTML+=STEPS.map(function(st){return '<a href="#step-'+st.n+'"><b>'+st.n+'</b>'+st.title+'</a>';}).join("");}
 /* drawings */
 STEPS.forEach(function(st){var el=document.querySelector('[data-draw="'+st.n+'"]');if(!el)return;
-  try{B.snapshot(el,function(V){return buildScene(V,st);},function(svg,V,S){B.text(svg,30,58,"Step "+st.n,40,C().ink);drawMarkers(svg,V,S,st);},{w:1500,aspect:4/3});}catch(e){el.querySelector(".fallback").textContent="Drawing failed: "+e.message;}
+  try{B.snapshot(el,function(V){return buildScene(V,st);},function(svg,V,S){var c=C();drawLeaders(svg,V,S,c);drawChips(svg,V,S,c);B.text(svg,30,58,"Step "+st.n,40,c.ink);drawMarkers(svg,V,S,st);},{w:1500,aspect:4/3});}catch(e){el.querySelector(".fallback").textContent="Drawing failed: "+e.message;}
   var dl=document.querySelector('[data-detail="'+st.n+'"]');
-  if(dl){try{B.snapshot(dl,function(V){var S=buildScene(V,st);S.items.forEach(function(i){if(i.n)i.hwAmt=Math.max(i.hwAmt||0,40);});setExplode(S,0,1);var it=focusItem(S);if(it){S.box=detailBox(S,it,110);S.mx=.05;S.my=.05;}return S;},null,{w:1400,aspect:3/2});}catch(e){dl.querySelector(".fallback").textContent="Close-up failed: "+e.message;}}
+  if(dl){try{B.snapshot(dl,function(V){var S=buildScene(V,st);S.items.forEach(function(i){if(i.n)i.hwAmt=Math.max(i.hwAmt||0,40);});setExplode(S,0,1);var it=focusItem(S);if(it){S.box=detailBox(S,it,120);S.mx=.05;S.my=.05;S.dir=faceDir(st,S,it);S.focus=it;}return S;},
+    function(svg,V,S){var c=C();S.items.forEach(function(it){if(!it.n||!it.hwAmt)return;var q=centreOf(it,S);B.leader(svg,V,q.now,q.home,c.edge);});
+      if(S.focus){var k=S.focus.obj.userData.kind||"fastener",p=S.focus.onPart;B.text(svg,30,52,k.charAt(0).toUpperCase()+k.slice(1)+(p?" into "+p.code:""),34,c.ink);if(p)B.text(svg,30,86,p.name,20,c.ink2,500);
+        }
+      drawChips(svg,V,S,c);},{w:1400,aspect:3/2});}catch(e){dl.querySelector(".fallback").textContent="Close-up failed: "+e.message;}}
   (st.wrong||[]).forEach(function(w,i){if(!w.turn)return;var c=document.querySelector('[data-wrong="'+st.n+'-'+i+'"]');if(!c)return;
     try{B.snapshot(c,function(V){var S=buildScene(V,st,{turn:w.turn});setExplode(S,0,0);return S;},function(svg,V){B.verdict(svg,V,"bad");},{w:1000,aspect:5/3});}catch(e){}});
 });

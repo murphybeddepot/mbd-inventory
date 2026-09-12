@@ -41,16 +41,16 @@ function alignY(obj,pos,n){obj.quaternion.setFromUnitVectors(new T.Vector3(0,1,0
 function placeCams(p){var Th=ASM.T,out=[];camsOf(p).forEach(function(h){var lz=h.far?0:Th,n=localDir(p,0,0,h.far?-1:1),d=nearestEdgeDir(p,h),m=localDir(p,d.lx,d.ly,0);
   var c=B.cam15(12.5);var pos=toWorld(p,h.x,h.y,lz).addScaledVector(n,-13.8);alignY(c,pos,n);
   /* spin about its axis so the mouth (-x local) faces the edge the bolt comes from */
-  var mouth=new T.Vector3(-1,0,0).applyQuaternion(c.quaternion),ang=Math.atan2(mouth.clone().cross(m).dot(n),mouth.dot(m));c.rotateY(ang);c.userData.n=n;c.userData.mouthDir=m;out.push(c);});return out;}
+  var mouth=new T.Vector3(-1,0,0).applyQuaternion(c.quaternion),ang=Math.atan2(mouth.clone().cross(m).dot(n),mouth.dot(m));c.rotateY(ang);c.userData.n=n;c.userData.mouthDir=m;c.userData.kind="cam";c.userData.hole=h;out.push(c);});return out;}
 function placePins(p,reachOverride){var Th=ASM.T,out=[];pinsOf(p).forEach(function(h){var lz=h.far?0:Th,n=localDir(p,0,0,h.far?-1:1);
-  var b=B.camBolt(reachOverride||34,h.dep,2.5);alignY(b,toWorld(p,h.x,h.y,lz),n);b.userData.hole=h;out.push(b);});return out;}
+  var b=B.camBolt(reachOverride||34,h.dep,2.5);alignY(b,toWorld(p,h.x,h.y,lz),n);b.userData.hole=h;b.userData.kind="pin";out.push(b);});return out;}
 function placeEdgeBolts(p){var Th=ASM.T,out=[];edgeBoltsOf(p).forEach(function(h){var e=HB_EDGE[h.hb],x=e==='X0'?0:e==='XL'?p.L:h.x,y=e==='Y0'?0:e==='YW'?p.W:h.y;
-  var n=localDir(p,e==='X0'?-1:e==='XL'?1:0,e==='Y0'?-1:e==='YW'?1:0,0);var b=B.camBolt(34,13,4);alignY(b,toWorld(p,x,y,Th/2),n);out.push(b);});return out;}
+  var n=localDir(p,e==='X0'?-1:e==='XL'?1:0,e==='Y0'?-1:e==='YW'?1:0,0);var b=B.camBolt(34,13,4);alignY(b,toWorld(p,x,y,Th/2),n);b.userData.kind="edge bolt";out.push(b);});return out;}
 function placeDowels(p){var Th=ASM.T,out=[];edgeDowelsOf(p).forEach(function(h){var e=HB_EDGE[h.hb],x=e==='X0'?0:e==='XL'?p.L:h.x,y=e==='Y0'?0:e==='YW'?p.W:h.y;
-  var n=localDir(p,e==='X0'?-1:e==='XL'?1:0,e==='Y0'?-1:e==='YW'?1:0,0);var d=B.dowel(8,30);alignY(d,toWorld(p,x,y,Th/2).addScaledVector(n,-16),n);out.push(d);});return out;}
+  var n=localDir(p,e==='X0'?-1:e==='XL'?1:0,e==='Y0'?-1:e==='YW'?1:0,0);var d=B.dowel(8,30);alignY(d,toWorld(p,x,y,Th/2).addScaledVector(n,-16),n);d.userData.kind="dowel";out.push(d);});return out;}
 /* screws standing in given face holes (head on the face, pointing in) */
 function placeScrews(p,filter,len,r,headR,plain){var Th=ASM.T,out=[];p.faces.filter(filter).forEach(function(h){var lz=h.far?0:Th,n=localDir(p,0,0,h.far?-1:1);
-  var s=B.screwCsk(len,r,headR,plain);alignY(s,toWorld(p,h.x,h.y,lz).addScaledVector(n,.3),n.clone().negate());s.userData.n=n;out.push(s);});return out;}
+  var s=B.screwCsk(len,r,headR,plain);alignY(s,toWorld(p,h.x,h.y,lz).addScaledVector(n,.3),n.clone().negate());s.userData.n=n;s.userData.kind="screw";out.push(s);});return out;}
 /* display frames: rows = display coords from world (x,y,z) */
 var DISPLAY={
   upright:function(v){return new T.Vector3(v.x,v.z,-v.y);},          /* Z up, front toward the viewer */
