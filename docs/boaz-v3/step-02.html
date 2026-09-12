@@ -5,6 +5,7 @@
 <style>
 
 
+
 :root{
   --paper:#F2F3EF; --panel:#FBFBF9; --ink:#191C1E; --ink-2:#4C5257; --ink-3:#767D83;
   --rule:#CDD1C9; --rule-2:#E2E5DE;
@@ -214,6 +215,7 @@ ol.steps b{font-weight:600}
 .kitem b{flex:none;display:inline-grid;place-items:center;width:20px;height:20px;border:1.5px solid var(--ink);border-radius:50%;font-family:Archivo,sans-serif;font-size:11px;font-weight:700}
 
 
+
 </style>
 
 <div class="wrap">
@@ -414,9 +416,10 @@ window.Boaz3D=(function(){
 var T=window.THREE; if(!T) return null;
 function col(h){return new T.Color(h).convertSRGBToLinear();}
 var MAT={
-  melamine:function(){return new T.MeshStandardMaterial({color:col(0xF2F1EC),roughness:.52,metalness:0});},
+  melamine:function(){return new T.MeshStandardMaterial({color:col(0xEBEAE4),roughness:.6,metalness:0});},
   band:function(){return new T.MeshStandardMaterial({color:col(0xFFFFFF),roughness:.28,metalness:0});},
-  core:function(){return new T.MeshStandardMaterial({color:col(0x8E8778),roughness:.95,metalness:0,side:T.DoubleSide});},
+  core:function(){return new T.MeshStandardMaterial({color:col(0x4A463F),roughness:.95,metalness:0,side:T.DoubleSide});},
+  mouth:function(){return new T.MeshStandardMaterial({color:col(0x2A2723),roughness:1,metalness:0});},
   powder:function(){return new T.MeshStandardMaterial({color:col(0x24272B),roughness:.58,metalness:.22});},
   oxide:function(){return new T.MeshStandardMaterial({color:col(0x2B2E33),roughness:.38,metalness:.55});},
   zinc:function(){return new T.MeshStandardMaterial({color:col(0xB8BDC2),roughness:.33,metalness:.75});},
@@ -447,15 +450,16 @@ function panel(spec){
     var thru=h.depth>=t-0.01,d=thru?t+0.8:h.depth,z0=h.from==="back"?-0.4:t+0.4,dir=h.from==="back"?1:-1;
     var wall=new T.Mesh(new T.CylinderGeometry(h.r-.02,h.r-.02,d,28,1,true),MAT.core());
     wall.rotation.x=Math.PI/2;wall.position.set(h.x,h.y,z0+dir*d/2);wall.receiveShadow=true;g.add(wall);
-    if(!thru){var fl=new T.Mesh(new T.CircleGeometry(h.r,28),MAT.core());fl.position.set(h.x,h.y,z0+dir*d);fl.rotation.y=dir>0?Math.PI:0;if(dir<0)fl.rotation.y=0;fl.lookAt(new T.Vector3(h.x,h.y,z0));g.add(fl);
+    var ring=new T.Mesh(new T.RingGeometry(h.r-.05,h.r+.9,32),MAT.mouth());ring.position.set(h.x,h.y,h.from==="back"?-.42:t+.42);ring.lookAt(new T.Vector3(h.x,h.y,h.from==="back"?-100:t+100));ring.castShadow=false;g.add(ring);
+    if(!thru){var fl=new T.Mesh(new T.CircleGeometry(h.r,28),MAT.mouth());fl.position.set(h.x,h.y,z0+dir*d);fl.rotation.y=dir>0?Math.PI:0;if(dir<0)fl.rotation.y=0;fl.lookAt(new T.Vector3(h.x,h.y,z0));g.add(fl);
       var cap=new T.Mesh(new T.CircleGeometry(h.r+.6,28),MAT.melamine());cap.position.set(h.x,h.y,h.from==="back"?t+.36:-.36);cap.lookAt(new T.Vector3(h.x,h.y,h.from==="back"?t+100:-100));g.add(cap);}
   });
   (spec.edgeHoles||[]).forEach(function(h){
     /* opening disc proud of the edge face + short dark wall so it reads as a bore */
     var n=new T.Vector3(h.axis==="x"?h.dir:0,h.axis==="y"?h.dir:0,0);
     var pos=new T.Vector3(h.x,h.y,h.z);
-    var disc=new T.Mesh(new T.CircleGeometry(h.r,28),MAT.dark());disc.position.copy(pos).addScaledVector(n,.08);disc.lookAt(pos.clone().addScaledVector(n,10));disc.castShadow=false;g.add(disc);
-    var ring=new T.Mesh(new T.RingGeometry(h.r,h.r+.5,28),MAT.core());ring.position.copy(pos).addScaledVector(n,.06);ring.lookAt(pos.clone().addScaledVector(n,10));ring.castShadow=false;g.add(ring);
+    var disc=new T.Mesh(new T.CircleGeometry(h.r,28),MAT.dark());disc.position.copy(pos).addScaledVector(n,.1);disc.lookAt(pos.clone().addScaledVector(n,10));disc.castShadow=false;g.add(disc);
+    var ring=new T.Mesh(new T.RingGeometry(h.r,h.r+1,28),MAT.mouth());ring.position.copy(pos).addScaledVector(n,.08);ring.lookAt(pos.clone().addScaledVector(n,10));ring.castShadow=false;g.add(ring);
   });
   (spec.band||[]).forEach(function(e){
     var b;if(e==="front")b=new T.BoxGeometry(1,H,t),b.translate(-.5-.35,H/2,t/2);
@@ -530,6 +534,17 @@ function pivotArm(len,w,h,pinX,pinR,pinH){
   return g;
 }
 
+function lBracket(){var g=new T.Group(),m=MAT.zinc();var a=mesh(new T.BoxGeometry(50,2.5,15),m);a.position.set(0,1.25,0);var b=mesh(new T.BoxGeometry(2.5,50,15),m);b.position.set(-23.75,25,0);g.add(a,b);
+  [12.5,37.5].forEach(function(x){var h=new T.Mesh(new T.CircleGeometry(2.6,16),MAT.dark());h.rotation.x=-Math.PI/2;h.position.set(x-25,2.55,0);g.add(h);var v=new T.Mesh(new T.CircleGeometry(2.6,16),MAT.dark());v.rotation.y=-Math.PI/2;v.position.set(-25.05,x,0);g.add(v);});return g;}
+function hingePlate(){var g=new T.Group();var geo=new T.ExtrudeGeometry(rrect(64,46,4),{depth:3,bevelEnabled:false});geo.rotateX(-Math.PI/2);var p=mesh(geo,MAT.powder());g.add(p);
+  var big=new T.Mesh(new T.CircleGeometry(7.6,24),MAT.dark());big.rotation.x=-Math.PI/2;big.position.set(16,3.05,0);g.add(big);
+  [[-22,-14],[-22,14],[22,-14],[22,14]].forEach(function(q){var h=new T.Mesh(new T.CircleGeometry(2.2,12),MAT.dark());h.rotation.x=-Math.PI/2;h.position.set(q[0]-8,3.05,q[1]);g.add(h);});return g;}
+function pianoHinge(len){var g=new T.Group(),m=MAT.zinc();var a=mesh(new T.BoxGeometry(len,1.2,18),m);a.position.set(0,.6,-9.6);var b=mesh(new T.BoxGeometry(len,1.2,18),m);b.position.set(0,.6,9.6);
+  var k=mesh(new T.CylinderGeometry(3,3,len,20),m);k.rotation.z=Math.PI/2;k.position.set(0,1.5,0);g.add(a,b,k);
+  var n=Math.floor(len/50.8);for(var i=0;i<n;i++){var x=-len/2+25.4+i*50.8;[-13,13].forEach(function(z){var h=new T.Mesh(new T.CircleGeometry(2,12),MAT.dark());h.rotation.x=-Math.PI/2;h.position.set(x,1.25,z);g.add(h);});}return g;}
+function shelfPin(){var g=new T.Group();g.add(lathe([[0,0],[2.5,0],[2.5,-10],[0,-10]],20,MAT.zinc()));var c=mesh(new T.CylinderGeometry(3.8,3.8,1.5,24),MAT.zinc());c.position.y=.75;g.add(c);var l=mesh(new T.BoxGeometry(7,1.8,7),MAT.zinc());l.position.set(0,2.4,-2);g.add(l);return g;}
+function magnet(w,h,d){return mesh(new T.BoxGeometry(w,h,d),MAT.oxide());}
+function wallSlab(w,h){var m=new T.MeshStandardMaterial({color:col(0xDCD9D2),roughness:1});var s=new T.Mesh(new T.BoxGeometry(w,h,40),m);s.receiveShadow=true;return s;}
 /* ---- view ---- */
 function view(container,opts){
   opts=opts||{};
@@ -539,10 +554,10 @@ function view(container,opts){
   renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
   var scene=new T.Scene();
-  var hemi=new T.HemisphereLight(0xffffff,0xb9b4aa,.62);scene.add(hemi);
-  var key=new T.DirectionalLight(0xffffff,.95);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.bias=-0.0006;key.shadow.normalBias=.6;scene.add(key);
-  var fill=new T.DirectionalLight(0xffffff,.32);scene.add(fill);
-  var rim=new T.DirectionalLight(0xffffff,.22);scene.add(rim);
+  var hemi=new T.HemisphereLight(0xf4f6ff,0x8a8378,.5);scene.add(hemi);
+  var key=new T.DirectionalLight(0xffffff,1.35);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.bias=-0.0006;key.shadow.normalBias=.6;scene.add(key);
+  var fill=new T.DirectionalLight(0xffffff,.28);scene.add(fill);
+  var rim=new T.DirectionalLight(0xffffff,.3);scene.add(rim);
   var ground=new T.Mesh(new T.PlaneGeometry(1,1),new T.ShadowMaterial({opacity:.24}));ground.receiveShadow=true;ground.rotation.x=-Math.PI/2;scene.add(ground);
   var cam=new T.OrthographicCamera(-1,1,1,-1,-6000,6000);
   var root=new T.Group();scene.add(root);
@@ -555,7 +570,7 @@ function view(container,opts){
     if(w/h<asp)w=h*asp;else h=w/asp;
     cam.left=cx-w/2;cam.right=cx+w/2;cam.top=cy+h/2;cam.bottom=cy-h/2;cam.updateProjectionMatrix();
     /* lights relative to the view */
-    key.position.copy(c).add(new T.Vector3(-.55,1.15,.75).multiplyScalar(Math.max(size.x,size.y,size.z)*1.4));key.target.position.copy(c);scene.add(key.target);
+    key.position.copy(c).add(new T.Vector3(-.75,1.05,.55).multiplyScalar(Math.max(size.x,size.y,size.z)*1.4));key.target.position.copy(c);scene.add(key.target);
     fill.position.copy(c).add(new T.Vector3(.9,.35,.6).multiplyScalar(2000));fill.target.position.copy(c);scene.add(fill.target);
     rim.position.copy(c).add(new T.Vector3(.2,.5,-1).multiplyScalar(2000));rim.target.position.copy(c);scene.add(rim.target);
     var R=Math.max(size.x,size.y,size.z)*.9;key.shadow.camera.left=-R;key.shadow.camera.right=R;key.shadow.camera.top=R;key.shadow.camera.bottom=-R;key.shadow.camera.near=1;key.shadow.camera.far=8000;key.shadow.camera.updateProjectionMatrix();
@@ -578,11 +593,11 @@ function marker(svg,V,anchor,n,dx,dy,color,bg){
 function verdict(svg,V,kind){
   var W=V.W,H=V.H,red="#C8281E",green="#2E8B4A";
   if(kind==="bad"){
-    var m=Math.min(W,H)*.14,sw=Math.min(W,H)*.075;
+    var m=Math.min(W,H)*.16,sw=Math.min(W,H)*.032;
     [[m,m,W-m,H-m],[W-m,m,m,H-m]].forEach(function(p){
       var l=document.createElementNS(NS,"line");l.setAttribute("x1",p[0]);l.setAttribute("y1",p[1]);l.setAttribute("x2",p[2]);l.setAttribute("y2",p[3]);
-      l.setAttribute("stroke",red);l.setAttribute("stroke-width",sw);l.setAttribute("stroke-linecap","round");l.setAttribute("opacity",.88);svg.appendChild(l);});
-    var r=document.createElementNS(NS,"rect");r.setAttribute("x",0);r.setAttribute("y",0);r.setAttribute("width",W);r.setAttribute("height",H);r.setAttribute("fill","none");r.setAttribute("stroke",red);r.setAttribute("stroke-width",Math.min(W,H)*.03);svg.appendChild(r);
+      l.setAttribute("stroke",red);l.setAttribute("stroke-width",sw);l.setAttribute("stroke-linecap","round");l.setAttribute("opacity",.62);svg.appendChild(l);});
+    var r=document.createElementNS(NS,"rect");r.setAttribute("x",4);r.setAttribute("y",4);r.setAttribute("width",W-8);r.setAttribute("height",H-8);r.setAttribute("fill","none");r.setAttribute("stroke",red);r.setAttribute("stroke-width",8);r.setAttribute("opacity",.8);svg.appendChild(r);
   } else {
     var s=Math.min(W,H)*.34,cx=W-s*.75,cy=H-s*.75;
     var c=document.createElementNS(NS,"circle");c.setAttribute("cx",cx);c.setAttribute("cy",cy);c.setAttribute("r",s*.5);c.setAttribute("fill",green);svg.appendChild(c);
@@ -603,7 +618,7 @@ function snapshot(container,build,labels,opts){
   container.classList.add("ready");
   V.renderer.dispose();V.renderer.forceContextLoss();
 }
-return{MAT:MAT,verdict:verdict,panel:panel,boltFlat:boltFlat,nylock:nylock,cam15:cam15,camBolt:camBolt,dowel:dowel,screwCsk:screwCsk,pivotArm:pivotArm,view:view,overlay:overlay,marker:marker,text:text,snapshot:snapshot};
+return{MAT:MAT,verdict:verdict,lBracket:lBracket,hingePlate:hingePlate,pianoHinge:pianoHinge,shelfPin:shelfPin,magnet:magnet,wallSlab:wallSlab,panel:panel,boltFlat:boltFlat,nylock:nylock,cam15:cam15,camBolt:camBolt,dowel:dowel,screwCsk:screwCsk,pivotArm:pivotArm,view:view,overlay:overlay,marker:marker,text:text,snapshot:snapshot};
 })();
 
 </script>

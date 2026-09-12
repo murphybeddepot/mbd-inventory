@@ -1,0 +1,906 @@
+<title>Boaz V3 Instructions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+
+
+
+:root{
+  --paper:#F2F3EF; --panel:#FBFBF9; --ink:#191C1E; --ink-2:#4C5257; --ink-3:#767D83;
+  --rule:#CDD1C9; --rule-2:#E2E5DE;
+  --face:#003087; --face-soft:#E4EAF5;
+  --edge:#A9660A; --edge-soft:#F6EBDA;
+  --steel:#949BA2; --steel-lit:#C9CED3; --steel-dk:#5B6167;
+  --mel:#E7E8E1; --mel-dk:#D3D5CB; --band:#FFFFFF;
+  --flag:#9E2F26; --flag-soft:#F6E3E1;
+  --ok:#2E6B41;
+  --shadow:0 1px 2px rgba(20,25,30,.06);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#15181A; --panel:#1D2124; --ink:#E9ECE7; --ink-2:#AEB5BA; --ink-3:#848B91;
+    --rule:#343A3E; --rule-2:#272C30;
+    --face:#7FA6E8; --face-soft:#1B2740;
+    --edge:#E0A24E; --edge-soft:#33270F;
+    --steel:#7F868D; --steel-lit:#A9B0B6; --steel-dk:#474D53;
+    --mel:#2A2F33; --mel-dk:#1F2326; --band:#3C4247;
+    --flag:#E38279; --flag-soft:#3A1F1C;
+    --ok:#74B98C;
+    --shadow:0 1px 2px rgba(0,0,0,.4);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#15181A; --panel:#1D2124; --ink:#E9ECE7; --ink-2:#AEB5BA; --ink-3:#848B91;
+  --rule:#343A3E; --rule-2:#272C30;
+  --face:#7FA6E8; --face-soft:#1B2740;
+  --edge:#E0A24E; --edge-soft:#33270F;
+  --steel:#7F868D; --steel-lit:#A9B0B6; --steel-dk:#474D53;
+  --mel:#2A2F33; --mel-dk:#1F2326; --band:#3C4247;
+  --flag:#E38279; --flag-soft:#3A1F1C;
+  --ok:#74B98C;
+  --shadow:0 1px 2px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:15px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px; margin:0 auto; padding-inline:20px; padding-block:0 72px}
+h1,h2,h3,.lbl,.tb dt{font-family:Archivo,system-ui,sans-serif}
+.mono,code,.dim,.qty,td.n,th.n{font-family:"IBM Plex Mono",ui-monospace,monospace; font-variant-numeric:tabular-nums}
+
+/* ---- title block ---- */
+.sheet{border:1.5px solid var(--ink); background:var(--panel); margin-block:24px 40px}
+.sheet-top{padding:22px 22px 16px; border-bottom:1.5px solid var(--ink)}
+.sheet-top h1{
+  margin:0; font-size:clamp(26px,5.2vw,42px); font-weight:800; line-height:1.04;
+  letter-spacing:-.022em; text-transform:uppercase; text-wrap:balance;
+}
+.sheet-top p{margin:10px 0 0; max-width:62ch; color:var(--ink-2); font-size:15px}
+.tb{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0; margin:0}
+.tb div{padding:11px 14px; border-right:1px solid var(--rule); border-top:1px solid var(--rule-2)}
+.tb div:last-child{border-right:0}
+.tb dt{font-size:10.5px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); margin:0}
+.tb dd{margin:3px 0 0; font-family:"IBM Plex Mono",monospace; font-size:13px; font-variant-numeric:tabular-nums}
+
+/* ---- generic ---- */
+h2{
+  font-size:12px; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+  color:var(--ink-3); margin:0 0 14px; padding-bottom:8px; border-bottom:1px solid var(--rule);
+}
+section{margin-block:44px}
+p{margin:0 0 14px}
+.lede{font-size:16.5px; max-width:66ch; color:var(--ink-2)}
+a{color:var(--face)}
+
+/* ---- legend ---- */
+.legend{display:flex; flex-wrap:wrap; gap:8px 20px; font-size:13px; color:var(--ink-2); margin-bottom:18px}
+.legend span{display:flex; align-items:center; gap:7px}
+.key{width:13px; height:13px; border-radius:2px; flex:none; border:1px solid rgba(0,0,0,.18)}
+
+/* ---- scale tray ---- */
+.tray{background:var(--panel); border:1px solid var(--rule); padding:18px 16px; overflow-x:auto}
+.tray svg{display:block; min-width:560px; width:100%; height:auto}
+
+/* ---- fastener cards ---- */
+.card{
+  background:var(--panel); border:1px solid var(--rule); margin-bottom:22px;
+  box-shadow:var(--shadow);
+}
+.card > header{
+  display:flex; flex-wrap:wrap; align-items:baseline; gap:6px 14px;
+  padding:15px 18px; border-bottom:1px solid var(--rule);
+}
+.card > header h3{
+  margin:0; font-size:19px; font-weight:700; letter-spacing:-.012em; flex:1 1 auto; min-width:200px;
+}
+.sku{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--ink-2)}
+.tag{
+  font-family:"IBM Plex Mono",monospace; font-size:10.5px; font-weight:600; letter-spacing:.06em;
+  text-transform:uppercase; padding:3px 8px; border-radius:2px; white-space:nowrap;
+}
+.tag.new{background:var(--edge-soft); color:var(--edge); border:1px solid currentColor}
+.tag.same{background:transparent; color:var(--ink-3); border:1px solid var(--rule)}
+.body{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); gap:0}
+@media(max-width:760px){.body{grid-template-columns:1fr}}
+.draw{padding:18px; border-right:1px solid var(--rule-2); display:flex; align-items:center; justify-content:center; background:var(--paper)}
+@media(max-width:760px){.draw{border-right:0; border-bottom:1px solid var(--rule-2)}}
+.draw svg{width:100%; height:auto; max-width:340px}
+.txt{padding:18px}
+.txt p{font-size:14.5px}
+.txt p:last-child{margin-bottom:0}
+.spec{width:100%; border-collapse:collapse; margin:0 0 14px; font-size:13px}
+.spec th,.spec td{text-align:left; padding:5px 0; border-bottom:1px solid var(--rule-2); vertical-align:baseline}
+.spec th{font-weight:500; color:var(--ink-3); width:44%; padding-right:12px}
+.spec td{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+.note{
+  font-size:13px; padding:10px 12px; border-left:3px solid var(--flag);
+  background:var(--flag-soft); color:var(--ink); margin:14px 0 0;
+}
+.note.calm{border-left-color:var(--face); background:var(--face-soft)}
+.note strong{font-weight:600}
+
+/* ---- animation ---- */
+.anim{margin:0; border-top:1px solid var(--rule); background:var(--paper)}
+.anim figcaption{
+  font-size:10.5px; font-weight:700; letter-spacing:.13em; text-transform:uppercase;
+  color:var(--ink-3); padding:11px 18px 0; font-family:Archivo,sans-serif;
+}
+.stage{padding:6px 18px 0; overflow-x:auto}
+.stage svg{display:block; width:100%; max-width:640px; margin:0 auto; height:auto; min-width:300px}
+.ctl{display:flex; align-items:center; gap:12px; padding:10px 18px 14px}
+.ctl button{
+  font-family:Archivo,sans-serif; font-size:11px; font-weight:700; letter-spacing:.08em;
+  text-transform:uppercase; padding:7px 13px; border:1px solid var(--ink); border-radius:2px;
+  background:var(--ink); color:var(--panel); cursor:pointer; flex:none;
+}
+.ctl button:hover{opacity:.85}
+.ctl button:focus-visible,.ctl input:focus-visible{outline:2px solid var(--face); outline-offset:2px}
+.ctl input[type=range]{flex:1 1 auto; min-width:80px; accent-color:var(--face); cursor:pointer}
+.ctl .step{
+  font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-2);
+  flex:none; min-width:14ch; text-align:right;
+}
+@media(max-width:520px){.ctl .step{min-width:0; width:100%; text-align:left; order:3}}
+
+/* ---- tables ---- */
+.scroll{overflow-x:auto; border:1px solid var(--rule); background:var(--panel)}
+table.data{border-collapse:collapse; width:100%; min-width:520px; font-size:13.5px}
+table.data th,table.data td{padding:9px 14px; text-align:left; border-bottom:1px solid var(--rule-2)}
+table.data thead th{
+  font-family:Archivo,sans-serif; font-size:10.5px; font-weight:700; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-3); border-bottom:1px solid var(--rule); white-space:nowrap;
+}
+table.data td.n,table.data th.n{text-align:right; font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums}
+table.data tbody tr:last-child td{border-bottom:0}
+.delta{color:var(--edge); font-weight:600}
+
+/* ---- questions ---- */
+ol.q{margin:0; padding:0; list-style:none; counter-reset:q}
+ol.q li{
+  counter-increment:q; position:relative; padding:14px 0 14px 44px;
+  border-bottom:1px solid var(--rule-2); font-size:14.5px;
+}
+ol.q li:last-child{border-bottom:0}
+ol.q li::before{
+  content:"Q" counter(q); position:absolute; left:0; top:15px;
+  font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600; color:var(--edge);
+}
+ol.q b{font-weight:600}
+footer{margin-top:52px; padding-top:18px; border-top:1px solid var(--rule); font-size:13px; color:var(--ink-3)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+
+/* step-sheet additions */
+.stepnum{font-family:Archivo,sans-serif;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--edge);margin:0 0 6px}
+.strip{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;border:1px solid var(--rule);background:var(--panel)}
+.strip > div{padding:14px 16px;border-right:1px solid var(--rule-2);min-width:0}
+.strip > div:last-child{border-right:0}
+@media(max-width:640px){.strip > div{border-right:0;border-bottom:1px solid var(--rule-2)}.strip > div:last-child{border-bottom:0}}
+.strip h4{margin:0 0 8px;font-family:Archivo,sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.strip svg{width:100%;height:auto;display:block}
+.strip .row{display:flex;align-items:center;gap:10px;font-size:13.5px;padding:5px 0;border-top:1px solid var(--rule-2)}
+.strip .row:first-of-type{border-top:0}
+.strip .row svg{width:54px;flex:none}
+.strip .row b{font-family:"IBM Plex Mono",monospace;font-weight:600;min-width:3ch;text-align:right}
+.fig{background:var(--panel);border:1px solid var(--rule);padding:14px 16px 6px;box-shadow:var(--shadow)}
+.fig svg{width:100%;height:auto;display:block}
+.fig figcaption{font-size:12.5px;color:var(--ink-2);padding:8px 0 6px}
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:st;max-width:66ch}
+ol.steps li{counter-increment:st;position:relative;padding:12px 0 12px 46px;border-bottom:1px solid var(--rule-2);font-size:15.5px;line-height:1.55}
+ol.steps li:last-child{border-bottom:0}
+ol.steps li::before{content:counter(st);position:absolute;left:0;top:10px;width:30px;height:30px;border:1.5px solid var(--ink);border-radius:50%;display:grid;place-items:center;font-family:Archivo,sans-serif;font-weight:700;font-size:13px}
+ol.steps b{font-weight:600}
+.checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.check{border:1px solid var(--rule);background:var(--panel);padding:12px 14px}
+.check .lbl{font-family:Archivo,sans-serif;font-size:13px;font-weight:800;letter-spacing:.06em;margin:-12px -14px 10px;padding:9px 14px;color:#fff;text-transform:uppercase}
+.check.ok .lbl{background:var(--ok)}.check.bad .lbl{background:var(--flag)}
+.check.ok{border-color:var(--ok)}.check.bad{border-color:var(--flag);border-width:2px}
+.check.info .lbl{background:transparent;color:var(--face);padding:0;margin:0 0 6px;text-transform:none;font-size:12.5px}
+.check svg{width:100%;height:auto;display:block;margin-bottom:6px}
+.check p{font-size:13.5px;margin:0;color:var(--ink-2)}
+.notes{font-size:14px;color:var(--ink-2);max-width:70ch}
+.notes li{margin-bottom:6px}
+.render{position:relative;width:100%;background:var(--panel);overflow:hidden}
+.render.sm{aspect-ratio:5/3;margin-bottom:6px;border:1px solid var(--rule-2)}
+.render canvas,.render img,.render svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.render svg{pointer-events:none}
+.render .fallback{position:absolute;inset:0;display:grid;place-items:center;font-size:13px;color:var(--ink-3)}
+.render.ready .fallback{display:none}
+.anote{margin:8px 18px 0;font-size:14px;color:var(--ink-2);text-align:center;min-height:1.6em}
+.key-wrap{display:flex;flex-wrap:wrap;gap:4px 22px;margin-top:12px}
+.kitem{flex:1 1 250px;display:flex;align-items:flex-start;gap:8px;font-size:13.5px;color:var(--ink);padding:3px 0;min-width:0}
+.kitem b{flex:none;display:inline-grid;place-items:center;width:20px;height:20px;border:1.5px solid var(--ink);border-radius:50%;font-family:Archivo,sans-serif;font-size:11px;font-weight:700}
+
+
+
+.index{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:4px 14px;margin:24px 0 8px}
+.index a{display:flex;gap:10px;align-items:baseline;text-decoration:none;color:var(--ink);font-size:13.5px;padding:5px 0;border-bottom:1px solid var(--rule-2)}
+.index a b{font-family:"IBM Plex Mono",monospace;color:var(--edge);min-width:2ch;text-align:right}
+.stepsec{margin-top:56px;padding-top:8px;border-top:2px solid var(--ink)}
+.stepsec h2{margin-top:26px}
+</style>
+
+<div class="wrap">
+<div class="sheet">
+  <div class="sheet-top">
+    <p class="stepnum">Boaz V3 &middot; Queen &middot; QBZW00</p>
+    <h1>Assembly instructions</h1>
+    <p class="lede">Steps 3 to 31, drawn from the V3 production file: every part sits where it does in the built cabinet, and every cam, pin, dowel and screw is placed by the drilling. Steps 1 and 2 have their own pages.</p>
+  </div>
+  <dl class="tb">
+    <div><dt>Source file</dt><dd>v1-65 &middot; 2026-08-25</dd></div>
+    <div><dt>Parts placed</dt><dd>66 &middot; 844 holes</dd></div>
+    <div><dt>Step 1</dt><dd><a href="https://claude.ai/code/artifact/07695344-0e52-4e1b-9b9f-7e4c5afe80a7">Lower pivot arms</a></dd></div>
+    <div><dt>Step 2</dt><dd><a href="https://claude.ai/code/artifact/2f9fdaaa-5291-4915-9bac-e25f9cf907b3">Join the ends</a></dd></div>
+  </dl>
+</div>
+<nav class="index" id="index"></nav>
+<div id="book"></div>
+<footer>Drawn from <span class="mono">v1-65 BoazV3 QBZW00</span> with outlines for 2A and 2E from <span class="mono">v1-58</span>. Sequence follows the V2 sheet; wording changed only where V3 differs or the file settles a question.</footer>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* Boaz3D — realistic panel + hardware renderer for the V3 instruction sheets. three r128. */
+window.Boaz3D=(function(){
+"use strict";
+var T=window.THREE; if(!T) return null;
+function col(h){return new T.Color(h).convertSRGBToLinear();}
+var MAT={
+  melamine:function(){return new T.MeshStandardMaterial({color:col(0xEBEAE4),roughness:.6,metalness:0});},
+  band:function(){return new T.MeshStandardMaterial({color:col(0xFFFFFF),roughness:.28,metalness:0});},
+  core:function(){return new T.MeshStandardMaterial({color:col(0x4A463F),roughness:.95,metalness:0,side:T.DoubleSide});},
+  mouth:function(){return new T.MeshStandardMaterial({color:col(0x2A2723),roughness:1,metalness:0});},
+  powder:function(){return new T.MeshStandardMaterial({color:col(0x24272B),roughness:.58,metalness:.22});},
+  oxide:function(){return new T.MeshStandardMaterial({color:col(0x2B2E33),roughness:.38,metalness:.55});},
+  zinc:function(){return new T.MeshStandardMaterial({color:col(0xB8BDC2),roughness:.33,metalness:.75});},
+  nylon:function(){return new T.MeshStandardMaterial({color:col(0x36415A),roughness:.85,metalness:0});},
+  wood:function(){return new T.MeshStandardMaterial({color:col(0xC8A46F),roughness:.82,metalness:0});},
+  dark:function(){return new T.MeshStandardMaterial({color:col(0x0E0F10),roughness:.9,metalness:0});},
+  ghost:function(){return new T.MeshStandardMaterial({color:col(0xF2F1EC),roughness:.5,transparent:true,opacity:.35});}
+};
+function mesh(g,m,o){var x=new T.Mesh(g,m);x.castShadow=!(o&&o.noShadow);x.receiveShadow=true;return x;}
+function rrect(w,h,r){var s=new T.Shape();s.moveTo(-w/2+r,-h/2);s.lineTo(w/2-r,-h/2);s.absarc(w/2-r,-h/2+r,r,-Math.PI/2,0,false);
+  s.lineTo(w/2,h/2-r);s.absarc(w/2-r,h/2-r,r,0,Math.PI/2,false);s.lineTo(-w/2+r,h/2);s.absarc(-w/2+r,h/2-r,r,Math.PI/2,Math.PI,false);
+  s.lineTo(-w/2,-h/2+r);s.absarc(-w/2+r,-h/2+r,r,Math.PI,Math.PI*1.5,false);return s;}
+function hexShape(R){var s=new T.Shape();for(var i=0;i<6;i++){var a=Math.PI/6+i*Math.PI/3,x=Math.cos(a)*R,y=Math.sin(a)*R;if(i)s.lineTo(x,y);else s.moveTo(x,y);}s.closePath();return s;}
+
+/* ---- panel: outline in the XY plane (x = length, y = height), extruded +z by t.
+   faceHoles: [{x,y,r,depth}] cut through the outline; blind ones get a floor. depth>=t means through.
+   edgeHoles: [{x,y,z,axis:'y'|'x',dir:+1|-1,r,depth}] drawn as liners on an edge face.
+   band: array of 'front'|'back'|'top'|'bottom' edges (x=0 is front, x=L back, y=0 bottom). */
+function panel(spec){
+  var L=spec.L,H=spec.H,t=spec.t||19.05,g=new T.Group();
+  var shape=spec.shape||(function(){var s=new T.Shape();s.moveTo(0,0);s.lineTo(L,0);s.lineTo(L,H);s.lineTo(0,H);s.closePath();return s;})();
+  (spec.faceHoles||[]).forEach(function(h){var p=new T.Path();p.absarc(h.x,h.y,h.r,0,Math.PI*2,true);shape.holes.push(p);});
+  var geo=new T.ExtrudeGeometry(shape,{depth:t,bevelEnabled:true,bevelThickness:.35,bevelSize:.35,bevelSegments:2,curveSegments:28});
+  geo.translate(0,0,0); /* bevel pushes faces to -0.35 and t+0.35; accept */
+  var body=mesh(geo,MAT.melamine());g.add(body);
+  /* hole liners: wall + floor (+ cap on the far face for blind holes) */
+  (spec.faceHoles||[]).forEach(function(h){
+    var thru=h.depth>=t-0.01,d=thru?t+0.8:h.depth,z0=h.from==="back"?-0.4:t+0.4,dir=h.from==="back"?1:-1;
+    var wall=new T.Mesh(new T.CylinderGeometry(h.r-.02,h.r-.02,d,28,1,true),MAT.core());
+    wall.rotation.x=Math.PI/2;wall.position.set(h.x,h.y,z0+dir*d/2);wall.receiveShadow=true;g.add(wall);
+    var ring=new T.Mesh(new T.RingGeometry(h.r-.05,h.r+.9,32),MAT.mouth());ring.position.set(h.x,h.y,h.from==="back"?-.42:t+.42);ring.lookAt(new T.Vector3(h.x,h.y,h.from==="back"?-100:t+100));ring.castShadow=false;g.add(ring);
+    if(!thru){var fl=new T.Mesh(new T.CircleGeometry(h.r,28),MAT.mouth());fl.position.set(h.x,h.y,z0+dir*d);fl.rotation.y=dir>0?Math.PI:0;if(dir<0)fl.rotation.y=0;fl.lookAt(new T.Vector3(h.x,h.y,z0));g.add(fl);
+      var cap=new T.Mesh(new T.CircleGeometry(h.r+.6,28),MAT.melamine());cap.position.set(h.x,h.y,h.from==="back"?t+.36:-.36);cap.lookAt(new T.Vector3(h.x,h.y,h.from==="back"?t+100:-100));g.add(cap);}
+  });
+  (spec.edgeHoles||[]).forEach(function(h){
+    /* opening disc proud of the edge face + short dark wall so it reads as a bore */
+    var n=new T.Vector3(h.axis==="x"?h.dir:0,h.axis==="y"?h.dir:0,0);
+    var pos=new T.Vector3(h.x,h.y,h.z);
+    var disc=new T.Mesh(new T.CircleGeometry(h.r,28),MAT.dark());disc.position.copy(pos).addScaledVector(n,.1);disc.lookAt(pos.clone().addScaledVector(n,10));disc.castShadow=false;g.add(disc);
+    var ring=new T.Mesh(new T.RingGeometry(h.r,h.r+1,28),MAT.mouth());ring.position.copy(pos).addScaledVector(n,.08);ring.lookAt(pos.clone().addScaledVector(n,10));ring.castShadow=false;g.add(ring);
+  });
+  (spec.band||[]).forEach(function(e){
+    var b;if(e==="front")b=new T.BoxGeometry(1,H,t),b.translate(-.5-.35,H/2,t/2);
+    if(e==="back")b=new T.BoxGeometry(1,H,t),b.translate(L+.5+.35,H/2,t/2);
+    if(e==="top")b=new T.BoxGeometry(L,1,t),b.translate(L/2,H+.5+.35,t/2);
+    if(e==="bottom")b=new T.BoxGeometry(L,1,t),b.translate(L/2,-.5-.35,t/2);
+    if(b)g.add(mesh(b,MAT.band()));
+  });
+  return g;
+}
+
+/* ---- hardware, each built about its own origin ---- */
+function lathe(pts,seg,m){var g=new T.LatheGeometry(pts.map(function(p){return new T.Vector2(p[0],p[1]);}),seg||40);return mesh(g,m);}
+function threadProfile(r,y0,y1,pitch,depth){var o=[],y=y0;while(y<y1-pitch){o.push([r-depth,y]);o.push([r,y+pitch/2]);y+=pitch;}o.push([r-depth,y1]);return o;}
+/* flat socket head bolt along +y: head face at y=0, tip at y=len */
+function boltFlat(len,r,headR,headL){
+  var g=new T.Group(),p=[[0,0],[headR,0],[headR,.6],[r,headL]];
+  var plainEnd=Math.max(headL+4,len-Math.min(28,len*.6));
+  p.push([r,plainEnd]);p=p.concat(threadProfile(r,plainEnd,len-1.2,1.25,.45));p.push([r-1,len-.2],[0,len]);
+  g.add(lathe(p,44,MAT.oxide()));
+  var sock=new T.Mesh(new T.CylinderGeometry(2.9,2.9,3.6,6),MAT.dark());sock.position.y=1.7;g.add(sock); /* reads as the hex socket */
+  return g;
+}
+/* nylock nut about +y: bearing face y=0 */
+function nylock(af,h){
+  var g=new T.Group(),R=af/Math.sqrt(3);
+  var geo=new T.ExtrudeGeometry(hexShape(R),{depth:h-1.2,bevelEnabled:true,bevelThickness:.6,bevelSize:.6,bevelSegments:2});
+  geo.rotateX(-Math.PI/2);geo.translate(0,.6,0);g.add(mesh(geo,MAT.oxide()));
+  var collar=new T.Mesh(new T.CylinderGeometry(R*.78,R*.84,2.2,36),MAT.nylon());collar.position.y=h+.5;collar.castShadow=true;g.add(collar);
+  var hole=new T.Mesh(new T.CircleGeometry(4.05,28),MAT.dark());hole.rotation.x=-Math.PI/2;hole.position.y=h+1.62;g.add(hole);
+  return g;
+}
+/* Minifix 15 cam about +y: drum axis y, arrow/slot face at y=h */
+function cam15(h){
+  var g=new T.Group(),r=7.5;h=h||12.5;
+  g.add(mesh(new T.CylinderGeometry(r,r,h,48),MAT.zinc()));
+  g.children[0].position.y=h/2;
+  var cross1=new T.Mesh(new T.BoxGeometry(6.2,.8,1.4),MAT.dark()),cross2=new T.Mesh(new T.BoxGeometry(1.4,.8,6.2),MAT.dark());cross1.position.y=h-.3;cross2.position.y=h-.3;g.add(cross1,cross2);
+  var arrow=new T.Mesh(new T.ConeGeometry(1.4,2.4,3),MAT.dark());arrow.rotation.z=Math.PI/2;arrow.position.set(-5.2,h+.02,0);g.add(arrow);
+  var slot=new T.Mesh(new T.BoxGeometry(3.2,5.2,8.2),MAT.dark());slot.position.set(-r+1.4,h*.42,0);g.add(slot); /* mouth toward -x */
+  g.userData.mouth=new T.Vector3(-1,0,0);
+  return g;
+}
+/* Minifix bolt with ⌀8 wood thread: collar at y=0, thread to -y, shank+head to +y (reach) */
+function camBolt(reach,thread,threadR){
+  var g=new T.Group(),p=[[0,-thread],[threadR-1.2,-thread]];
+  p=p.concat(threadProfile(threadR,-thread+.5,-.5,1.6,.6).map(function(q){return [q[0],q[1]];}));
+  p.push([threadR,-.3],[5.2,-.3],[5.2,2.2],[2.6,2.4],[2.6,reach-3.4],[3.6,reach-2.2],[3.6,reach-.6],[2.4,reach]);
+  p.push([0,reach]);
+  g.add(lathe(p,40,MAT.zinc()));
+  var ph=new T.Mesh(new T.BoxGeometry(5.6,.8,1.1),MAT.dark()),ph2=new T.Mesh(new T.BoxGeometry(1.1,.8,5.6),MAT.dark());ph.position.y=2.2;ph2.position.y=2.2;g.add(ph,ph2);
+  return g;
+}
+function dowel(d,len){var r=d/2;return lathe([[0,0],[r-1,0],[r,1],[r,len-1],[r-1,len],[0,len]],28,MAT.wood());}
+/* countersunk #2 square-drive screw along +y, head face at y=0 */
+function screwCsk(len,r,headR,plain){
+  var g=new T.Group(),p=[[0,0],[headR,0],[headR,.4],[r,headL(headR,r)]];
+  function headL(R,r){return (R-r)*1.15;}
+  var s0=headL(headR,r)+(plain||0);p.push([r*.92,s0]);p=p.concat(threadProfile(r,s0,len-1.5,1.4,.5));p.push([r*.5,len-.4],[0,len]);
+  g.add(lathe(p,36,MAT.oxide()));
+  var sq=new T.Mesh(new T.BoxGeometry(2.4,1.6,2.4),MAT.dark());sq.position.y=.6;g.add(sq);
+  return g;
+}
+/* pivot arm: rounded rectangular tube along +x from 0..len, section w (z) × h (y), pin at x=pinX pointing +y */
+function pivotArm(len,w,h,pinX,pinR,pinH){
+  var g=new T.Group(),sec=rrect(w,h,1.6),inner=rrect(w-4,h-4,.8);sec.holes.push(inner);
+  var geo=new T.ExtrudeGeometry(sec,{depth:len,bevelEnabled:false,curveSegments:8});geo.rotateY(Math.PI/2); /* extrude along +x */
+  var tube=mesh(geo,MAT.powder());tube.position.set(0,h/2,0);g.add(tube);
+  /* end caps are open — real tube. pin welded on top */
+  var pin=lathe([[0,0],[pinR,0],[pinR,pinH-1],[pinR-1,pinH],[0,pinH]],36,MAT.powder());pin.position.set(pinX,h,0);g.add(pin);
+  var weld=new T.Mesh(new T.TorusGeometry(pinR+.6,.8,10,36),MAT.powder());weld.rotation.x=Math.PI/2;weld.position.set(pinX,h+.2,0);g.add(weld);
+  return g;
+}
+
+function lBracket(){var g=new T.Group(),m=MAT.zinc();var a=mesh(new T.BoxGeometry(50,2.5,15),m);a.position.set(0,1.25,0);var b=mesh(new T.BoxGeometry(2.5,50,15),m);b.position.set(-23.75,25,0);g.add(a,b);
+  [12.5,37.5].forEach(function(x){var h=new T.Mesh(new T.CircleGeometry(2.6,16),MAT.dark());h.rotation.x=-Math.PI/2;h.position.set(x-25,2.55,0);g.add(h);var v=new T.Mesh(new T.CircleGeometry(2.6,16),MAT.dark());v.rotation.y=-Math.PI/2;v.position.set(-25.05,x,0);g.add(v);});return g;}
+function hingePlate(){var g=new T.Group();var geo=new T.ExtrudeGeometry(rrect(64,46,4),{depth:3,bevelEnabled:false});geo.rotateX(-Math.PI/2);var p=mesh(geo,MAT.powder());g.add(p);
+  var big=new T.Mesh(new T.CircleGeometry(7.6,24),MAT.dark());big.rotation.x=-Math.PI/2;big.position.set(16,3.05,0);g.add(big);
+  [[-22,-14],[-22,14],[22,-14],[22,14]].forEach(function(q){var h=new T.Mesh(new T.CircleGeometry(2.2,12),MAT.dark());h.rotation.x=-Math.PI/2;h.position.set(q[0]-8,3.05,q[1]);g.add(h);});return g;}
+function pianoHinge(len){var g=new T.Group(),m=MAT.zinc();var a=mesh(new T.BoxGeometry(len,1.2,18),m);a.position.set(0,.6,-9.6);var b=mesh(new T.BoxGeometry(len,1.2,18),m);b.position.set(0,.6,9.6);
+  var k=mesh(new T.CylinderGeometry(3,3,len,20),m);k.rotation.z=Math.PI/2;k.position.set(0,1.5,0);g.add(a,b,k);
+  var n=Math.floor(len/50.8);for(var i=0;i<n;i++){var x=-len/2+25.4+i*50.8;[-13,13].forEach(function(z){var h=new T.Mesh(new T.CircleGeometry(2,12),MAT.dark());h.rotation.x=-Math.PI/2;h.position.set(x,1.25,z);g.add(h);});}return g;}
+function shelfPin(){var g=new T.Group();g.add(lathe([[0,0],[2.5,0],[2.5,-10],[0,-10]],20,MAT.zinc()));var c=mesh(new T.CylinderGeometry(3.8,3.8,1.5,24),MAT.zinc());c.position.y=.75;g.add(c);var l=mesh(new T.BoxGeometry(7,1.8,7),MAT.zinc());l.position.set(0,2.4,-2);g.add(l);return g;}
+function magnet(w,h,d){return mesh(new T.BoxGeometry(w,h,d),MAT.oxide());}
+function wallSlab(w,h){var m=new T.MeshStandardMaterial({color:col(0xDCD9D2),roughness:1});var s=new T.Mesh(new T.BoxGeometry(w,h,40),m);s.receiveShadow=true;return s;}
+/* ---- view ---- */
+function view(container,opts){
+  opts=opts||{};
+  var W=opts.w||1600,Hh=Math.round(W/(opts.aspect||4/3));
+  var renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:!!opts.snapshot});
+  renderer.setPixelRatio(1);renderer.setSize(W,Hh,false);
+  renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
+  var scene=new T.Scene();
+  var hemi=new T.HemisphereLight(0xf4f6ff,0x8a8378,.5);scene.add(hemi);
+  var key=new T.DirectionalLight(0xffffff,1.35);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.bias=-0.0006;key.shadow.normalBias=.6;scene.add(key);
+  var fill=new T.DirectionalLight(0xffffff,.28);scene.add(fill);
+  var rim=new T.DirectionalLight(0xffffff,.3);scene.add(rim);
+  var ground=new T.Mesh(new T.PlaneGeometry(1,1),new T.ShadowMaterial({opacity:.24}));ground.receiveShadow=true;ground.rotation.x=-Math.PI/2;scene.add(ground);
+  var cam=new T.OrthographicCamera(-1,1,1,-1,-6000,6000);
+  var root=new T.Group();scene.add(root);
+  function fit(dir,mx,my,groundY,box){
+    var all=new T.Box3().setFromObject(root),bb=box||all,c=bb.getCenter(new T.Vector3()),size=all.getSize(new T.Vector3());
+    var d=dir.clone().normalize();cam.position.copy(c).addScaledVector(d,3000);cam.up.set(0,1,0);cam.lookAt(c);cam.updateMatrixWorld();
+    var inv=cam.matrixWorldInverse,mn=new T.Vector2(1e9,1e9),mxv=new T.Vector2(-1e9,-1e9);
+    for(var i=0;i<8;i++){var v=new T.Vector3(i&1?bb.max.x:bb.min.x,i&2?bb.max.y:bb.min.y,i&4?bb.max.z:bb.min.z).applyMatrix4(inv);mn.x=Math.min(mn.x,v.x);mn.y=Math.min(mn.y,v.y);mxv.x=Math.max(mxv.x,v.x);mxv.y=Math.max(mxv.y,v.y);}
+    var w=(mxv.x-mn.x)*(1+2*(mx||.12)),h=(mxv.y-mn.y)*(1+2*(my||.12)),cx=(mn.x+mxv.x)/2,cy=(mn.y+mxv.y)/2,asp=W/Hh;
+    if(w/h<asp)w=h*asp;else h=w/asp;
+    cam.left=cx-w/2;cam.right=cx+w/2;cam.top=cy+h/2;cam.bottom=cy-h/2;cam.updateProjectionMatrix();
+    /* lights relative to the view */
+    key.position.copy(c).add(new T.Vector3(-.75,1.05,.55).multiplyScalar(Math.max(size.x,size.y,size.z)*1.4));key.target.position.copy(c);scene.add(key.target);
+    fill.position.copy(c).add(new T.Vector3(.9,.35,.6).multiplyScalar(2000));fill.target.position.copy(c);scene.add(fill.target);
+    rim.position.copy(c).add(new T.Vector3(.2,.5,-1).multiplyScalar(2000));rim.target.position.copy(c);scene.add(rim.target);
+    var R=Math.max(size.x,size.y,size.z)*.9;key.shadow.camera.left=-R;key.shadow.camera.right=R;key.shadow.camera.top=R;key.shadow.camera.bottom=-R;key.shadow.camera.near=1;key.shadow.camera.far=8000;key.shadow.camera.updateProjectionMatrix();
+    ground.position.set(c.x,groundY!==undefined?groundY:all.min.y-.2,c.z);ground.scale.set(size.x*6+2000,size.z*6+2000,1);
+  }
+  function px(v){var p=v.clone().project(cam);return[(p.x+1)/2*W,(1-p.y)/2*Hh];}
+  return{renderer:renderer,scene:scene,root:root,cam:cam,fit:fit,px:px,W:W,H:Hh,render:function(){renderer.render(scene,cam);}};
+}
+
+/* ---- label overlay (numbered markers) ---- */
+var NS="http://www.w3.org/2000/svg";
+function overlay(container,W,H){var s=document.createElementNS(NS,"svg");s.setAttribute("viewBox","0 0 "+W+" "+H);container.appendChild(s);return s;}
+function marker(svg,V,anchor,n,dx,dy,color,bg){
+  var a=V.px(anchor),R=27,x=Math.max(R+8,Math.min(V.W-R-8,a[0]+dx)),y=Math.max(R+8,Math.min(V.H-R-8,a[1]+dy));
+  var l=document.createElementNS(NS,"line");l.setAttribute("x1",a[0]);l.setAttribute("y1",a[1]);l.setAttribute("x2",x);l.setAttribute("y2",y);l.setAttribute("stroke",color);l.setAttribute("stroke-width",2.2);svg.appendChild(l);
+  var d=document.createElementNS(NS,"circle");d.setAttribute("cx",a[0]);d.setAttribute("cy",a[1]);d.setAttribute("r",5);d.setAttribute("fill",color);svg.appendChild(d);
+  var c=document.createElementNS(NS,"circle");c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r",R);c.setAttribute("fill",bg);c.setAttribute("stroke",color);c.setAttribute("stroke-width",3);svg.appendChild(c);
+  var t=document.createElementNS(NS,"text");t.setAttribute("x",x);t.setAttribute("y",y+10);t.setAttribute("text-anchor","middle");t.setAttribute("font-family","Archivo,sans-serif");t.setAttribute("font-size",28);t.setAttribute("font-weight",800);t.setAttribute("fill",color);t.textContent=n;svg.appendChild(t);
+}
+function verdict(svg,V,kind){
+  var W=V.W,H=V.H,red="#C8281E",green="#2E8B4A";
+  if(kind==="bad"){
+    var m=Math.min(W,H)*.16,sw=Math.min(W,H)*.032;
+    [[m,m,W-m,H-m],[W-m,m,m,H-m]].forEach(function(p){
+      var l=document.createElementNS(NS,"line");l.setAttribute("x1",p[0]);l.setAttribute("y1",p[1]);l.setAttribute("x2",p[2]);l.setAttribute("y2",p[3]);
+      l.setAttribute("stroke",red);l.setAttribute("stroke-width",sw);l.setAttribute("stroke-linecap","round");l.setAttribute("opacity",.62);svg.appendChild(l);});
+    var r=document.createElementNS(NS,"rect");r.setAttribute("x",4);r.setAttribute("y",4);r.setAttribute("width",W-8);r.setAttribute("height",H-8);r.setAttribute("fill","none");r.setAttribute("stroke",red);r.setAttribute("stroke-width",8);r.setAttribute("opacity",.8);svg.appendChild(r);
+  } else {
+    var s=Math.min(W,H)*.34,cx=W-s*.75,cy=H-s*.75;
+    var c=document.createElementNS(NS,"circle");c.setAttribute("cx",cx);c.setAttribute("cy",cy);c.setAttribute("r",s*.5);c.setAttribute("fill",green);svg.appendChild(c);
+    var t=document.createElementNS(NS,"path");t.setAttribute("d","M"+(cx-s*.24)+","+cy+" l"+(s*.16)+","+(s*.16)+" l"+(s*.32)+","+(-s*.34));
+    t.setAttribute("fill","none");t.setAttribute("stroke","#fff");t.setAttribute("stroke-width",s*.11);t.setAttribute("stroke-linecap","round");t.setAttribute("stroke-linejoin","round");svg.appendChild(t);
+  }
+}
+function text(svg,x,y,s,size,color,weight,anchor){var t=document.createElementNS(NS,"text");t.setAttribute("x",x);t.setAttribute("y",y);t.setAttribute("font-family","Archivo,sans-serif");t.setAttribute("font-size",size);t.setAttribute("font-weight",weight||700);t.setAttribute("fill",color);if(anchor)t.setAttribute("text-anchor",anchor);t.textContent=s;svg.appendChild(t);return t;}
+
+/* snapshot: render once to an <img>, release the context */
+function snapshot(container,build,labels,opts){
+  var V=view(container,Object.assign({snapshot:true},opts||{}));
+  var S=build(V);V.fit(S.dir,S.mx,S.my,S.groundY,S.box);V.render();
+  var img=container.querySelector("img")||document.createElement("img");img.alt="";img.src=V.renderer.domElement.toDataURL("image/png");
+  if(!img.parentNode)container.appendChild(img);
+  var old=container.querySelector("svg");if(old)old.remove();
+  var svg=overlay(container,V.W,V.H);if(labels)labels(svg,V,S);
+  container.classList.add("ready");
+  V.renderer.dispose();V.renderer.forceContextLoss();
+}
+return{MAT:MAT,verdict:verdict,lBracket:lBracket,hingePlate:hingePlate,pianoHinge:pianoHinge,shelfPin:shelfPin,magnet:magnet,wallSlab:wallSlab,panel:panel,boltFlat:boltFlat,nylock:nylock,cam15:cam15,camBolt:camBolt,dowel:dowel,screwCsk:screwCsk,pivotArm:pivotArm,view:view,overlay:overlay,marker:marker,text:text,snapshot:snapshot};
+})();
+
+</script>
+<script>
+/* Boaz assembly engine: places every part of the product file in the world, with real outline,
+   holes on the verified faces, and hardware generated from the drilling. */
+window.BoazAsm=(function(){
+"use strict";
+var T=window.THREE,B=window.Boaz3D;if(!T||!B)return null;
+var FRAME={'0,0,0':[[1,0,0],[0,1,0],[0,0,1]],'0,270,0':[[0,0,1],[0,1,0],[-1,0,0]],'90,0,0':[[1,0,0],[0,0,1],[0,-1,0]],'90,270,0':[[0,0,1],[-1,0,0],[0,-1,0]]};
+/* rows = world direction of local x, y, z. Verified against the placement table (world_i = anchor_i + M[i][j] local_j  <=>  frame[j][i] = M[i][j]). */
+var INSTALL_FLIP={'3G':'x','3F':'x','3A':'x','3C':'x','2E':'x','2D':'x','6B':'x','5B':'x','4A':'x','4C':'x','4D':'x','2B':'x','2C':'x','3E':'x','1D':'x','1C':'x','6A':'y','5A':'y'};
+var HB_EDGE={0:'X0',180:'XL',90:'Y0',270:'YW'};
+var ASM=null;
+function load(json){ASM=json;ASM.parts.forEach(function(p,i){p.idx=i;var F=FRAME[p.key].map(function(r){return r.slice();}),pos=p.anchor.slice(),ax=INSTALL_FLIP[p.code];
+  if(ax){var keep={x:0,y:1,z:2}[ax],ext=[p.L,p.W,ASM.T];for(var i2=0;i2<3;i2++){if(i2===keep)continue;pos[0]+=F[i2][0]*ext[i2];pos[1]+=F[i2][1]*ext[i2];pos[2]+=F[i2][2]*ext[i2];F[i2]=F[i2].map(function(v){return -v;});}}
+  p.F=F;p.pos=pos;});return ASM;}
+function partsByCode(code){return ASM.parts.filter(function(p){return p.code===code;});}
+function matrixOf(p){var F=p.F,m=new T.Matrix4();m.set(F[0][0],F[1][0],F[2][0],p.pos[0],F[0][1],F[1][1],F[2][1],p.pos[1],F[0][2],F[1][2],F[2][2],p.pos[2],0,0,0,1);return m;}
+function toWorld(p,lx,ly,lz){var F=p.F;return new T.Vector3(p.pos[0]+F[0][0]*lx+F[1][0]*ly+F[2][0]*lz,p.pos[1]+F[0][1]*lx+F[1][1]*ly+F[2][1]*lz,p.pos[2]+F[0][2]*lx+F[1][2]*ly+F[2][2]*lz);}
+function localDir(p,lx,ly,lz){var F=p.F;return new T.Vector3(F[0][0]*lx+F[1][0]*ly+F[2][0]*lz,F[0][1]*lx+F[1][1]*ly+F[2][1]*lz,F[0][2]*lx+F[1][2]*ly+F[2][2]*lz);}
+/* shelf-pin ladders: >=3 holes on one row 32 apart */
+function ladder(p){var s={};var f=p.faces.filter(function(h){return h.dia===5;});var byY={};f.forEach(function(h,i){var k=h.y.toFixed(1)+'|'+(h.far?1:0);(byY[k]=byY[k]||[]).push(h);});
+  Object.keys(byY).forEach(function(k){var r=byY[k];if(r.length<4)return;r.sort(function(a,b){return a.x-b.x;});var run=1;for(var i=1;i<r.length;i++){if(Math.abs(r[i].x-r[i-1].x-32)<.6)run++;else run=1;if(run>=3){r.forEach(function(h){s[h.x+','+h.y+','+(h.far?1:0)]=1;});}}});return s;}
+function isLadder(p,h){p._lad=p._lad||ladder(p);return !!p._lad[h.x+','+h.y+','+(h.far?1:0)];}
+/* build one placed part */
+function buildPart(p,opts){opts=opts||{};var Th=ASM.T;
+  var shape=new T.Shape();p.outline.forEach(function(q,i){if(i)shape.lineTo(q[0],q[1]);else shape.moveTo(q[0],q[1]);});shape.closePath();
+  var fh=p.faces.map(function(h){return{x:h.x,y:h.y,r:h.dia/2,depth:h.dep,from:h.far?"back":"front"};});
+  var eh=p.edges.map(function(h){var e=HB_EDGE[h.hb]||'YW',x=e==='X0'?0:e==='XL'?p.L:h.x,y=e==='Y0'?0:e==='YW'?p.W:h.y;
+    return{x:x,y:y,z:Th/2,axis:e[0]==='X'?'x':'y',dir:(e==='X0'||e==='Y0')?-1:1,r:h.dia/2};});
+  var band=[];p.outline.forEach(function(q,i){if(!q[2])return;var n=p.outline[(i+1)%p.outline.length];
+    if(Math.abs(q[1]-n[1])<.01){band.push(q[1]<.01?"bottom":(Math.abs(q[1]-p.W)<.01?"top":null));}
+    else if(Math.abs(q[0]-n[0])<.01){band.push(q[0]<.01?"front":(Math.abs(q[0]-p.L)<.01?"back":null));}});
+  var g=B.panel({L:p.L,H:p.W,t:Th,shape:shape,faceHoles:fh,edgeHoles:eh,band:band.filter(Boolean),ghost:opts.ghost});
+  g.applyMatrix4(matrixOf(p));g.userData.part=p;g.userData.home=g.position.clone();g.userData.homeQ=g.quaternion.clone();return g;}
+/* hardware from drilling */
+function camsOf(p){return p.faces.filter(function(h){return h.dia===15&&h.dep>=14;});}
+function pinsOf(p){return p.faces.filter(function(h){return h.dia===5&&h.dep<19&&!isLadder(p,h);});}
+function edgeBoltsOf(p){return p.edges.filter(function(h){return h.dia===8&&h.dep===13;});}
+function edgeDowelsOf(p){return p.edges.filter(function(h){return h.dia===8&&h.dep===16;});}
+function nearestEdgeDir(p,h){var c=[[h.x,0,-1,0],[p.L-h.x,1,0,0],[h.y,0,0,-1],[p.W-h.y,0,1,0]].sort(function(a,b){return a[0]-b[0];})[0];return{lx:c[1],ly:c[2]};}
+/* orient an object built about +y so +y aligns with world dir n, then place */
+function alignY(obj,pos,n){obj.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),n.clone().normalize());obj.position.copy(pos);obj.userData.home=pos.clone();obj.userData.n=n.clone().normalize();return obj;}
+function placeCams(p){var Th=ASM.T,out=[];camsOf(p).forEach(function(h){var lz=h.far?0:Th,n=localDir(p,0,0,h.far?-1:1),d=nearestEdgeDir(p,h),m=localDir(p,d.lx,d.ly,0);
+  var c=B.cam15(12.5);var pos=toWorld(p,h.x,h.y,lz).addScaledVector(n,-12.5);alignY(c,pos,n);
+  /* spin about its axis so the mouth (-x local) faces the edge the bolt comes from */
+  var mouth=new T.Vector3(-1,0,0).applyQuaternion(c.quaternion),ang=Math.atan2(mouth.clone().cross(m).dot(n),mouth.dot(m));c.rotateY(ang);c.userData.n=n;c.userData.mouthDir=m;out.push(c);});return out;}
+function placePins(p,reachOverride){var Th=ASM.T,out=[];pinsOf(p).forEach(function(h){var lz=h.far?0:Th,n=localDir(p,0,0,h.far?-1:1);
+  var b=B.camBolt(reachOverride||34,h.dep,2.5);alignY(b,toWorld(p,h.x,h.y,lz),n);b.userData.hole=h;out.push(b);});return out;}
+function placeEdgeBolts(p){var Th=ASM.T,out=[];edgeBoltsOf(p).forEach(function(h){var e=HB_EDGE[h.hb],x=e==='X0'?0:e==='XL'?p.L:h.x,y=e==='Y0'?0:e==='YW'?p.W:h.y;
+  var n=localDir(p,e==='X0'?-1:e==='XL'?1:0,e==='Y0'?-1:e==='YW'?1:0,0);var b=B.camBolt(34,13,4);alignY(b,toWorld(p,x,y,Th/2),n);out.push(b);});return out;}
+function placeDowels(p){var Th=ASM.T,out=[];edgeDowelsOf(p).forEach(function(h){var e=HB_EDGE[h.hb],x=e==='X0'?0:e==='XL'?p.L:h.x,y=e==='Y0'?0:e==='YW'?p.W:h.y;
+  var n=localDir(p,e==='X0'?-1:e==='XL'?1:0,e==='Y0'?-1:e==='YW'?1:0,0);var d=B.dowel(8,30);alignY(d,toWorld(p,x,y,Th/2).addScaledVector(n,-16),n);out.push(d);});return out;}
+/* screws standing in given face holes (head on the face, pointing in) */
+function placeScrews(p,filter,len,r,headR,plain){var Th=ASM.T,out=[];p.faces.filter(filter).forEach(function(h){var lz=h.far?0:Th,n=localDir(p,0,0,h.far?-1:1);
+  var s=B.screwCsk(len,r,headR,plain);alignY(s,toWorld(p,h.x,h.y,lz).addScaledVector(n,.3),n.clone().negate());s.userData.n=n;out.push(s);});return out;}
+/* display frames: rows = display coords from world (x,y,z) */
+var DISPLAY={
+  upright:function(v){return new T.Vector3(v.x,v.z,-v.y);},          /* Z up, front toward the viewer */
+  lyingRightEnd:function(v){return new T.Vector3(v.z,1749-v.x,-v.y);},/* bed cabinet on its right end, bottom to the left */
+  lyingLeftEnd:function(v){return new T.Vector3(2160-v.z,v.x,-v.y);}, /* on its left end, bottom to the right */
+  bookcaseLying:function(v){return new T.Vector3(v.z,v.x,v.y);},     /* bookcase on its left end, open front toward -z */
+  faceDown:function(v){return new T.Vector3(v.x,v.y,v.z);},          /* on its face: back edge up */
+  faceUp:function(v){return new T.Vector3(v.x,-v.y,-v.z);}           /* on its back: front up */
+};
+function displayMatrix(name){var f=DISPLAY[name],o=f(new T.Vector3(0,0,0)),ex=f(new T.Vector3(1,0,0)).sub(o),ey=f(new T.Vector3(0,1,0)).sub(o),ez=f(new T.Vector3(0,0,1)).sub(o);
+  var m=new T.Matrix4();m.set(ex.x,ey.x,ez.x,o.x,ex.y,ey.y,ez.y,o.y,ex.z,ey.z,ez.z,o.z,0,0,0,1);return m;}
+return{load:load,parts:function(){return ASM.parts;},byCode:partsByCode,buildPart:buildPart,toWorld:toWorld,localDir:localDir,
+  camsOf:camsOf,pinsOf:pinsOf,placeCams:placeCams,placePins:placePins,placeEdgeBolts:placeEdgeBolts,placeDowels:placeDowels,placeScrews:placeScrews,
+  displayMatrix:displayMatrix,DISPLAY:DISPLAY,T:function(){return ASM.T;}};
+})();
+
+</script>
+<script>
+/* Boaz V3 steps 3–31. Each step is data: which parts, how they lie, what explodes, what hardware the drilling calls for, and the copy. */
+window.BOAZ_STEPS=(function(){
+var L=function(a){return a;};
+var CAM="cam housing &empty;15 &middot; 262.26.535",PIN="connecting bolt &empty;5, 34 reach &middot; 262.28.624",PIN24="connecting bolt &empty;5, 24 reach",S125="1&frac14;&Prime; #6 screw &middot; 010.72.948",S175="1&frac34;&Prime; #8 screw &middot; 010.23.122",S075="&frac34;&Prime; #6 screw &middot; 010.22.952";
+var PH3="#3 Phillips screwdriver",SQ2="impact driver, #2 square bit",PH2="drill, #2 Phillips bit",MAL="rubber mallet";
+return [
+{n:3,title:"Prepare the bed cabinet parts",lede:"Every cam and pin for the bed cabinet goes in now, while each part is on the floor and every hole is easy to reach. Nothing is joined in this step.",
+ parts:["1B","1E","1C@1","2A","2B","2C","2D","2E"],display:"lyingRightEnd",dir:[-.9,1.05,1],mx:.05,my:.08,
+ explode:{"2A":[0,120,0],"2B":[0,260,0],"2C":[0,330,0],"2D":[0,420,0],"2E":[0,520,0]},group:{"2A":1,"2B":1,"2C":1,"2D":1,"2E":1},
+ hw:{cams:["2B","2D","2E","2A"],pins:["2A","1E"]},hwExplode:60,hwGroup:2,
+ markers:[["2A",864,362,19,"1",-70,-60,"face"],["2D",845,48,19,"2",60,-60,"face"],["2E",845,114,19,"3",60,-50,"face"],["2B",845,189,19,"4",-70,-40,"face"],["1E",1913,34,0,"5",70,50,"face"],["2C",832,48,19,"6",70,-50,"ink"]],
+ key:["16 cams into the Top 2A, one face; 4 pins into its other face at the back edge","6 cams into the rear valance 2D","8 cams into the front toe 2E","4 cams into the headboard 2B","pins into every &empty;5 hole of the end assembly except the shelf ladders","the headboard valance 2C gets nothing yet"],
+ hardware:[["46",CAM],["46",PIN]],tools:[PH2],people:1,
+ steps:["<b>Cams into 2B, 2D and 2E.</b> Every &empty;15 hole, arrow toward the nearest edge &mdash; that is the edge the pin arrives from.","<b>Top 2A:</b> cams into the sixteen &empty;15 holes on one face, pins into the four &empty;5 holes on the other face along the back edge. Eight of the cams sit inside the notched ends at the short 24 distance.","<b>Pins into the end assemblies</b> (1B+1E and 1A+1D): every &empty;5 hole on the inside face. Seat each to its collar.","<b>Leave 2C alone.</b> The headboard valance is screwed, not cammed."],
+ wrong:[{kind:"bad",t:"Arrow pointing into the panel",x:"A cam whose arrow does not face the edge has no mouth for the pin. Every cam on the Top points at the nearest end or the front edge."},{kind:"bad",t:"Pins in the shelf ladders",x:"The end assemblies have no ladders, but the bookcase ends in step 10 do. Pins only go where a cam will catch them."}],
+ notes:["Cam and pin counts read from the drilling: 46 cams and 46 pins across the bed cabinet, including the six on the new end joint from step 2."]},
+
+{n:4,title:"Rear valance onto the Top",lede:"The rear valance 2D hangs under the back edge of the Top and makes it stiff. Together they form an L.",
+ parts:["2A","2D"],display:"lyingRightEnd",dir:[-.9,1.05,1],mx:.08,my:.1,
+ explode:{"2D":[-160,0,0]},group:{"2D":1},hw:{cams:["2D","2A"],pins:["2A"]},hwExplode:0,
+ markers:[["2D",845,48,19,"1",70,-60,"face"],["2A",864,714,0,"2",-70,50,"face"],["2D",845,0,9.5,"3",60,50,"edge"]],
+ key:["2D&rsquo;s cams face the outside of the L","the Top&rsquo;s four pins on its back edge, other face","2D&rsquo;s edge bores run onto those pins"],
+ hardware:[["4","cams already in 2D, pins already in 2A"]],tools:[PH3],people:1,
+ steps:["<b>Stand 2D on its edge against the back edge of 2A</b> so the four pins in the Top enter the bores in 2D&rsquo;s top edge.","<b>Check the L:</b> 2D&rsquo;s cams face out, away from the inside of the L. If they face in, 2D is backwards.","<b>Tighten the four cams</b> clockwise past half a turn."],
+ wrong:[{kind:"bad",t:"Cams facing inside the L",x:"2D is backwards. The pins will still enter the edge but the cams are on the wrong side to catch them and the valance will fall off when the cabinet stands.",turn:{"2D":"x"}},{kind:"ok",t:"Cams facing out",x:"Cams visible on the outer face of the L, all four pins caught."}],
+ notes:[]},
+
+{n:5,title:"Headboard valance onto the headboard",lede:"Four screws, no cams. The valance 2C sits on the back face of the headboard 2B and is screwed through pre-drilled holes.",
+ parts:["2B","2C"],display:"lyingRightEnd",dir:[-.9,1.05,-1],mx:.08,my:.1,
+ explode:{"2C":[0,0,-150]},group:{"2C":1},hw:{cams:["2B"],screws:[{code:"2C",sel:"d5",len:31.75,r:1.75,headR:3.45,plain:3.95}]},hwExplode:60,hwGroup:2,
+ markers:[["2C",832,48,0,"1",60,-60,"ink"],["2B",845,85,19,"2",-70,-50,"face"]],
+ key:["2C on the back of 2B, pilot holes matched","two &empty;3 pilots in 2B take the inner screws; the outer two go into solid panel"],
+ hardware:[["4",S125]],tools:[SQ2],people:1,
+ steps:["<b>Lay 2C on the back face of 2B</b>, long edges in line, pilot holes over their marks.","<b>Drive the two outer screws first</b> to hold alignment, then the two inner ones.","<b>Do not put cams or pins in 2C.</b>"],
+ wrong:[{kind:"bad",t:"Screwed to the front face",x:"The valance goes on the wall side of the headboard. On the room side it sits where the mattress goes."}],
+ notes:["2C carries two &empty;5 through-holes and two &empty;5 blind pilots; 2B carries two &empty;3 pilots. Draw all four screws at those holes."]},
+
+{n:6,title:"Toe, Top and headboard onto one end",lede:"The right end assembly lies flat, inside face up. The front toe, the Top assembly and the headboard assembly stand up on it and their cams are tightened one at a time.",
+ parts:["1B","1E","1C@1","2A","2D","2B","2C","2E"],display:"lyingRightEnd",dir:[-.9,1.05,1],mx:.05,my:.08,
+ explode:{"2E":[0,320,0],"2A":[0,440,0],"2D":[0,440,0],"2B":[0,560,0],"2C":[0,560,0]},group:{"2E":1,"2A":2,"2D":2,"2B":3,"2C":3},
+ hw:{cams:["2B","2D","2E","2A"],pins:["2A","1E"]},hwExplode:0,
+ markers:[["2E",845,114,19,"1",60,-60,"face"],["2A",1728,392,9.5,"2",70,-50,"edge"],["2B",845,189,19,"3",-70,-50,"face"],["1E",1913,162,0,"4",70,60,"face"]],
+ key:["front toe 2E onto the pins near the front edge","the Top&rsquo;s end runs drop over the four pins high on 1E","headboard assembly onto its two pins","hold each part steady while its cams are turned"],
+ hardware:[["cams and pins","already installed"]],tools:[PH3],people:2,
+ steps:["<b>Front toe first.</b> Lower 2E onto the pins at the front of 1B, banded edge up. Tighten its four cams on this end.","<b>Top assembly.</b> With a helper, lower the Top-and-valance L onto the four pins near the top of 1E. Tighten the four cams in the notch.","<b>Headboard assembly.</b> Lower 2B with 2C attached onto its pins. Tighten two cams.","<b>Everything stands on its own now.</b> Do not lean on it."],
+ wrong:[{kind:"bad",t:"Top on before the toe",x:"The toe is the lowest part and needs a clear face to land on. Order is toe, Top, headboard."}],
+ notes:["Cam heights on 1E, from the floor: toe at 85 / 117 / 162, headboard at 603 / 859, Top at 2091."]},
+
+{n:7,title:"Second end down",lede:"The left end assembly comes down pins-first onto everything standing on the right end. The Top locates it, then the headboard and toe.",
+ parts:["1B","1E","1C@1","2A","2D","2B","2C","2E","1A","1D","1C@0"],display:"lyingRightEnd",dir:[-.9,1.05,1],mx:.05,my:.08,
+ explode:{"1A":[0,620,0],"1D":[0,620,0],"1C@0":[0,620,0]},group:{"1A":1,"1D":1,"1C@0":1},hw:{cams:["2B","2D","2E","2A","1D"],pins:["2A","1E","1D"]},hwExplode:0,
+ markers:[["1D",1913,162,0,"1",60,-60,"face"],["2A",0,392,9.5,"2",-70,-50,"edge"],["2B",34,189,19,"3",-70,50,"face"]],
+ key:["pins on the inside face of 1D, pointing down","the Top&rsquo;s end runs catch first","then headboard and toe cams"],
+ hardware:[["cams and pins","already installed"]],tools:[PH3],people:2,
+ steps:["<b>With a helper, lift the left end assembly</b> and turn it pins-down.","<b>Lower it onto the Top first.</b> When the four Top pins are in, let the headboard and toe pins find their bores.","<b>Tighten every cam on this end:</b> four on the Top, two on the headboard, four on the toe, two on the rear valance."],
+ wrong:[{kind:"bad",t:"Pins up",x:"If the end goes on pins-up nothing engages. Turn it over before lifting."}],notes:[]},
+
+{n:8,title:"Stand the bed cabinet up",lede:"Roll it onto its face, then stand it upright with the bottom edges on a blanket.",
+ parts:["1A","1B","1D","1E","1C@0","1C@1","2A","2B","2C","2D","2E"],display:"upright",dir:[-1,.7,1.2],mx:.06,my:.08,explode:{},group:{},hw:{cams:["2B","2D","2E","2A","1D","1E"],pins:["2A","1D","1E"]},hwExplode:0,
+ markers:[],key:[],hardware:[],tools:["blanket"],people:2,
+ steps:["<b>Two people.</b> Rotate the cabinet onto its front face, then lift it upright.","<b>Keep the bottom edges on a blanket</b> while it moves.","<b>Push it to the wall</b> where it will live. The next step anchors it."],wrong:[],notes:["No fasteners in this step."]},
+
+{n:9,title:"Anchor to the wall",lede:"Three corner braces tie the top of the cabinet to studs. Nothing else holds a Murphy bed to the wall.",
+ parts:["1A","1B","1D","1E","1C@0","1C@1","2A","2B","2C","2D","2E"],display:"upright",dir:[-1,.7,1.2],mx:.06,my:.08,explode:{},group:{},hw:{},hwExplode:70,hwGroup:1,
+ extras:"brackets",
+ markers:[["W",874,2101,495,"1",0,-90,"ink2"],["W",300,2101,470,"2",-80,-60,"ink2"],["W",1450,2101,470,"3",80,-60,"ink2"]],
+ key:["three braces on the top, spaced onto three studs","short screws down into the Top","long screws through drywall into framing"],
+ hardware:[["3","corner brace 50 &times; 50 &times; 15 &middot; 260.28.905"],["6",S075],["6",S175]],tools:["stud finder","tape",SQ2],people:1,
+ steps:["<b>Find and mark three studs</b> behind the top of the cabinet.","<b>Brace to the Top:</b> two &frac34;&Prime; screws each, into the top surface near the back edge.","<b>Brace to the stud:</b> two 1&frac34;&Prime; screws each, into framing.","<b>Push-test.</b> The cabinet must not move."],
+ wrong:[{kind:"bad",t:"Drywall anchors",x:"Not on a Murphy bed. Failure means the whole cabinet coming off the wall. Steel studs, concrete or masonry need their own fasteners, not supplied."}],notes:["Safety warning text from the V2 sheet carries over verbatim."]},
+
+{n:10,title:"Prepare one bookcase",lede:"One set of seven parts, on a blanket, bottom edges of the ends toward the bed. Twenty-five cams and twenty-five pins go in before anything is joined.",
+ parts:["3A@0","3B@0","3C@0","3D@0","3E@0","3F@0","3G@0"],display:"bookcaseLying",dir:[-.8,1.05,-1],mx:.06,my:.08,
+ explode:{"3B@0":[0,520,0],"3C@0":[0,300,0],"3D@0":[0,150,0],"3E@0":[0,150,0],"3F@0":[0,150,0],"3G@0":[0,150,0]},group:{"3B@0":1,"3C@0":1,"3D@0":1,"3E@0":1,"3F@0":1,"3G@0":1},
+ hw:{cams:["3C@0","3D@0","3E@0","3F@0","3G@0"],pins:["3A@0","3B@0","3D@0"]},hwExplode:50,hwGroup:2,
+ markers:[["3A@0",447,57,19,"1",-70,-60,"face"],["3A@0",9.5,69,19,"2",-70,50,"face"],["3C@0",1000,182,19,"3",60,-60,"face"],["3D@0",34,37,19,"4",60,-50,"face"],["3C@0",1000,10,0,"5",70,50,"ink"]],
+ key:["shelf ladders: five pairs, 32 apart &mdash; no pins here","twelve pins per end, the lone holes","ten cams in the interior back","cams in top, deck, partition and valance","small holes down the back are screw clearance, not pin holes"],
+ hardware:[["25",CAM],["25",PIN]],tools:[PH2],people:1,
+ steps:["<b>Lay out 3A, 3B, 3C, 3D, 3E, 3F, 3G</b> on a blanket, bottom edges of the ends nearest the bed.","<b>Cams into every &empty;15 hole</b> on the back, top, deck, partition and valance. Arrow toward the nearest edge.","<b>Pins into the twelve lone &empty;5 holes on each end</b> and the one on the top face of 3D for the valance. Not the ladders.","<b>Leave the small holes down the back alone</b> &mdash; they are for step 15&rsquo;s screws."],
+ wrong:[{kind:"bad",t:"Pins in a ladder",x:"The five-pair ladders at 57 and 160 from the front are for shelf supports. A pin there catches nothing and blocks a shelf."},{kind:"bad",t:"Pins in the back&rsquo;s small holes",x:"The &empty;3 holes down the interior back are screw clearance. Pins do not fit and the screws in step 15 will not either."}],
+ notes:["Bookcase one is the bay at the left; the other three are identical and repeat in step 16."]},
+
+{n:11,title:"Valance and top onto one end",lede:"The valance cams onto the top first. Then the top assembly goes onto the end lying flat, along its top edge.",
+ parts:["3A@0","3D@0","3E@0"],display:"bookcaseLying",dir:[-.8,1.05,-1],mx:.08,my:.1,
+ explode:{"3D@0":[0,220,0],"3E@0":[0,220,-140]},group:{"3E@0":1,"3D@0":2},hw:{cams:["3D@0","3E@0"],pins:["3A@0","3D@0"]},hwExplode:0,
+ markers:[["3E@0",193,43,19,"1",60,-60,"face"],["3D@0",193,14.5,19,"2",-70,-50,"face"],["3A@0",1945,69,19,"3",-70,50,"face"]],
+ key:["3E&rsquo;s cam catches the single pin on the top face of 3D","3D&rsquo;s cams catch the pins at the top of 3A","the top-edge pins on 3A"],
+ hardware:[["cams and pins","already installed"]],tools:[PH3],people:1,
+ steps:["<b>Valance 3E onto the top 3D:</b> one pin, one cam. Tighten.","<b>Top assembly onto the end:</b> along the top edge of 3A, cams facing the bottom of the bookcase. Tighten two cams."],
+ wrong:[{kind:"bad",t:"Valance on the wrong face",x:"The valance hangs below the top at the front. If the cam is on the top face the valance sticks up above the bookcase."}],notes:[]},
+
+{n:12,title:"Partition and deck",lede:"With the same end still flat, the horizontal partition and the deck go on, cams facing the bottom of the bookcase.",
+ parts:["3A@0","3D@0","3E@0","3F@0","3G@0"],display:"bookcaseLying",dir:[-.8,1.05,-1],mx:.08,my:.1,
+ explode:{"3F@0":[0,220,0],"3G@0":[0,220,0]},group:{"3F@0":1,"3G@0":1},hw:{cams:["3D@0","3E@0","3F@0","3G@0"],pins:["3A@0","3D@0"]},hwExplode:0,
+ markers:[["3F@0",34,37,19,"1",-70,-60,"face"],["3G@0",34,37,19,"2",60,-50,"face"]],
+ key:["partition 3F at mid height, cams down","deck 3G at the bottom, cams down"],
+ hardware:[["cams and pins","already installed"]],tools:[PH3],people:1,
+ steps:["<b>Partition 3F</b> onto its two pins, cams toward the bottom of the bookcase. Tighten.","<b>Deck 3G</b> onto its two pins at the bottom, cams down. Tighten.","<b>Hold each level</b> while turning the cams so it does not rack."],
+ wrong:[{kind:"bad",t:"Cams facing up",x:"Partition and deck cams face the floor of the bookcase so the second end can be tightened from below. Cams up cannot be reached once the back is on."}],notes:[]},
+
+{n:13,title:"Interior back",lede:"The back drops onto the pins of the end. Its cams face away from the parts already fitted, and its pilot holes must line up with the partition before anything is tightened.",
+ parts:["3A@0","3D@0","3E@0","3F@0","3G@0","3C@0"],display:"bookcaseLying",dir:[-.8,1.05,1],mx:.08,my:.1,
+ explode:{"3C@0":[0,260,0]},group:{"3C@0":1},hw:{cams:["3D@0","3E@0","3F@0","3G@0","3C@0"],pins:["3A@0","3D@0"]},hwExplode:0,
+ markers:[["3C@0",1000,182,19,"1",60,-60,"face"],["3C@0",1000,10,0,"2",-70,50,"ink"],["3A@0",266,10.5,19,"3",-70,-50,"face"]],
+ key:["3C&rsquo;s ten cams face outward, away from the shelves","its &empty;3 clearance holes must sit over the partition, top and deck edges","five pins along the back edge of 3A"],
+ hardware:[["cams and pins","already installed"]],tools:[PH3],people:1,
+ steps:["<b>Lower 3C onto the five pins</b> along the back edge of 3A, cams facing out.","<b>Line the small holes up</b> with the edges of the top, partition and deck before turning anything.","<b>Tighten the five cams.</b>"],
+ wrong:[{kind:"bad",t:"Cams facing the shelves",x:"Turned over, the back&rsquo;s cams face inside the bookcase and cannot be reached with the second end on. The screw holes also miss the partition.",turn:{"3C@0":"x"}}],notes:["Seen from the back of the bookcase in this drawing so the cams show."]},
+
+{n:14,title:"Second end down",lede:"The remaining end comes down pins-first onto the back, top, valance, partition and deck. Twelve cams; one of them needs the short screwdriver.",
+ parts:["3A@0","3B@0","3C@0","3D@0","3E@0","3F@0","3G@0"],display:"bookcaseLying",dir:[-.8,1.05,-1],mx:.06,my:.08,
+ explode:{"3B@0":[0,420,0]},group:{"3B@0":1},hw:{cams:["3D@0","3E@0","3F@0","3G@0","3C@0"],pins:["3A@0","3B@0","3D@0"]},hwExplode:0,
+ markers:[["3B@0",1945,69,19,"1",60,-60,"face"],["3E@0",193,43,19,"2",-70,-50,"face"]],
+ key:["twelve pins on the inside face of 3B, pointing down","the cam behind the valance needs the short #3"],
+ hardware:[["cams and pins","already installed"]],tools:[PH3,"short #3 Phillips"],people:2,
+ steps:["<b>With a helper, lift 3B</b> and turn it pins-down.","<b>Lower the twelve pins</b> into the back, top, valance, partition and deck together.","<b>Tighten all twelve cams.</b> The one behind the valance takes the short screwdriver."],
+ wrong:[{kind:"bad",t:"Two left ends",x:"3A and 3B are a mirror pair. If the pin faces both point the same way you have two of one hand; the ladders and pins will not meet."}],notes:[]},
+
+{n:15,title:"Reinforce the back",lede:"Six 1&frac34;&Prime; screws through the interior back into the top, partition and deck. This is the step the V2 sheet marks do not skip, and it is what stops the case racking when it swings.",
+ parts:["3A@0","3B@0","3C@0","3D@0","3E@0","3F@0","3G@0"],display:"bookcaseLying",dir:[-.8,1.05,1],mx:.06,my:.08,explode:{},group:{},
+ hw:{cams:["3D@0","3E@0","3F@0","3G@0","3C@0"],pins:["3A@0","3B@0","3D@0"],screws:[{code:"3C@0",sel:"d3",len:44.45,r:2.1,headR:4.1,plain:6.6}]},hwExplode:70,hwGroup:1,
+ markers:[["3C@0",1000,182,0,"1",60,-60,"ink2"],["3C@0",1000,10,0,"2",-70,50,"ink2"]],
+ key:["two screws into the top edge of 3D","two into the deck 3G, two into the partition 3F"],
+ hardware:[["6",S175]],tools:[SQ2],people:1,
+ steps:["<b>Six screws per bookcase</b> through the &empty;3 holes down the back: two into the top, two into the partition, two into the deck.","<b>Each finds a &empty;3 &times; 5 pilot</b> in the panel edge and then bites solid core.","<b>Do not skip this.</b>"],
+ wrong:[{kind:"bad",t:"1&frac14;&Prime; screws here",x:"Through 19 of back panel a 1&frac14;&Prime; leaves 12 mm of bite. The sheet calls for 1&frac34;&Prime; #8."}],notes:["V3 changed this joint: clearance &empty;5 &rarr; &empty;3, pilot 25 deep &rarr; &empty;3 &times; 5."]},
+
+{n:16,title:"Three more bookcases",lede:"Repeat steps 10 to 15 for the remaining three sets of parts. All four bookcases are the same.",
+ parts:["3A","3B","3C","3D","3E","3F","3G"],display:"upright",dir:[-1,.7,1.2],mx:.06,my:.08,explode:{},group:{},hw:{},hwExplode:0,
+ markers:[],key:[],hardware:[["75",CAM],["75",PIN],["18",S175]],tools:[PH2,PH3,SQ2],people:2,
+ steps:["<b>Repeat steps 10&ndash;15</b> three times.","<b>Check each one</b> is square before moving on: measure the diagonals."],wrong:[],notes:["No drawings needed beyond the finished four."]},
+
+{n:17,title:"Hinge plates onto the four outer decks",lede:"The black pivot plates go on parts 4A, 4B, 4D and 4E, over their &empty;15 sockets, with four &frac34;&Prime; Phillips screws each from the BC1 box.",
+ parts:["4A","4B","4D","4E"],display:"upright",dir:[-1,1.1,1],mx:.08,my:.12,explode:{},group:{},
+ hw:{screws:[{code:"4A",sel:"d3",len:19.05,r:1.75,headR:3.45,plain:0},{code:"4B",sel:"d3",len:19.05,r:1.75,headR:3.45,plain:0},{code:"4D",sel:"d3",len:19.05,r:1.75,headR:3.45,plain:0},{code:"4E",sel:"d3",len:19.05,r:1.75,headR:3.45,plain:0}]},hwExplode:60,hwGroup:2,
+ extras:"plates",
+ markers:[["4D",398,122,19,"1",-70,-60,"face"],["4D",344,52,19,"2",60,50,"face"],["4C",0,0,0,"",0,0,"ink"]],
+ key:["large hole in the plate over the &empty;15 &times; 9 socket in the deck","four &empty;3 pilots for the plate screws"],
+ hardware:[["4","hinge plate, BC1 box"],["16","&frac34;&Prime; Phillips wood screw, BC1 box"]],tools:[PH2],people:1,
+ steps:["<b>Place a plate on each of 4A, 4B, 4D, 4E</b>, large hole over the deck&rsquo;s large hole.","<b>Four screws each</b> into the &empty;3 pilots.","<b>Keep them matched:</b> 32 top left, 19 bottom left, 62 bottom right, 59 top right in V2 numbering; 4E, 4D, 4A, 4B here."],
+ wrong:[{kind:"bad",t:"Plate on a centre deck",x:"The four 4C centre decks have no socket and no pilots. Plates only go on the four corner decks."}],notes:["The socket is &empty;15 &times; 9 &mdash; the same diameter as a cam, but nine deep. It is not a cam hole."]},
+
+{n:18,title:"Tops and bottoms onto the bookcases",lede:"Each bookcase lies on its back and gets an outer deck top and bottom, clamped and screwed with four 1&frac14;&Prime; screws each. The plated decks go on the outer corners.",
+ parts:["3A","3B","3C","3D","3E","3F","3G","4A","4B","4C","4D","4E"],display:"upright",dir:[-1,.7,1.2],mx:.05,my:.08,
+ explode:{"4A":[0,-220,0],"4D":[0,-220,0],"4C@0":[0,220,0],"4C@1":[0,-220,0],"4C@2":[0,220,0],"4C@3":[0,-220,0],"4B":[0,220,0],"4E":[0,220,0]},group:{"4A":1,"4B":1,"4C":1,"4D":1,"4E":1},
+ hw:{screws:[{code:"4A",sel:"d5",len:31.75,r:1.75,headR:3.45,plain:3.95},{code:"4B",sel:"d5",len:31.75,r:1.75,headR:3.45,plain:3.95},{code:"4C",sel:"d5",len:31.75,r:1.75,headR:3.45,plain:3.95},{code:"4D",sel:"d5",len:31.75,r:1.75,headR:3.45,plain:3.95},{code:"4E",sel:"d5",len:31.75,r:1.75,headR:3.45,plain:3.95}]},hwExplode:60,hwGroup:2,
+ extras:"plates",
+ markers:[["4E",398,122,19,"1",-70,-60,"face"],["4C",100,45,19,"2",0,-70,"face"],["4A",398,122,19,"3",70,60,"face"]],
+ key:["plated decks at the four outer corners, socket toward the outside and front","centre decks: four screws, orientation not critical","socket must line up with the plate&rsquo;s large hole"],
+ hardware:[["32",S125]],tools:["clamps",SQ2],people:1,
+ steps:["<b>Bookcase on its back.</b> Clamp its top deck in place, then its bottom deck.","<b>Four screws each</b> through the &empty;5 clearance holes into the top and deck.","<b>Outer bookcases get the plated decks</b> with the socket at the outside front corner. Inner bookcases get centre decks either way round."],
+ wrong:[{kind:"bad",t:"Plated deck on an inner bookcase",x:"The pivot socket must be at the four outer corners of the pair. On an inner case it has nothing to sit on."}],notes:["V2 identified decks by hole count: two extra holes on the tops, one on the bottoms. V3 codes carry that: 4E/4B tops, 4D/4A bottoms."]},
+
+{n:19,title:"Piano hinges",lede:"Each adjoining pair of bookcases folds on one 72&Prime; hinge along their back edges, screwed in a zig-zag so the leaf stays straight.",
+ parts:["3A@0","3B@0","3C@0","3D@0","3E@0","3F@0","3G@0","3A@1","3B@1","3C@1","3D@1","3E@1","3F@1","3G@1","4C@0","4C@1","4D","4E"],display:"faceDown",dir:[-.8,1.2,.9],mx:.05,my:.1,explode:{},group:{},hw:{},hwExplode:90,hwGroup:1,
+ extras:"hinge",
+ markers:[["W",425,20,1010,"1",0,-90,"ink2"],["W",425,20,120,"2",-80,-40,"ink2"]],
+ key:["hinge centred on the joint between the two ends, 3&frac34;&Prime; down from the top","every other hole on each side, offset by one; start at one end with two screws"],
+ hardware:[["2","72&Prime; piano hinge &middot; 351.09.633"],["as needed",S075]],tools:[SQ2,"tape"],people:2,
+ steps:["<b>Four bookcases face-down in pairs</b>, nothing pinched underneath.","<b>Centre a hinge along the joint</b> between the two ends, 3&frac34;&Prime; from the top.","<b>Zig-zag:</b> every other hole on each leaf, offset by one. Two screws at one end first, then the other end, then the middle.","<b>Tap the screw point to mark first.</b> If a mark lands on a pin hole, skip it."],
+ wrong:[{kind:"bad",t:"Straight down one side",x:"Fills one leaf before the other and bows the hinge. The pair then will not fold flat."}],notes:[]},
+
+{n:20,title:"Bookcases onto the pivots",lede:"Each folded pair rolls onto its piano-hinge side, stands up onto the lower pivot pin, then the upper pivot arm is bolted to the side of the bed cabinet with its pin in the top plate.",
+ parts:["1A","1B","1D","1E","1C@0","1C@1","2A","2B","2C","2D","2E","3A@0","3B@0","3C@0","3D@0","3E@0","3F@0","3G@0","4D","4E","4C@0","4C@1"],display:"upright",dir:[-1,.7,1.2],mx:.05,my:.08,
+ explode:{"3A@0":[0,140,500],"3B@0":[0,140,500],"3C@0":[0,140,500],"3D@0":[0,140,500],"3E@0":[0,140,500],"3F@0":[0,140,500],"3G@0":[0,140,500],"4D":[0,140,500],"4E":[0,140,500],"4C@0":[0,140,500],"4C@1":[0,140,500]},
+ group:{"3A@0":1,"3B@0":1,"3C@0":1,"3D@0":1,"3E@0":1,"3F@0":1,"3G@0":1,"4D":1,"4E":1,"4C@0":1,"4C@1":1},hw:{},hwExplode:0,
+ markers:[["W",-30,60,-120,"1",-80,60,"ok"],["W",-30,2110,-120,"2",-80,-60,"ok"]],
+ key:["lower pivot pin, from step 1, into the bottom plate","upper pivot arm and pin into the top plate, bolted to the side of the cabinet"],
+ hardware:[["2","brass bushing, BC1"],["2","upper pivot arm, BC1"],["1&frac12;&Prime; bolts","+ nylock nuts, BC1"]],tools:["&frac12;&Prime; socket","5 mm hex key","ladder"],people:3,
+ steps:["<b>Bushings onto the lower pivot arms</b> before anything else.","<b>Fold one pair, roll it onto its hinge side</b>, line the bottom plate up with the pin and stand it up until it drops on.","<b>On a ladder, pin into the top plate</b>, then bolt the upper arm to the side of the cabinet: &frac12;&Prime; socket and 5 mm hex key.","<b>Repeat for the other pair.</b> Misalignment is fixed in step 25."],
+ wrong:[{kind:"bad",t:"No bushing",x:"The plate rides steel on steel and the bookcase drags. Fit the brass bushing first."}],notes:["Upper arm bolt holes are the four &empty;8 through-holes near the top of 1D and 1E, at 50.8 / 152.4 / 254 from the back and one at 393.4."]},
+
+{n:21,title:"Prepare the fascia",lede:"Pins into the top front fascia, cams into the two side fascias. Three parts, laid out flat.",
+ parts:["5A","5B","5C"],display:"upright",dir:[-1,1.1,1],mx:.08,my:.12,explode:{"5B":[-200,0,0],"5C":[200,0,0]},group:{},
+ hw:{cams:["5B","5C"],pins:["5A"]},hwExplode:60,hwGroup:1,
+ markers:[["5A",884,48,0,"1",0,-80,"face"],["5B",48,362,19,"2",-80,-40,"face"],["5C",48,362,19,"3",80,-40,"face"]],
+ key:["six pins in 5A: four for the Top, one for each side fascia","one cam in each side fascia","the two &empty;5 holes in each side fascia are screw pilots, not pin holes"],
+ hardware:[["2",CAM],["6",PIN]],tools:[PH2],people:1,
+ steps:["<b>Pins into the six &empty;5 holes in 5A.</b>","<b>One cam into each of 5B and 5C.</b>","<b>Leave the other two holes in 5B and 5C empty</b> &mdash; step 22&rsquo;s screws go there."],
+ wrong:[{kind:"bad",t:"Pins in the side fascia pilots",x:"5B and 5C each have one cam hole and two screw pilots. Pins in the pilots block the screws and catch nothing."}],notes:[]},
+
+{n:22,title:"Install the fascia",lede:"Side fascias clamp to the bed cabinet and take two screws each. The top front fascia then cams to the sides and the Top.",
+ parts:["1A","1B","1D","1E","2A","2D","5A","5B","5C"],display:"upright",dir:[-1,.7,1.2],mx:.05,my:.08,
+ explode:{"5B":[-260,0,0],"5C":[260,0,0],"5A":[0,0,320]},group:{"5B":1,"5C":1,"5A":2},
+ hw:{cams:["5B","5C","2A"],pins:["5A"],screws:[{code:"5B",sel:"d5",len:31.75,r:1.75,headR:3.45,plain:3.95},{code:"5C",sel:"d5",len:31.75,r:1.75,headR:3.45,plain:3.95}]},hwExplode:60,hwGroup:1,
+ markers:[["5B",48,362,19,"1",-80,-40,"face"],["5A",884,48,0,"2",0,-80,"face"],["2A",714,34,19,"3",60,60,"face"]],
+ key:["side fascia against the end, cam on the upper side, two 1&frac14;&Prime; screws","top front fascia pins into the sides and the Top","the Top&rsquo;s four front cams; a short screwdriver may be needed"],
+ hardware:[["4",S125]],tools:["clamps",SQ2,PH3,"short #3 Phillips","ladder"],people:1,
+ steps:["<b>Clamp each side fascia</b> to the end: back edge flush with the top of the cabinet, front just above flush, cam on the upper side. Two 1&frac14;&Prime; screws.","<b>Lift the top front fascia</b> onto the side fascias and the Top. Tighten the two side cams and the four in the Top.","<b>Short screwdriver</b> for the Top cams if the ladder position is awkward."],
+ wrong:[{kind:"bad",t:"Cam on the lower side",x:"The side fascia&rsquo;s cam must face up to catch the top fascia&rsquo;s pin. Upside down there is nothing to tighten."}],notes:[]},
+
+{n:23,title:"Nailers and fillers",lede:"V2 fitted a 3&Prime; &times; 9&Prime; filler between each side fascia and the Top with two 1&frac14;&Prime; screws. Those fillers are not in the V3 file.",
+ parts:["1D","1E","2A","5A","5B","5C"],display:"upright",dir:[-1,.7,1.2],mx:.05,my:.08,explode:{},group:{},hw:{cams:["5B","5C","2A"],pins:["5A"]},hwExplode:0,
+ markers:[],key:[],hardware:[["4",S125+" (V2)"]],tools:[MAL,"clamps",SQ2],people:1,
+ steps:["<b>Confirm before drawing:</b> the V2 fillers 33|34 (230 &times; 77) have no part in the V3 product. Either they were dropped with the 1728 Top, or they are still shipped uncoded.","<b>If they stay:</b> mallet the filler between the side fascia and the Top, bottom edge flush with the bottom of the Top, two screws into the side fascia &mdash; one above the pivot arm, one between arm and front edge."],
+ wrong:[],notes:["This step is a question, not a drawing, until the fillers are settled."]},
+
+{n:24,title:"The &ldquo;T&rdquo;",lede:"Two boards cam together into a T that hides the centre gap between the bookcase pairs, then clamp and screw to the right pair from inside.",
+ parts:["6A","6B","3B@1","3A@2","3C@1","3C@2"],display:"upright",dir:[-1,.7,1.2],mx:.06,my:.1,
+ explode:{"6A":[0,0,260],"6B":[0,0,420]},group:{"6B":1,"6A":2},hw:{cams:["6A"],pins:["6B"]},hwExplode:0,
+ markers:[["6A",48,996,19,"1",-70,-60,"face"],["6B",38,996,19,"2",60,-60,"face"]],
+ key:["four cams in the side board 6A, facing the bookcase when installed","four pins in the front board 6B"],
+ hardware:[["4",CAM],["4",PIN],["3",S125]],tools:["clamps",PH2,SQ2],people:1,
+ steps:["<b>Pins into 6B, cams into 6A.</b> Join them into a T with the cams on the side that will face the bookcase.","<b>Clamp the T to the right pair</b> of bookcases.","<b>Three 1&frac14;&Prime; screws from inside the bookcase:</b> one behind the valance, one just below the partition, one just above the deck.","<b>If the T pushes the bookcases open</b>, square them (step 25) and fit the large magnets (step 26)."],
+ wrong:[{kind:"bad",t:"Cams showing",x:"The T&rsquo;s cams face the bookcase, never the room."}],notes:[]},
+
+{n:25,title:"Square up the bookcases",lede:"If the centre bookcases are not flush at the top, nudge the bed cabinet toward the higher side until they are.",
+ parts:["1A","1B","1D","1E","2A","2E","3A","3B","3C","3D","3E","3F","3G","4A","4B","4C","4D","4E","6A","6B"],display:"upright",dir:[-1,.7,1.2],mx:.05,my:.08,explode:{},group:{},hw:{},hwExplode:0,
+ markers:[],key:[],hardware:[],tools:[MAL],people:1,
+ steps:["<b>Check the centre pair at the top.</b>","<b>Not flush?</b> Nudge the bed cabinet toward the higher side with a mallet or a foot until they are.","<b>Recheck after the magnets go in.</b>"],wrong:[],notes:[]},
+
+{n:26,title:"Large magnets",lede:"Two magnets on the front toe, one each side of the centre gap; plates vertical on the backs of the bookcases so screws stay clear of the magnets.",
+ parts:["2E","3C@1","3C@2","3G@1","3G@2"],display:"upright",dir:[-1,.9,1.2],mx:.08,my:.1,explode:{},group:{},hw:{},hwExplode:80,hwGroup:1,
+ extras:"magnetsLarge",
+ markers:[["W",790,232,60,"1",-90,-50,"ink2"],["W",960,232,60,"2",90,-50,"ink2"]],
+ key:["magnet 1&ndash;2&Prime; left of the gap, plate vertical on the right bookcase&rsquo;s back","magnet 1&ndash;2&Prime; right of the gap, plate on the left bookcase"],
+ hardware:[["2","large magnet + strike plate, magnet kit"],["kit","&frac12;&Prime; screws"]],tools:["drill, #1 Phillips bit"],people:1,
+ steps:["<b>Open the left bookcase.</b> Fit the right-hand magnet to the top of the toe and its plate vertically on the back of that bookcase.","<b>Open the right bookcase.</b> Fit the left magnet and its plate on the other bookcase.","<b>Plates vertical</b>, long side up and down, so the screws miss the magnet."],
+ wrong:[{kind:"bad",t:"Plate horizontal",x:"The plate screws land on the magnet and it never seats."}],notes:["Revised 4/29/25 on the V2 sheet for vertical plates; carried over."]},
+
+{n:27,title:"Small flat magnets",lede:"One per bookcase on the back edge opposite the piano hinge, halfway up, just above the centre cam. Magnet and plate in a plus shape.",
+ parts:["3A@1","3B@1","3C@1","3A@2","3B@2","3C@2"],display:"upright",dir:[-1,.9,1.2],mx:.06,my:.1,explode:{},group:{},hw:{},hwExplode:80,hwGroup:1,
+ extras:"magnetsSmall",
+ markers:[["W",840,1000,-6,"1",-90,-40,"ink2"],["W",860,1000,-6,"2",90,-40,"ink2"]],
+ key:["magnet on one bookcase back edge, plate on its neighbour, crossed","halfway up, just above the centre cam"],
+ hardware:[["4","small flat magnet + plate, magnet kit"],["kit","adhesive strips, &frac12;&Prime; screws"]],tools:["drill, #1 Phillips bit"],people:1,
+ steps:["<b>Position each magnet</b> on the back edge opposite the piano hinge, halfway up, just above the centre cam.","<b>Magnet and plate crossed</b> so the screws clear each other.","<b>Stick, then screw.</b> Pilot holes optional."],
+ wrong:[],notes:["Keeps the bookcases flush when fully open."]},
+
+{n:28,title:"Adjustable shelves",lede:"Four pins per shelf into the ladder at the height you want. Three shelves per bookcase, twelve in all.",
+ parts:["3A@0","3B@0","3C@0","3D@0","3E@0","3F@0","3G@0","7A@0","7A@1","7A@2"],display:"upright",dir:[-1,.7,1.2],mx:.08,my:.1,
+ explode:{"7A@0":[0,0,300],"7A@1":[0,0,300],"7A@2":[0,0,300]},group:{"7A@0":1,"7A@1":1,"7A@2":1},hw:{},hwExplode:40,hwGroup:0,
+ extras:"shelfPins",
+ markers:[["7A@0",193,88,19,"1",-80,-50,"ink2"],["3A@0",383,57,19,"2",-70,50,"face"]],
+ key:["shelf 7A onto four pins","five heights per shelf in the ladder"],
+ hardware:[["48","shelf support &empty;5 &middot; 282.04.711"]],tools:[],people:1,
+ steps:["<b>Four pins into a rung</b>, two each side, same height.","<b>Shelf on.</b> Repeat for all twelve.","<b>Move them any time.</b>"],
+ wrong:[{kind:"bad",t:"Pins on different rungs",x:"The shelf rocks. All four on the same rung."}],notes:[]},
+
+{n:29,title:"Goose-neck lights, if fitted",lede:"Two lights on the side panels, wired behind the headboard to the transformer. Optional kit.",
+ parts:["1D","1E","2A","2B","2C"],display:"upright",dir:[-1,.7,1.2],mx:.06,my:.1,explode:{},group:{},hw:{},hwExplode:0,
+ markers:[],key:[],hardware:[["kit","2 lights, transformer, splitter, cord"]],tools:["drill, 5/64&Prime; bit",PH2],people:1,
+ steps:["<b>Remove each light&rsquo;s base cover</b> to reach the screw holes; position on the side panel.","<b>Pilot with 5/64&Prime;</b>, one screw, set the angle, then the other two.","<b>Cords behind the headboard</b> to the splitter and transformer. Flat-plug extension cord if the outlet is behind the bed."],wrong:[],notes:[]},
+
+{n:30,title:"Side toes, optional",lede:"Two panels that cover the seam between the lower and upper ends on the outside. 1&frac34;&Prime; screws from inside, through the brace and ends.",
+ parts:["1A","1B","1D","1E","1C@0","1C@1","2E","8A@0","8A@1"],display:"upright",dir:[-1,.7,1.2],mx:.06,my:.1,
+ explode:{"8A@0":[-260,0,0],"8A@1":[260,0,0]},group:{"8A@0":1,"8A@1":1},hw:{},hwExplode:0,
+ markers:[["8A@0",104,238,0,"1",-80,-40,"ink"],["1C@0",128,226,19,"2",70,-60,"ink2"]],
+ key:["side toe against the outside of the end, over the seam","four 1&frac34;&Prime; screws a side from inside, through the brace and end"],
+ hardware:[["8",S175]],tools:[SQ2],people:2,
+ steps:["<b>Open the bookcases.</b> A helper holds the toe against the outside of the end, covering the seam.","<b>Four 1&frac34;&Prime; screws a side</b> from inside, through the brace and end into the toe.","<b>Removing them later leaves holes.</b>"],
+ wrong:[],notes:["Each toe carries one &empty;3 &times; 3 mark on its long edge, centred. Purpose unconfirmed; see the fastener sheet."]},
+
+{n:31,title:"Bed frame and springs",lede:"Follow the current bed frame and spring instructions. The frame goes as far from the wall as possible, centred, and must be fastened to the wall before any spring is fitted.",
+ parts:["1A","1B","1D","1E","2A","2B","2C","2D","2E"],display:"upright",dir:[-1,.7,1.2],mx:.06,my:.1,explode:{},group:{},hw:{},hwExplode:0,
+ markers:[],key:[],hardware:[["frame","hardware cards"]],tools:["large locking pliers"],people:2,
+ steps:["<b>Centre the frame</b> left to right, as close to the front toe as possible. Remove quarter-round if wall-mounting.","<b>Frame vertical and fastened to the wall</b> before any spring.","<b>Two springs first</b> with locking pliers, mattress on, then the rest."],
+ wrong:[{kind:"bad",t:"Springs before the frame is anchored",x:"Extreme tension. The frame can snap forward. Vertical, closed, fastened to the wall, then springs one at a time."}],notes:["Spring covers are not fitted in the Boaz."]}
+];
+})();
+
+</script>
+<script>window.ASSEMBLY={"source":"v1-65 BoazV3 QBZW00-20260825160001.moz","T":19.05,"parts":[{"code":"6B","name":"Board [For FRONT of \"T\" Assembly]","L":1993,"W":77,"key":"90,270,0","M":[[0,-1,0],[0,0,-1],[1,0,0]],"anchor":[902.5,-203,53],"outline":[[0,77,0],[0,0,1],[1993,0,0],[1993,77,1]],"faces":[{"x":285,"y":38.5,"dia":5,"dep":13,"far":false},{"x":759,"y":38.5,"dia":5,"dep":13,"far":false},{"x":1234,"y":38.5,"dia":5,"dep":13,"far":false},{"x":1708,"y":38.5,"dia":5,"dep":13,"far":false}],"edges":[]},{"code":"2C","name":"[Head Board Shelf] Valance","L":1664,"W":96,"key":"90,0,0","M":[[1,0,0],[0,0,-1],[0,1,0]],"anchor":[32,495,751.72],"outline":[[0,0,1],[1664,0,0],[1664,96,1],[0,96,0]],"faces":[{"x":100,"y":48,"dia":5,"dep":19.05,"far":false},{"x":704,"y":48,"dia":5,"dep":13,"far":false},{"x":960,"y":48,"dia":5,"dep":13,"far":false},{"x":1564,"y":48,"dia":5,"dep":19.05,"far":false}],"edges":[]},{"code":"2D","name":"[Rear] Valance (Bed Cabinet)","L":1690,"W":96,"key":"90,0,0","M":[[1,0,0],[0,0,-1],[0,1,0]],"anchor":[19,495,1985.8],"outline":[[0,96,0],[0,0,0],[1690,0,0],[1690,96,1]],"faces":[{"x":34,"y":48,"dia":15,"dep":15,"far":false},{"x":311,"y":34,"dia":15,"dep":15,"far":false},{"x":695,"y":34,"dia":15,"dep":15,"far":false},{"x":995,"y":34,"dia":15,"dep":15,"far":false},{"x":1379,"y":34,"dia":15,"dep":15,"far":false},{"x":1656,"y":48,"dia":15,"dep":15,"far":false}],"edges":[{"x":0,"y":48,"dia":8,"dep":34,"hb":0},{"x":1690,"y":48,"dia":8,"dep":34,"hb":180},{"x":1379,"y":0,"dia":8,"dep":34,"hb":90},{"x":995,"y":0,"dia":8,"dep":34,"hb":90},{"x":695,"y":0,"dia":8,"dep":34,"hb":90},{"x":311,"y":0,"dia":8,"dep":34,"hb":90}]},{"code":"5A","name":"Valance [Top Front Facia]","L":1769,"W":96,"key":"90,0,0","M":[[1,0,0],[0,0,-1],[0,1,0]],"anchor":[-20.5,-230,2062],"outline":[[0,96,1],[0,0,1],[1769,0,1],[1769,96,1]],"faces":[{"x":11,"y":77,"dia":5,"dep":13,"far":false},{"x":350.5,"y":29.3,"dia":5,"dep":13,"far":false},{"x":734.5,"y":29.3,"dia":5,"dep":13,"far":false},{"x":1034.5,"y":29.3,"dia":5,"dep":13,"far":false},{"x":1418.5,"y":29.3,"dia":5,"dep":13,"far":false},{"x":1758,"y":77,"dia":5,"dep":13,"far":false}],"edges":[]},{"code":"6A","name":"Board [For SIDE of \"T\" Assembly]","L":1993,"W":96,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[873.5,-203,53],"outline":[[0,0,0],[1993,0,0],[1993,96,1],[0,96,0]],"faces":[{"x":285,"y":34,"dia":15,"dep":15,"far":false},{"x":759,"y":34,"dia":15,"dep":15,"far":false},{"x":1234,"y":34,"dia":15,"dep":15,"far":false},{"x":1708,"y":34,"dia":15,"dep":15,"far":false}],"edges":[{"x":285,"y":0,"dia":8,"dep":34,"hb":90},{"x":759,"y":0,"dia":8,"dep":34,"hb":90},{"x":1234,"y":0,"dia":8,"dep":34,"hb":90},{"x":1708,"y":0,"dia":8,"dep":34,"hb":90}]},{"code":"2E","name":"Front Toe [Kick]","L":1690,"W":228,"key":"90,0,0","M":[[1,0,0],[0,0,-1],[0,1,0]],"anchor":[19,19,0],"outline":[[0,177.5,0],[0,0,0],[1690,0,0],[1690,177.5,1],[1664,177.5,0],[1664,228,0],[26,228,0],[26,177.5,0]],"faces":[{"x":34,"y":66,"dia":15,"dep":15,"far":false},{"x":34,"y":34,"dia":15,"dep":15,"far":false},{"x":34,"y":143,"dia":15,"dep":15,"far":false},{"x":34,"y":111,"dia":15,"dep":15,"far":false},{"x":1656,"y":143,"dia":15,"dep":15,"far":false},{"x":1656,"y":111,"dia":15,"dep":15,"far":false},{"x":1656,"y":66,"dia":15,"dep":15,"far":false},{"x":1656,"y":34,"dia":15,"dep":15,"far":false}],"edges":[{"x":0,"y":34,"dia":8,"dep":34,"hb":0},{"x":0,"y":66,"dia":8,"dep":34,"hb":0},{"x":0,"y":111,"dia":8,"dep":34,"hb":0},{"x":0,"y":143,"dia":8,"dep":34,"hb":0},{"x":1690,"y":143,"dia":8,"dep":34,"hb":180},{"x":1690,"y":111,"dia":8,"dep":34,"hb":180},{"x":1690,"y":66,"dia":8,"dep":34,"hb":180},{"x":1690,"y":34,"dia":8,"dep":34,"hb":180}]},{"code":"2B","name":"Head Board","L":1690,"W":378,"key":"90,0,0","M":[[1,0,0],[0,0,-1],[0,1,0]],"anchor":[19,476,506.76],"outline":[[0,378,0],[0,0,1],[1690,0,0],[1690,378,1]],"faces":[{"x":113,"y":85,"dia":3,"dep":13,"far":false},{"x":1577,"y":85,"dia":3,"dep":13,"far":false},{"x":34,"y":25,"dia":15,"dep":15,"far":false},{"x":34,"y":281,"dia":15,"dep":15,"far":false},{"x":1656,"y":25,"dia":15,"dep":15,"far":false},{"x":1656,"y":281,"dia":15,"dep":15,"far":false}],"edges":[{"x":0,"y":25,"dia":8,"dep":34,"hb":0},{"x":0,"y":281,"dia":8,"dep":34,"hb":0},{"x":1690,"y":281,"dia":8,"dep":34,"hb":180},{"x":1690,"y":25,"dia":8,"dep":34,"hb":180}]},{"code":"1C","name":"Bottom Brace BOTBRACE","L":175,"W":453,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[38,23,49.21],"outline":[[0,453,1],[0,0,1],[175,0,1],[175,453,1]],"faces":[{"x":100,"y":98.51,"dia":5,"dep":13,"far":false},{"x":156,"y":98.51,"dia":5,"dep":13,"far":false},{"x":156,"y":162.51,"dia":5,"dep":13,"far":false},{"x":100,"y":162.51,"dia":5,"dep":13,"far":false},{"x":156,"y":290.51,"dia":5,"dep":13,"far":false},{"x":100,"y":290.51,"dia":5,"dep":13,"far":false},{"x":100,"y":354.51,"dia":5,"dep":13,"far":false},{"x":156,"y":354.51,"dia":5,"dep":13,"far":false}],"edges":[]},{"code":"1C","name":"Bottom Brace BOTBRACE","L":175,"W":453,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[1709,23,49.21],"outline":[[0,0,1],[175,0,1],[175,453,1],[0,453,1]],"faces":[{"x":156,"y":354.49,"dia":5,"dep":13,"far":false},{"x":100,"y":354.49,"dia":5,"dep":13,"far":false},{"x":100,"y":290.49,"dia":5,"dep":13,"far":false},{"x":156,"y":290.49,"dia":5,"dep":13,"far":false},{"x":100,"y":162.49,"dia":5,"dep":13,"far":false},{"x":156,"y":162.49,"dia":5,"dep":13,"far":false},{"x":156,"y":98.49,"dia":5,"dep":13,"far":false},{"x":100,"y":98.49,"dia":5,"dep":13,"far":false}],"edges":[]},{"code":"1A","name":"Finished Left End (Bed Cabinet: Lower)","L":178,"W":476,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[19,0,0],"outline":[[0,0,1],[178,0,0],[178,476,1],[0,476,0]],"faces":[{"x":20,"y":378.8,"dia":8,"dep":19.05,"far":false},{"x":20,"y":277.2,"dia":8,"dep":19.05,"far":false},{"x":20,"y":175.6,"dia":8,"dep":19.05,"far":false},{"x":20,"y":74,"dia":8,"dep":19.05,"far":false},{"x":85,"y":10.5,"dia":5,"dep":13,"far":true},{"x":117,"y":10.5,"dia":5,"dep":13,"far":true},{"x":162,"y":10.5,"dia":5,"dep":13,"far":true}],"edges":[{"x":178,"y":60,"dia":8,"dep":13,"hb":180},{"x":178,"y":204,"dia":8,"dep":13,"hb":180},{"x":178,"y":348,"dia":8,"dep":13,"hb":180},{"x":178,"y":132,"dia":8,"dep":16,"hb":180},{"x":178,"y":276,"dia":8,"dep":16,"hb":180},{"x":178,"y":420,"dia":8,"dep":16,"hb":180}]},{"code":"1B","name":"Finished Right End (Bed Cabinet: Lower)","L":178,"W":476,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[1728,0,0],"outline":[[0,0,1],[178,0,0],[178,476,1],[0,476,0]],"faces":[{"x":85,"y":10.5,"dia":5,"dep":13,"far":false},{"x":117,"y":10.5,"dia":5,"dep":13,"far":false},{"x":162,"y":10.5,"dia":5,"dep":13,"far":false},{"x":20,"y":378.8,"dia":8,"dep":19.05,"far":false},{"x":20,"y":277.2,"dia":8,"dep":19.05,"far":false},{"x":20,"y":175.6,"dia":8,"dep":19.05,"far":false},{"x":20,"y":74,"dia":8,"dep":19.05,"far":false}],"edges":[{"x":178,"y":60,"dia":8,"dep":13,"hb":180},{"x":178,"y":204,"dia":8,"dep":13,"hb":180},{"x":178,"y":348,"dia":8,"dep":13,"hb":180},{"x":178,"y":132,"dia":8,"dep":16,"hb":180},{"x":178,"y":276,"dia":8,"dep":16,"hb":180},{"x":178,"y":420,"dia":8,"dep":16,"hb":180}]},{"code":"8A","name":"SIDE TOE","L":208,"W":476,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[0,0,0],"outline":[[0,0,1],[208,0,1],[208,476,1],[0,476,1]],"faces":[],"edges":[{"x":104,"y":476,"dia":3,"dep":3,"hb":270}]},{"code":"8A","name":"SIDE TOE","L":208,"W":476,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[1747,0,0],"outline":[[0,0,1],[208,0,1],[208,476,1],[0,476,1]],"faces":[],"edges":[{"x":104,"y":476,"dia":3,"dep":3,"hb":270}]},{"code":"1D","name":"Finished Left End (Bed Cabinet: Upper)","L":1980,"W":495,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[19,0,178],"outline":[[0,0,0],[1980,0,0],[1980,495,1],[0,495,0]],"faces":[{"x":1948.25,"y":241,"dia":8,"dep":19.05,"far":false},{"x":1948.25,"y":342.6,"dia":8,"dep":19.05,"far":false},{"x":1948.25,"y":444.2,"dia":8,"dep":19.05,"far":false},{"x":16,"y":484.5,"dia":5,"dep":13,"far":false},{"x":425.74,"y":49.59,"dia":5,"dep":13,"far":false},{"x":681,"y":28.62,"dia":5,"dep":13,"far":false},{"x":1855.8,"y":10.5,"dia":5,"dep":13,"far":false},{"x":1913.3,"y":56,"dia":5,"dep":13,"far":false},{"x":1913.3,"y":184,"dia":5,"dep":13,"far":false},{"x":1913.3,"y":333,"dia":5,"dep":13,"far":false},{"x":1913.3,"y":461,"dia":5,"dep":13,"far":false},{"x":34,"y":147,"dia":15,"dep":15,"far":false},{"x":34,"y":291,"dia":15,"dep":15,"far":false},{"x":34,"y":435,"dia":15,"dep":15,"far":false},{"x":1913.3,"y":101.6,"dia":8,"dep":19.05,"far":false}],"edges":[{"x":0,"y":147,"dia":8,"dep":34,"hb":0},{"x":0,"y":291,"dia":8,"dep":34,"hb":0},{"x":0,"y":435,"dia":8,"dep":34,"hb":0},{"x":0,"y":363,"dia":8,"dep":16,"hb":0},{"x":0,"y":219,"dia":8,"dep":16,"hb":0},{"x":0,"y":75,"dia":8,"dep":16,"hb":0}]},{"code":"1E","name":"Finished Right End (Bed Cabinet: Upper)","L":1980,"W":495,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[1728,0,178],"outline":[[0,0,1],[1980,0,0],[1980,495,0],[0,495,0]],"faces":[{"x":16,"y":10.5,"dia":5,"dep":13,"far":false},{"x":425.74,"y":445.42,"dia":5,"dep":13,"far":false},{"x":681,"y":466.39,"dia":5,"dep":13,"far":false},{"x":1855.8,"y":484.5,"dia":5,"dep":13,"far":false},{"x":1913.3,"y":439,"dia":5,"dep":13,"far":false},{"x":1913.3,"y":311,"dia":5,"dep":13,"far":false},{"x":1913.3,"y":162,"dia":5,"dep":13,"far":false},{"x":1913.3,"y":34,"dia":5,"dep":13,"far":false},{"x":1948.25,"y":254,"dia":8,"dep":19.05,"far":false},{"x":1948.25,"y":152.4,"dia":8,"dep":19.05,"far":false},{"x":1948.25,"y":50.8,"dia":8,"dep":19.05,"far":false},{"x":34,"y":348,"dia":15,"dep":15,"far":false},{"x":34,"y":204,"dia":15,"dep":15,"far":false},{"x":34,"y":60,"dia":15,"dep":15,"far":false},{"x":1913.3,"y":393.4,"dia":8,"dep":19.05,"far":false}],"edges":[{"x":0,"y":348,"dia":8,"dep":34,"hb":0},{"x":0,"y":204,"dia":8,"dep":34,"hb":0},{"x":0,"y":60,"dia":8,"dep":34,"hb":0},{"x":0,"y":132,"dia":8,"dep":16,"hb":0},{"x":0,"y":276,"dia":8,"dep":16,"hb":0},{"x":0,"y":420,"dia":8,"dep":16,"hb":0}]},{"code":"5B","name":"Nailer [Side Facias]","L":96,"W":725,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[0,-230,2062],"outline":[[0,725,1],[0,0,0],[96,0,1],[96,725,0]],"faces":[{"x":77,"y":691,"dia":15,"dep":15,"far":false},{"x":29.3,"y":686.9,"dia":5,"dep":13,"far":false},{"x":29.3,"y":101.6,"dia":5,"dep":13,"far":false}],"edges":[{"x":77,"y":725,"dia":8,"dep":34,"hb":270}]},{"code":"5C","name":"Nailer [Side Facias]","L":96,"W":725,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[1747,-230,2062],"outline":[[0,0,0],[96,0,1],[96,725,0],[0,725,1]],"faces":[{"x":77,"y":34,"dia":15,"dep":15,"far":false},{"x":29.3,"y":38.1,"dia":5,"dep":13,"far":false},{"x":29.3,"y":623.4,"dia":5,"dep":13,"far":false}],"edges":[{"x":77,"y":0,"dia":8,"dep":34,"hb":90}]},{"code":"2A","name":"Boaz Top (Bed Cabinet)","L":1728,"W":725,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[0,-230,2081.8],"outline":[[0,0,0],[1728,0,0],[1728,225,0],[1709,225,0],[1709,725,0],[19,725,0],[19,225,0],[0,225,0]],"faces":[{"x":43,"y":669,"dia":15,"dep":15,"far":false},{"x":43,"y":541,"dia":15,"dep":15,"far":false},{"x":43,"y":392,"dia":15,"dep":15,"far":false},{"x":43,"y":264,"dia":15,"dep":15,"far":false},{"x":330,"y":34,"dia":15,"dep":15,"far":false},{"x":714,"y":34,"dia":15,"dep":15,"far":false},{"x":1014,"y":34,"dia":15,"dep":15,"far":false},{"x":1398,"y":34,"dia":15,"dep":15,"far":false},{"x":1685,"y":264,"dia":15,"dep":15,"far":false},{"x":1685,"y":392,"dia":15,"dep":15,"far":false},{"x":1685,"y":541,"dia":15,"dep":15,"far":false},{"x":1685,"y":669,"dia":15,"dep":15,"far":false},{"x":27,"y":100,"dia":35,"dep":19.05,"far":false},{"x":1701,"y":100,"dia":35,"dep":19.05,"far":false},{"x":330,"y":714.5,"dia":5,"dep":13,"far":true},{"x":714,"y":714.5,"dia":5,"dep":13,"far":true},{"x":1014,"y":714.5,"dia":5,"dep":13,"far":true},{"x":1398,"y":714.5,"dia":5,"dep":13,"far":true},{"x":34,"y":38.1,"dia":15,"dep":15,"far":false},{"x":1694,"y":38.1,"dia":15,"dep":15,"far":false},{"x":34,"y":623.4,"dia":15,"dep":15,"far":false},{"x":1694,"y":623.4,"dia":15,"dep":15,"far":false}],"edges":[{"x":0,"y":669,"dia":8,"dep":40,"hb":0},{"x":0,"y":541,"dia":8,"dep":40,"hb":0},{"x":0,"y":392,"dia":8,"dep":40,"hb":0},{"x":0,"y":264,"dia":8,"dep":40,"hb":0},{"x":1728,"y":264,"dia":8,"dep":40,"hb":180},{"x":1728,"y":392,"dia":8,"dep":40,"hb":180},{"x":1728,"y":541,"dia":8,"dep":40,"hb":180},{"x":1728,"y":669,"dia":8,"dep":40,"hb":180},{"x":330,"y":0,"dia":8,"dep":34,"hb":90},{"x":714,"y":0,"dia":8,"dep":34,"hb":90},{"x":1014,"y":0,"dia":8,"dep":34,"hb":90},{"x":1398,"y":0,"dia":8,"dep":34,"hb":90},{"x":0,"y":38.1,"dia":8,"dep":34,"hb":0},{"x":1728,"y":38.1,"dia":8,"dep":34,"hb":180},{"x":0,"y":623.4,"dia":8,"dep":34,"hb":0},{"x":1728,"y":623.4,"dia":8,"dep":34,"hb":180}]},{"code":"3A","name":"Finished Left End [Bk. Cases]","L":1955,"W":203,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[19,-203,72],"outline":[[0,0,1],[1955,0,0],[1955,203,1],[0,203,0]],"faces":[{"x":9.5,"y":69,"dia":5,"dep":15,"far":false},{"x":9.5,"y":165,"dia":5,"dep":15,"far":false},{"x":266,"y":10.5,"dia":5,"dep":15,"far":false},{"x":319,"y":57,"dia":5,"dep":13,"far":false},{"x":351,"y":57,"dia":5,"dep":13,"far":false},{"x":383,"y":57,"dia":5,"dep":13,"far":false},{"x":415,"y":57,"dia":5,"dep":13,"far":false},{"x":447,"y":57,"dia":5,"dep":13,"far":false},{"x":319,"y":160,"dia":5,"dep":13,"far":false},{"x":351,"y":160,"dia":5,"dep":13,"far":false},{"x":383,"y":160,"dia":5,"dep":13,"far":false},{"x":415,"y":160,"dia":5,"dep":13,"far":false},{"x":447,"y":160,"dia":5,"dep":13,"far":false},{"x":650,"y":10.5,"dia":5,"dep":15,"far":false},{"x":780.5,"y":69,"dia":5,"dep":15,"far":false},{"x":780.5,"y":165,"dia":5,"dep":15,"far":false},{"x":911,"y":10.5,"dia":5,"dep":15,"far":false},{"x":1108,"y":57,"dia":5,"dep":13,"far":false},{"x":1140,"y":57,"dia":5,"dep":13,"far":false},{"x":1172,"y":57,"dia":5,"dep":13,"far":false},{"x":1204,"y":57,"dia":5,"dep":13,"far":false},{"x":1236,"y":57,"dia":5,"dep":13,"far":false},{"x":1305,"y":10.5,"dia":5,"dep":15,"far":false},{"x":1454,"y":57,"dia":5,"dep":13,"far":false},{"x":1486,"y":57,"dia":5,"dep":13,"far":false},{"x":1518,"y":57,"dia":5,"dep":13,"far":false},{"x":1550,"y":57,"dia":5,"dep":13,"far":false},{"x":1582,"y":57,"dia":5,"dep":13,"far":false},{"x":1454,"y":160,"dia":5,"dep":13,"far":false},{"x":1486,"y":160,"dia":5,"dep":13,"far":false},{"x":1518,"y":160,"dia":5,"dep":13,"far":false},{"x":1550,"y":160,"dia":5,"dep":13,"far":false},{"x":1582,"y":160,"dia":5,"dep":13,"far":false},{"x":1108,"y":160,"dia":5,"dep":13,"far":false},{"x":1140,"y":160,"dia":5,"dep":13,"far":false},{"x":1172,"y":160,"dia":5,"dep":13,"far":false},{"x":1204,"y":160,"dia":5,"dep":13,"far":false},{"x":1236,"y":160,"dia":5,"dep":13,"far":false},{"x":1689,"y":10.5,"dia":5,"dep":15,"far":false},{"x":1945.5,"y":69,"dia":5,"dep":15,"far":false},{"x":1945.5,"y":165,"dia":5,"dep":15,"far":false},{"x":1892.5,"y":187.5,"dia":5,"dep":15,"far":false}],"edges":[]},{"code":"3B","name":"Finished Right End [Bk. Cases]","L":1955,"W":203,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[425,-203,72],"outline":[[0,0,1],[1955,0,0],[1955,203,1],[0,203,0]],"faces":[{"x":9.5,"y":134,"dia":5,"dep":15,"far":false},{"x":9.5,"y":38,"dia":5,"dep":15,"far":false},{"x":266,"y":192.5,"dia":5,"dep":15,"far":false},{"x":319,"y":146,"dia":5,"dep":13,"far":false},{"x":351,"y":146,"dia":5,"dep":13,"far":false},{"x":383,"y":146,"dia":5,"dep":13,"far":false},{"x":415,"y":146,"dia":5,"dep":13,"far":false},{"x":447,"y":146,"dia":5,"dep":13,"far":false},{"x":319,"y":43,"dia":5,"dep":13,"far":false},{"x":351,"y":43,"dia":5,"dep":13,"far":false},{"x":383,"y":43,"dia":5,"dep":13,"far":false},{"x":415,"y":43,"dia":5,"dep":13,"far":false},{"x":447,"y":43,"dia":5,"dep":13,"far":false},{"x":650,"y":192.5,"dia":5,"dep":15,"far":false},{"x":780.5,"y":134,"dia":5,"dep":15,"far":false},{"x":780.5,"y":38,"dia":5,"dep":15,"far":false},{"x":911,"y":192.5,"dia":5,"dep":15,"far":false},{"x":1108,"y":146,"dia":5,"dep":13,"far":false},{"x":1140,"y":146,"dia":5,"dep":13,"far":false},{"x":1172,"y":146,"dia":5,"dep":13,"far":false},{"x":1204,"y":146,"dia":5,"dep":13,"far":false},{"x":1236,"y":146,"dia":5,"dep":13,"far":false},{"x":1305,"y":192.5,"dia":5,"dep":15,"far":false},{"x":1454,"y":146,"dia":5,"dep":13,"far":false},{"x":1486,"y":146,"dia":5,"dep":13,"far":false},{"x":1518,"y":146,"dia":5,"dep":13,"far":false},{"x":1550,"y":146,"dia":5,"dep":13,"far":false},{"x":1582,"y":146,"dia":5,"dep":13,"far":false},{"x":1454,"y":43,"dia":5,"dep":13,"far":false},{"x":1486,"y":43,"dia":5,"dep":13,"far":false},{"x":1518,"y":43,"dia":5,"dep":13,"far":false},{"x":1550,"y":43,"dia":5,"dep":13,"far":false},{"x":1582,"y":43,"dia":5,"dep":13,"far":false},{"x":1108,"y":43,"dia":5,"dep":13,"far":false},{"x":1140,"y":43,"dia":5,"dep":13,"far":false},{"x":1172,"y":43,"dia":5,"dep":13,"far":false},{"x":1204,"y":43,"dia":5,"dep":13,"far":false},{"x":1236,"y":43,"dia":5,"dep":13,"far":false},{"x":1689,"y":192.5,"dia":5,"dep":15,"far":false},{"x":1945.5,"y":134,"dia":5,"dep":15,"far":false},{"x":1945.5,"y":38,"dia":5,"dep":15,"far":false},{"x":1892.5,"y":15.5,"dia":5,"dep":15,"far":false}],"edges":[]},{"code":"3C","name":"Interior Back","L":1955,"W":387,"key":"90,270,0","M":[[0,-1,0],[0,0,-1],[1,0,0]],"anchor":[406,0,72],"outline":[[0,387,0],[0,0,0],[1955,0,0],[1955,387,0]],"faces":[{"x":10,"y":273.5,"dia":3,"dep":19.05,"far":false},{"x":10,"y":113.5,"dia":3,"dep":19.05,"far":false},{"x":780.5,"y":273.5,"dia":3,"dep":19.05,"far":false},{"x":780.5,"y":113.5,"dia":3,"dep":19.05,"far":false},{"x":1945,"y":273.5,"dia":3,"dep":19.05,"far":false},{"x":1945,"y":113.5,"dia":3,"dep":19.05,"far":false},{"x":266,"y":34,"dia":15,"dep":15,"far":false},{"x":266,"y":353,"dia":15,"dep":15,"far":false},{"x":650,"y":353,"dia":15,"dep":15,"far":false},{"x":911,"y":353,"dia":15,"dep":15,"far":false},{"x":911,"y":34,"dia":15,"dep":15,"far":false},{"x":650,"y":34,"dia":15,"dep":15,"far":false},{"x":1305,"y":34,"dia":15,"dep":15,"far":false},{"x":1305,"y":353,"dia":15,"dep":15,"far":false},{"x":1689,"y":353,"dia":15,"dep":15,"far":false},{"x":1689,"y":34,"dia":15,"dep":15,"far":false}],"edges":[{"x":266,"y":387,"dia":8,"dep":34,"hb":270},{"x":650,"y":387,"dia":8,"dep":34,"hb":270},{"x":911,"y":387,"dia":8,"dep":34,"hb":270},{"x":1305,"y":387,"dia":8,"dep":34,"hb":270},{"x":1689,"y":387,"dia":8,"dep":34,"hb":270},{"x":1689,"y":0,"dia":8,"dep":34,"hb":90},{"x":1305,"y":0,"dia":8,"dep":34,"hb":90},{"x":911,"y":0,"dia":8,"dep":34,"hb":90},{"x":650,"y":0,"dia":8,"dep":34,"hb":90},{"x":266,"y":0,"dia":8,"dep":34,"hb":90}]},{"code":"3D","name":"Top [Bk. Cases]","L":387,"W":182,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[19,-201,2008],"outline":[[0,0,1],[387,0,0],[387,182,0],[0,182,0]],"faces":[{"x":34,"y":133,"dia":15,"dep":15,"far":false},{"x":34,"y":37,"dia":15,"dep":15,"far":false},{"x":353,"y":37,"dia":15,"dep":15,"far":false},{"x":353,"y":133,"dia":15,"dep":15,"far":false},{"x":193.5,"y":14.5,"dia":5,"dep":15,"far":true}],"edges":[{"x":0,"y":133,"dia":8,"dep":34,"hb":0},{"x":0,"y":37,"dia":8,"dep":34,"hb":0},{"x":387,"y":37,"dia":8,"dep":34,"hb":180},{"x":387,"y":133,"dia":8,"dep":34,"hb":180},{"x":273.5,"y":182,"dia":3,"dep":5,"hb":270},{"x":113.5,"y":182,"dia":3,"dep":5,"hb":270}]},{"code":"3G","name":"Deck [Inside Bk. Cases]","L":387,"W":182,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[19,-201,72],"outline":[[0,182,0],[0,0,0],[387,0,0],[387,182,1]],"faces":[{"x":34,"y":49,"dia":15,"dep":15,"far":false},{"x":34,"y":145,"dia":15,"dep":15,"far":false},{"x":353,"y":145,"dia":15,"dep":15,"far":false},{"x":353,"y":49,"dia":15,"dep":15,"far":false}],"edges":[{"x":0,"y":49,"dia":8,"dep":34,"hb":0},{"x":0,"y":145,"dia":8,"dep":34,"hb":0},{"x":387,"y":145,"dia":8,"dep":34,"hb":180},{"x":387,"y":49,"dia":8,"dep":34,"hb":180},{"x":273.5,"y":0,"dia":3,"dep":5,"hb":90},{"x":113.5,"y":0,"dia":3,"dep":5,"hb":90}]},{"code":"3F","name":"Horizontal Partition","L":387,"W":182,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[19,-201,843],"outline":[[0,182,0],[0,0,0],[387,0,0],[387,182,1]],"faces":[{"x":34,"y":49,"dia":15,"dep":15,"far":false},{"x":34,"y":145,"dia":15,"dep":15,"far":false},{"x":353,"y":145,"dia":15,"dep":15,"far":false},{"x":353,"y":49,"dia":15,"dep":15,"far":false}],"edges":[{"x":0,"y":49,"dia":8,"dep":34,"hb":0},{"x":0,"y":145,"dia":8,"dep":34,"hb":0},{"x":387,"y":145,"dia":8,"dep":34,"hb":180},{"x":387,"y":49,"dia":8,"dep":34,"hb":180},{"x":273.5,"y":0,"dia":3,"dep":5,"hb":90},{"x":113.5,"y":0,"dia":3,"dep":5,"hb":90}]},{"code":"3E","name":"Valance [Bk. Cases]","L":387,"W":87,"key":"90,0,0","M":[[1,0,0],[0,0,-1],[0,1,0]],"anchor":[19,-178,1921],"outline":[[0,87,0],[0,0,0],[387,0,0],[387,87,1]],"faces":[{"x":34,"y":43.5,"dia":15,"dep":15,"far":false},{"x":193.5,"y":34,"dia":15,"dep":15,"far":false},{"x":353,"y":43.5,"dia":15,"dep":15,"far":false}],"edges":[{"x":0,"y":43.5,"dia":8,"dep":34,"hb":0},{"x":387,"y":43.5,"dia":8,"dep":34,"hb":180},{"x":193.5,"y":0,"dia":8,"dep":34,"hb":90}]},{"code":"7A","name":"Adjustable Shelf","L":387,"W":177,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[19,-201,455],"outline":[[0,0,1],[387,0,0],[387,177,0],[0,177,0]],"faces":[],"edges":[{"x":0,"y":88.5,"dia":3,"dep":3,"hb":0}]},{"code":"7A","name":"Adjustable Shelf","L":387,"W":177,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[19,-201,1244],"outline":[[0,0,1],[387,0,0],[387,177,0],[0,177,0]],"faces":[],"edges":[{"x":0,"y":88.5,"dia":3,"dep":3,"hb":0}]},{"code":"7A","name":"Adjustable Shelf","L":387,"W":177,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[19,-201,1590],"outline":[[0,0,1],[387,0,0],[387,177,0],[0,177,0]],"faces":[],"edges":[{"x":0,"y":88.5,"dia":3,"dep":3,"hb":0}]},{"code":"4E","name":"Deck Top Left [Exterior of Bk. Cases]","L":425,"W":203,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[0,-203,2027],"outline":[[0,0,1],[425,0,1],[425,203,1],[0,203,1]],"faces":[{"x":25.992,"y":150.697,"dia":3,"dep":12,"far":false},{"x":82.994,"y":150.697,"dia":3,"dep":12,"far":false},{"x":100.496,"y":157.997,"dia":5,"dep":19.05,"far":false},{"x":25.992,"y":10.991,"dia":3,"dep":12,"far":false},{"x":82.994,"y":10.991,"dia":3,"dep":12,"far":false},{"x":100.496,"y":44.992,"dia":5,"dep":19.05,"far":false},{"x":324.505,"y":44.992,"dia":5,"dep":19.05,"far":false},{"x":324.505,"y":157.997,"dia":5,"dep":19.05,"far":false},{"x":28.992,"y":80.793,"dia":15,"dep":9,"far":false}],"edges":[]},{"code":"4D","name":"Deck Bottom Left [Exterior of Bk. Cases]","L":425,"W":203,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[0,-203,53],"outline":[[0,0,1],[425,0,1],[425,203,1],[0,203,1]],"faces":[{"x":24,"y":52.303,"dia":3,"dep":12,"far":false},{"x":81,"y":52.303,"dia":3,"dep":12,"far":false},{"x":100.495,"y":44.992,"dia":5,"dep":19.05,"far":true},{"x":24,"y":192.009,"dia":3,"dep":12,"far":false},{"x":81,"y":192.009,"dia":3,"dep":12,"far":false},{"x":100.495,"y":157.997,"dia":5,"dep":19.05,"far":true},{"x":324.504,"y":157.997,"dia":5,"dep":19.05,"far":true},{"x":324.504,"y":44.992,"dia":5,"dep":19.05,"far":true},{"x":27,"y":122.207,"dia":15,"dep":9,"far":false}],"edges":[]},{"code":"3A","name":"Finished Left End [Bk. Cases]","L":1955,"W":203,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[444,-203,72],"outline":[[0,0,1],[1955,0,0],[1955,203,1],[0,203,0]],"faces":[{"x":9.5,"y":69,"dia":5,"dep":15,"far":false},{"x":9.5,"y":165,"dia":5,"dep":15,"far":false},{"x":266,"y":10.5,"dia":5,"dep":15,"far":false},{"x":319,"y":57,"dia":5,"dep":13,"far":false},{"x":351,"y":57,"dia":5,"dep":13,"far":false},{"x":383,"y":57,"dia":5,"dep":13,"far":false},{"x":415,"y":57,"dia":5,"dep":13,"far":false},{"x":447,"y":57,"dia":5,"dep":13,"far":false},{"x":319,"y":160,"dia":5,"dep":13,"far":false},{"x":351,"y":160,"dia":5,"dep":13,"far":false},{"x":383,"y":160,"dia":5,"dep":13,"far":false},{"x":415,"y":160,"dia":5,"dep":13,"far":false},{"x":447,"y":160,"dia":5,"dep":13,"far":false},{"x":650,"y":10.5,"dia":5,"dep":15,"far":false},{"x":780.5,"y":69,"dia":5,"dep":15,"far":false},{"x":780.5,"y":165,"dia":5,"dep":15,"far":false},{"x":911,"y":10.5,"dia":5,"dep":15,"far":false},{"x":1108,"y":57,"dia":5,"dep":13,"far":false},{"x":1140,"y":57,"dia":5,"dep":13,"far":false},{"x":1172,"y":57,"dia":5,"dep":13,"far":false},{"x":1204,"y":57,"dia":5,"dep":13,"far":false},{"x":1236,"y":57,"dia":5,"dep":13,"far":false},{"x":1305,"y":10.5,"dia":5,"dep":15,"far":false},{"x":1454,"y":57,"dia":5,"dep":13,"far":false},{"x":1486,"y":57,"dia":5,"dep":13,"far":false},{"x":1518,"y":57,"dia":5,"dep":13,"far":false},{"x":1550,"y":57,"dia":5,"dep":13,"far":false},{"x":1582,"y":57,"dia":5,"dep":13,"far":false},{"x":1454,"y":160,"dia":5,"dep":13,"far":false},{"x":1486,"y":160,"dia":5,"dep":13,"far":false},{"x":1518,"y":160,"dia":5,"dep":13,"far":false},{"x":1550,"y":160,"dia":5,"dep":13,"far":false},{"x":1582,"y":160,"dia":5,"dep":13,"far":false},{"x":1108,"y":160,"dia":5,"dep":13,"far":false},{"x":1140,"y":160,"dia":5,"dep":13,"far":false},{"x":1172,"y":160,"dia":5,"dep":13,"far":false},{"x":1204,"y":160,"dia":5,"dep":13,"far":false},{"x":1236,"y":160,"dia":5,"dep":13,"far":false},{"x":1689,"y":10.5,"dia":5,"dep":15,"far":false},{"x":1945.5,"y":69,"dia":5,"dep":15,"far":false},{"x":1945.5,"y":165,"dia":5,"dep":15,"far":false},{"x":1892.5,"y":187.5,"dia":5,"dep":15,"far":false}],"edges":[]},{"code":"3B","name":"Finished Right End [Bk. Cases]","L":1955,"W":203,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[850,-203,72],"outline":[[0,0,1],[1955,0,0],[1955,203,1],[0,203,0]],"faces":[{"x":9.5,"y":134,"dia":5,"dep":15,"far":false},{"x":9.5,"y":38,"dia":5,"dep":15,"far":false},{"x":266,"y":192.5,"dia":5,"dep":15,"far":false},{"x":319,"y":146,"dia":5,"dep":13,"far":false},{"x":351,"y":146,"dia":5,"dep":13,"far":false},{"x":383,"y":146,"dia":5,"dep":13,"far":false},{"x":415,"y":146,"dia":5,"dep":13,"far":false},{"x":447,"y":146,"dia":5,"dep":13,"far":false},{"x":319,"y":43,"dia":5,"dep":13,"far":false},{"x":351,"y":43,"dia":5,"dep":13,"far":false},{"x":383,"y":43,"dia":5,"dep":13,"far":false},{"x":415,"y":43,"dia":5,"dep":13,"far":false},{"x":447,"y":43,"dia":5,"dep":13,"far":false},{"x":650,"y":192.5,"dia":5,"dep":15,"far":false},{"x":780.5,"y":134,"dia":5,"dep":15,"far":false},{"x":780.5,"y":38,"dia":5,"dep":15,"far":false},{"x":911,"y":192.5,"dia":5,"dep":15,"far":false},{"x":1108,"y":146,"dia":5,"dep":13,"far":false},{"x":1140,"y":146,"dia":5,"dep":13,"far":false},{"x":1172,"y":146,"dia":5,"dep":13,"far":false},{"x":1204,"y":146,"dia":5,"dep":13,"far":false},{"x":1236,"y":146,"dia":5,"dep":13,"far":false},{"x":1305,"y":192.5,"dia":5,"dep":15,"far":false},{"x":1454,"y":146,"dia":5,"dep":13,"far":false},{"x":1486,"y":146,"dia":5,"dep":13,"far":false},{"x":1518,"y":146,"dia":5,"dep":13,"far":false},{"x":1550,"y":146,"dia":5,"dep":13,"far":false},{"x":1582,"y":146,"dia":5,"dep":13,"far":false},{"x":1454,"y":43,"dia":5,"dep":13,"far":false},{"x":1486,"y":43,"dia":5,"dep":13,"far":false},{"x":1518,"y":43,"dia":5,"dep":13,"far":false},{"x":1550,"y":43,"dia":5,"dep":13,"far":false},{"x":1582,"y":43,"dia":5,"dep":13,"far":false},{"x":1108,"y":43,"dia":5,"dep":13,"far":false},{"x":1140,"y":43,"dia":5,"dep":13,"far":false},{"x":1172,"y":43,"dia":5,"dep":13,"far":false},{"x":1204,"y":43,"dia":5,"dep":13,"far":false},{"x":1236,"y":43,"dia":5,"dep":13,"far":false},{"x":1689,"y":192.5,"dia":5,"dep":15,"far":false},{"x":1945.5,"y":134,"dia":5,"dep":15,"far":false},{"x":1945.5,"y":38,"dia":5,"dep":15,"far":false},{"x":1892.5,"y":15.5,"dia":5,"dep":15,"far":false}],"edges":[]},{"code":"3C","name":"Interior Back","L":1955,"W":387,"key":"90,270,0","M":[[0,-1,0],[0,0,-1],[1,0,0]],"anchor":[831,0,72],"outline":[[0,387,0],[0,0,0],[1955,0,0],[1955,387,0]],"faces":[{"x":10,"y":273.5,"dia":3,"dep":19.05,"far":false},{"x":10,"y":113.5,"dia":3,"dep":19.05,"far":false},{"x":780.5,"y":273.5,"dia":3,"dep":19.05,"far":false},{"x":780.5,"y":113.5,"dia":3,"dep":19.05,"far":false},{"x":1945,"y":273.5,"dia":3,"dep":19.05,"far":false},{"x":1945,"y":113.5,"dia":3,"dep":19.05,"far":false},{"x":266,"y":34,"dia":15,"dep":15,"far":false},{"x":266,"y":353,"dia":15,"dep":15,"far":false},{"x":650,"y":353,"dia":15,"dep":15,"far":false},{"x":911,"y":353,"dia":15,"dep":15,"far":false},{"x":911,"y":34,"dia":15,"dep":15,"far":false},{"x":650,"y":34,"dia":15,"dep":15,"far":false},{"x":1305,"y":34,"dia":15,"dep":15,"far":false},{"x":1305,"y":353,"dia":15,"dep":15,"far":false},{"x":1689,"y":353,"dia":15,"dep":15,"far":false},{"x":1689,"y":34,"dia":15,"dep":15,"far":false}],"edges":[{"x":266,"y":387,"dia":8,"dep":34,"hb":270},{"x":650,"y":387,"dia":8,"dep":34,"hb":270},{"x":911,"y":387,"dia":8,"dep":34,"hb":270},{"x":1305,"y":387,"dia":8,"dep":34,"hb":270},{"x":1689,"y":387,"dia":8,"dep":34,"hb":270},{"x":1689,"y":0,"dia":8,"dep":34,"hb":90},{"x":1305,"y":0,"dia":8,"dep":34,"hb":90},{"x":911,"y":0,"dia":8,"dep":34,"hb":90},{"x":650,"y":0,"dia":8,"dep":34,"hb":90},{"x":266,"y":0,"dia":8,"dep":34,"hb":90}]},{"code":"3D","name":"Top [Bk. Cases]","L":387,"W":182,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[444,-201,2008],"outline":[[0,0,1],[387,0,0],[387,182,0],[0,182,0]],"faces":[{"x":34,"y":133,"dia":15,"dep":15,"far":false},{"x":34,"y":37,"dia":15,"dep":15,"far":false},{"x":353,"y":37,"dia":15,"dep":15,"far":false},{"x":353,"y":133,"dia":15,"dep":15,"far":false},{"x":193.5,"y":14.5,"dia":5,"dep":15,"far":true}],"edges":[{"x":0,"y":133,"dia":8,"dep":34,"hb":0},{"x":0,"y":37,"dia":8,"dep":34,"hb":0},{"x":387,"y":37,"dia":8,"dep":34,"hb":180},{"x":387,"y":133,"dia":8,"dep":34,"hb":180},{"x":273.5,"y":182,"dia":3,"dep":5,"hb":270},{"x":113.5,"y":182,"dia":3,"dep":5,"hb":270}]},{"code":"3G","name":"Deck [Inside Bk. Cases]","L":387,"W":182,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[444,-201,72],"outline":[[0,182,0],[0,0,0],[387,0,0],[387,182,1]],"faces":[{"x":34,"y":49,"dia":15,"dep":15,"far":false},{"x":34,"y":145,"dia":15,"dep":15,"far":false},{"x":353,"y":145,"dia":15,"dep":15,"far":false},{"x":353,"y":49,"dia":15,"dep":15,"far":false}],"edges":[{"x":0,"y":49,"dia":8,"dep":34,"hb":0},{"x":0,"y":145,"dia":8,"dep":34,"hb":0},{"x":387,"y":145,"dia":8,"dep":34,"hb":180},{"x":387,"y":49,"dia":8,"dep":34,"hb":180},{"x":273.5,"y":0,"dia":3,"dep":5,"hb":90},{"x":113.5,"y":0,"dia":3,"dep":5,"hb":90}]},{"code":"3F","name":"Horizontal Partition","L":387,"W":182,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[444,-201,843],"outline":[[0,182,0],[0,0,0],[387,0,0],[387,182,1]],"faces":[{"x":34,"y":49,"dia":15,"dep":15,"far":false},{"x":34,"y":145,"dia":15,"dep":15,"far":false},{"x":353,"y":145,"dia":15,"dep":15,"far":false},{"x":353,"y":49,"dia":15,"dep":15,"far":false}],"edges":[{"x":0,"y":49,"dia":8,"dep":34,"hb":0},{"x":0,"y":145,"dia":8,"dep":34,"hb":0},{"x":387,"y":145,"dia":8,"dep":34,"hb":180},{"x":387,"y":49,"dia":8,"dep":34,"hb":180},{"x":273.5,"y":0,"dia":3,"dep":5,"hb":90},{"x":113.5,"y":0,"dia":3,"dep":5,"hb":90}]},{"code":"3E","name":"Valance [Bk. Cases]","L":387,"W":87,"key":"90,0,0","M":[[1,0,0],[0,0,-1],[0,1,0]],"anchor":[444,-178,1921],"outline":[[0,87,0],[0,0,0],[387,0,0],[387,87,1]],"faces":[{"x":34,"y":43.5,"dia":15,"dep":15,"far":false},{"x":193.5,"y":34,"dia":15,"dep":15,"far":false},{"x":353,"y":43.5,"dia":15,"dep":15,"far":false}],"edges":[{"x":0,"y":43.5,"dia":8,"dep":34,"hb":0},{"x":387,"y":43.5,"dia":8,"dep":34,"hb":180},{"x":193.5,"y":0,"dia":8,"dep":34,"hb":90}]},{"code":"7A","name":"Adjustable Shelf","L":387,"W":177,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[444,-201,455],"outline":[[0,0,1],[387,0,0],[387,177,0],[0,177,0]],"faces":[],"edges":[{"x":0,"y":88.5,"dia":3,"dep":3,"hb":0}]},{"code":"7A","name":"Adjustable Shelf","L":387,"W":177,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[444,-201,1244],"outline":[[0,0,1],[387,0,0],[387,177,0],[0,177,0]],"faces":[],"edges":[{"x":0,"y":88.5,"dia":3,"dep":3,"hb":0}]},{"code":"7A","name":"Adjustable Shelf","L":387,"W":177,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[444,-201,1590],"outline":[[0,0,1],[387,0,0],[387,177,0],[0,177,0]],"faces":[],"edges":[{"x":0,"y":88.5,"dia":3,"dep":3,"hb":0}]},{"code":"4C","name":"Deck Center [Exterior of Bk. Cases]","L":425,"W":203,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[425,-203,2027],"outline":[[0,203,1],[0,0,1],[425,0,1],[425,203,1]],"faces":[{"x":100.495,"y":158.008,"dia":5,"dep":19.05,"far":false},{"x":100.495,"y":45.003,"dia":5,"dep":19.05,"far":false},{"x":324.504,"y":45.003,"dia":5,"dep":19.05,"far":false},{"x":324.504,"y":158.008,"dia":5,"dep":19.05,"far":false}],"edges":[]},{"code":"4C","name":"Deck Center [Exterior of Bk. Cases]","L":425,"W":203,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[425,-203,53],"outline":[[0,203,1],[0,0,1],[425,0,1],[425,203,1]],"faces":[{"x":100.495,"y":158.008,"dia":5,"dep":19.05,"far":false},{"x":100.495,"y":45.003,"dia":5,"dep":19.05,"far":false},{"x":324.504,"y":45.003,"dia":5,"dep":19.05,"far":false},{"x":324.504,"y":158.008,"dia":5,"dep":19.05,"far":false}],"edges":[]},{"code":"3A","name":"Finished Left End [Bk. Cases]","L":1955,"W":203,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[897,-203,72],"outline":[[0,0,1],[1955,0,0],[1955,203,1],[0,203,0]],"faces":[{"x":9.5,"y":69,"dia":5,"dep":15,"far":false},{"x":9.5,"y":165,"dia":5,"dep":15,"far":false},{"x":266,"y":10.5,"dia":5,"dep":15,"far":false},{"x":319,"y":57,"dia":5,"dep":13,"far":false},{"x":351,"y":57,"dia":5,"dep":13,"far":false},{"x":383,"y":57,"dia":5,"dep":13,"far":false},{"x":415,"y":57,"dia":5,"dep":13,"far":false},{"x":447,"y":57,"dia":5,"dep":13,"far":false},{"x":319,"y":160,"dia":5,"dep":13,"far":false},{"x":351,"y":160,"dia":5,"dep":13,"far":false},{"x":383,"y":160,"dia":5,"dep":13,"far":false},{"x":415,"y":160,"dia":5,"dep":13,"far":false},{"x":447,"y":160,"dia":5,"dep":13,"far":false},{"x":650,"y":10.5,"dia":5,"dep":15,"far":false},{"x":780.5,"y":69,"dia":5,"dep":15,"far":false},{"x":780.5,"y":165,"dia":5,"dep":15,"far":false},{"x":911,"y":10.5,"dia":5,"dep":15,"far":false},{"x":1108,"y":57,"dia":5,"dep":13,"far":false},{"x":1140,"y":57,"dia":5,"dep":13,"far":false},{"x":1172,"y":57,"dia":5,"dep":13,"far":false},{"x":1204,"y":57,"dia":5,"dep":13,"far":false},{"x":1236,"y":57,"dia":5,"dep":13,"far":false},{"x":1305,"y":10.5,"dia":5,"dep":15,"far":false},{"x":1454,"y":57,"dia":5,"dep":13,"far":false},{"x":1486,"y":57,"dia":5,"dep":13,"far":false},{"x":1518,"y":57,"dia":5,"dep":13,"far":false},{"x":1550,"y":57,"dia":5,"dep":13,"far":false},{"x":1582,"y":57,"dia":5,"dep":13,"far":false},{"x":1454,"y":160,"dia":5,"dep":13,"far":false},{"x":1486,"y":160,"dia":5,"dep":13,"far":false},{"x":1518,"y":160,"dia":5,"dep":13,"far":false},{"x":1550,"y":160,"dia":5,"dep":13,"far":false},{"x":1582,"y":160,"dia":5,"dep":13,"far":false},{"x":1108,"y":160,"dia":5,"dep":13,"far":false},{"x":1140,"y":160,"dia":5,"dep":13,"far":false},{"x":1172,"y":160,"dia":5,"dep":13,"far":false},{"x":1204,"y":160,"dia":5,"dep":13,"far":false},{"x":1236,"y":160,"dia":5,"dep":13,"far":false},{"x":1689,"y":10.5,"dia":5,"dep":15,"far":false},{"x":1945.5,"y":69,"dia":5,"dep":15,"far":false},{"x":1945.5,"y":165,"dia":5,"dep":15,"far":false},{"x":1892.5,"y":187.5,"dia":5,"dep":15,"far":false}],"edges":[]},{"code":"3B","name":"Finished Right End [Bk. Cases]","L":1955,"W":203,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[1303,-203,72],"outline":[[0,0,1],[1955,0,0],[1955,203,1],[0,203,0]],"faces":[{"x":9.5,"y":134,"dia":5,"dep":15,"far":false},{"x":9.5,"y":38,"dia":5,"dep":15,"far":false},{"x":266,"y":192.5,"dia":5,"dep":15,"far":false},{"x":319,"y":146,"dia":5,"dep":13,"far":false},{"x":351,"y":146,"dia":5,"dep":13,"far":false},{"x":383,"y":146,"dia":5,"dep":13,"far":false},{"x":415,"y":146,"dia":5,"dep":13,"far":false},{"x":447,"y":146,"dia":5,"dep":13,"far":false},{"x":319,"y":43,"dia":5,"dep":13,"far":false},{"x":351,"y":43,"dia":5,"dep":13,"far":false},{"x":383,"y":43,"dia":5,"dep":13,"far":false},{"x":415,"y":43,"dia":5,"dep":13,"far":false},{"x":447,"y":43,"dia":5,"dep":13,"far":false},{"x":650,"y":192.5,"dia":5,"dep":15,"far":false},{"x":780.5,"y":134,"dia":5,"dep":15,"far":false},{"x":780.5,"y":38,"dia":5,"dep":15,"far":false},{"x":911,"y":192.5,"dia":5,"dep":15,"far":false},{"x":1108,"y":146,"dia":5,"dep":13,"far":false},{"x":1140,"y":146,"dia":5,"dep":13,"far":false},{"x":1172,"y":146,"dia":5,"dep":13,"far":false},{"x":1204,"y":146,"dia":5,"dep":13,"far":false},{"x":1236,"y":146,"dia":5,"dep":13,"far":false},{"x":1305,"y":192.5,"dia":5,"dep":15,"far":false},{"x":1454,"y":146,"dia":5,"dep":13,"far":false},{"x":1486,"y":146,"dia":5,"dep":13,"far":false},{"x":1518,"y":146,"dia":5,"dep":13,"far":false},{"x":1550,"y":146,"dia":5,"dep":13,"far":false},{"x":1582,"y":146,"dia":5,"dep":13,"far":false},{"x":1454,"y":43,"dia":5,"dep":13,"far":false},{"x":1486,"y":43,"dia":5,"dep":13,"far":false},{"x":1518,"y":43,"dia":5,"dep":13,"far":false},{"x":1550,"y":43,"dia":5,"dep":13,"far":false},{"x":1582,"y":43,"dia":5,"dep":13,"far":false},{"x":1108,"y":43,"dia":5,"dep":13,"far":false},{"x":1140,"y":43,"dia":5,"dep":13,"far":false},{"x":1172,"y":43,"dia":5,"dep":13,"far":false},{"x":1204,"y":43,"dia":5,"dep":13,"far":false},{"x":1236,"y":43,"dia":5,"dep":13,"far":false},{"x":1689,"y":192.5,"dia":5,"dep":15,"far":false},{"x":1945.5,"y":134,"dia":5,"dep":15,"far":false},{"x":1945.5,"y":38,"dia":5,"dep":15,"far":false},{"x":1892.5,"y":15.5,"dia":5,"dep":15,"far":false}],"edges":[]},{"code":"3C","name":"Interior Back","L":1955,"W":387,"key":"90,270,0","M":[[0,-1,0],[0,0,-1],[1,0,0]],"anchor":[1284,0,72],"outline":[[0,387,0],[0,0,0],[1955,0,0],[1955,387,0]],"faces":[{"x":10,"y":273.5,"dia":3,"dep":19.05,"far":false},{"x":10,"y":113.5,"dia":3,"dep":19.05,"far":false},{"x":780.5,"y":273.5,"dia":3,"dep":19.05,"far":false},{"x":780.5,"y":113.5,"dia":3,"dep":19.05,"far":false},{"x":1945,"y":273.5,"dia":3,"dep":19.05,"far":false},{"x":1945,"y":113.5,"dia":3,"dep":19.05,"far":false},{"x":266,"y":34,"dia":15,"dep":15,"far":false},{"x":266,"y":353,"dia":15,"dep":15,"far":false},{"x":650,"y":353,"dia":15,"dep":15,"far":false},{"x":911,"y":353,"dia":15,"dep":15,"far":false},{"x":911,"y":34,"dia":15,"dep":15,"far":false},{"x":650,"y":34,"dia":15,"dep":15,"far":false},{"x":1305,"y":34,"dia":15,"dep":15,"far":false},{"x":1305,"y":353,"dia":15,"dep":15,"far":false},{"x":1689,"y":353,"dia":15,"dep":15,"far":false},{"x":1689,"y":34,"dia":15,"dep":15,"far":false}],"edges":[{"x":266,"y":387,"dia":8,"dep":34,"hb":270},{"x":650,"y":387,"dia":8,"dep":34,"hb":270},{"x":911,"y":387,"dia":8,"dep":34,"hb":270},{"x":1305,"y":387,"dia":8,"dep":34,"hb":270},{"x":1689,"y":387,"dia":8,"dep":34,"hb":270},{"x":1689,"y":0,"dia":8,"dep":34,"hb":90},{"x":1305,"y":0,"dia":8,"dep":34,"hb":90},{"x":911,"y":0,"dia":8,"dep":34,"hb":90},{"x":650,"y":0,"dia":8,"dep":34,"hb":90},{"x":266,"y":0,"dia":8,"dep":34,"hb":90}]},{"code":"3D","name":"Top [Bk. Cases]","L":387,"W":182,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[897,-201,2008],"outline":[[0,0,1],[387,0,0],[387,182,0],[0,182,0]],"faces":[{"x":34,"y":133,"dia":15,"dep":15,"far":false},{"x":34,"y":37,"dia":15,"dep":15,"far":false},{"x":353,"y":37,"dia":15,"dep":15,"far":false},{"x":353,"y":133,"dia":15,"dep":15,"far":false},{"x":193.5,"y":14.5,"dia":5,"dep":15,"far":true}],"edges":[{"x":0,"y":133,"dia":8,"dep":34,"hb":0},{"x":0,"y":37,"dia":8,"dep":34,"hb":0},{"x":387,"y":37,"dia":8,"dep":34,"hb":180},{"x":387,"y":133,"dia":8,"dep":34,"hb":180},{"x":273.5,"y":182,"dia":3,"dep":5,"hb":270},{"x":113.5,"y":182,"dia":3,"dep":5,"hb":270}]},{"code":"3G","name":"Deck [Inside Bk. Cases]","L":387,"W":182,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[897,-201,72],"outline":[[0,182,0],[0,0,0],[387,0,0],[387,182,1]],"faces":[{"x":34,"y":49,"dia":15,"dep":15,"far":false},{"x":34,"y":145,"dia":15,"dep":15,"far":false},{"x":353,"y":145,"dia":15,"dep":15,"far":false},{"x":353,"y":49,"dia":15,"dep":15,"far":false}],"edges":[{"x":0,"y":49,"dia":8,"dep":34,"hb":0},{"x":0,"y":145,"dia":8,"dep":34,"hb":0},{"x":387,"y":145,"dia":8,"dep":34,"hb":180},{"x":387,"y":49,"dia":8,"dep":34,"hb":180},{"x":273.5,"y":0,"dia":3,"dep":5,"hb":90},{"x":113.5,"y":0,"dia":3,"dep":5,"hb":90}]},{"code":"3F","name":"Horizontal Partition","L":387,"W":182,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[897,-201,843],"outline":[[0,182,0],[0,0,0],[387,0,0],[387,182,1]],"faces":[{"x":34,"y":49,"dia":15,"dep":15,"far":false},{"x":34,"y":145,"dia":15,"dep":15,"far":false},{"x":353,"y":145,"dia":15,"dep":15,"far":false},{"x":353,"y":49,"dia":15,"dep":15,"far":false}],"edges":[{"x":0,"y":49,"dia":8,"dep":34,"hb":0},{"x":0,"y":145,"dia":8,"dep":34,"hb":0},{"x":387,"y":145,"dia":8,"dep":34,"hb":180},{"x":387,"y":49,"dia":8,"dep":34,"hb":180},{"x":273.5,"y":0,"dia":3,"dep":5,"hb":90},{"x":113.5,"y":0,"dia":3,"dep":5,"hb":90}]},{"code":"3E","name":"Valance [Bk. Cases]","L":387,"W":87,"key":"90,0,0","M":[[1,0,0],[0,0,-1],[0,1,0]],"anchor":[897,-178,1921],"outline":[[0,87,0],[0,0,0],[387,0,0],[387,87,1]],"faces":[{"x":34,"y":43.5,"dia":15,"dep":15,"far":false},{"x":193.5,"y":34,"dia":15,"dep":15,"far":false},{"x":353,"y":43.5,"dia":15,"dep":15,"far":false}],"edges":[{"x":0,"y":43.5,"dia":8,"dep":34,"hb":0},{"x":387,"y":43.5,"dia":8,"dep":34,"hb":180},{"x":193.5,"y":0,"dia":8,"dep":34,"hb":90}]},{"code":"7A","name":"Adjustable Shelf","L":387,"W":177,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[897,-201,455],"outline":[[0,0,1],[387,0,0],[387,177,0],[0,177,0]],"faces":[],"edges":[{"x":0,"y":88.5,"dia":3,"dep":3,"hb":0}]},{"code":"7A","name":"Adjustable Shelf","L":387,"W":177,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[897,-201,1244],"outline":[[0,0,1],[387,0,0],[387,177,0],[0,177,0]],"faces":[],"edges":[{"x":0,"y":88.5,"dia":3,"dep":3,"hb":0}]},{"code":"7A","name":"Adjustable Shelf","L":387,"W":177,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[897,-201,1590],"outline":[[0,0,1],[387,0,0],[387,177,0],[0,177,0]],"faces":[],"edges":[{"x":0,"y":88.5,"dia":3,"dep":3,"hb":0}]},{"code":"4C","name":"Deck Center [Exterior of Bk. Cases]","L":425,"W":203,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[878,-203,2027],"outline":[[0,203,1],[0,0,1],[425,0,1],[425,203,1]],"faces":[{"x":100.495,"y":158.008,"dia":5,"dep":19.05,"far":false},{"x":100.495,"y":45.003,"dia":5,"dep":19.05,"far":false},{"x":324.504,"y":45.003,"dia":5,"dep":19.05,"far":false},{"x":324.504,"y":158.008,"dia":5,"dep":19.05,"far":false}],"edges":[]},{"code":"4C","name":"Deck Center [Exterior of Bk. Cases]","L":425,"W":203,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[878,-203,53],"outline":[[0,203,1],[0,0,1],[425,0,1],[425,203,1]],"faces":[{"x":100.495,"y":158.008,"dia":5,"dep":19.05,"far":false},{"x":100.495,"y":45.003,"dia":5,"dep":19.05,"far":false},{"x":324.504,"y":45.003,"dia":5,"dep":19.05,"far":false},{"x":324.504,"y":158.008,"dia":5,"dep":19.05,"far":false}],"edges":[]},{"code":"3A","name":"Finished Left End [Bk. Cases]","L":1955,"W":203,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[1322,-203,72],"outline":[[0,0,1],[1955,0,0],[1955,203,1],[0,203,0]],"faces":[{"x":9.5,"y":69,"dia":5,"dep":15,"far":false},{"x":9.5,"y":165,"dia":5,"dep":15,"far":false},{"x":266,"y":10.5,"dia":5,"dep":15,"far":false},{"x":319,"y":57,"dia":5,"dep":13,"far":false},{"x":351,"y":57,"dia":5,"dep":13,"far":false},{"x":383,"y":57,"dia":5,"dep":13,"far":false},{"x":415,"y":57,"dia":5,"dep":13,"far":false},{"x":447,"y":57,"dia":5,"dep":13,"far":false},{"x":319,"y":160,"dia":5,"dep":13,"far":false},{"x":351,"y":160,"dia":5,"dep":13,"far":false},{"x":383,"y":160,"dia":5,"dep":13,"far":false},{"x":415,"y":160,"dia":5,"dep":13,"far":false},{"x":447,"y":160,"dia":5,"dep":13,"far":false},{"x":650,"y":10.5,"dia":5,"dep":15,"far":false},{"x":780.5,"y":69,"dia":5,"dep":15,"far":false},{"x":780.5,"y":165,"dia":5,"dep":15,"far":false},{"x":911,"y":10.5,"dia":5,"dep":15,"far":false},{"x":1108,"y":57,"dia":5,"dep":13,"far":false},{"x":1140,"y":57,"dia":5,"dep":13,"far":false},{"x":1172,"y":57,"dia":5,"dep":13,"far":false},{"x":1204,"y":57,"dia":5,"dep":13,"far":false},{"x":1236,"y":57,"dia":5,"dep":13,"far":false},{"x":1305,"y":10.5,"dia":5,"dep":15,"far":false},{"x":1454,"y":57,"dia":5,"dep":13,"far":false},{"x":1486,"y":57,"dia":5,"dep":13,"far":false},{"x":1518,"y":57,"dia":5,"dep":13,"far":false},{"x":1550,"y":57,"dia":5,"dep":13,"far":false},{"x":1582,"y":57,"dia":5,"dep":13,"far":false},{"x":1454,"y":160,"dia":5,"dep":13,"far":false},{"x":1486,"y":160,"dia":5,"dep":13,"far":false},{"x":1518,"y":160,"dia":5,"dep":13,"far":false},{"x":1550,"y":160,"dia":5,"dep":13,"far":false},{"x":1582,"y":160,"dia":5,"dep":13,"far":false},{"x":1108,"y":160,"dia":5,"dep":13,"far":false},{"x":1140,"y":160,"dia":5,"dep":13,"far":false},{"x":1172,"y":160,"dia":5,"dep":13,"far":false},{"x":1204,"y":160,"dia":5,"dep":13,"far":false},{"x":1236,"y":160,"dia":5,"dep":13,"far":false},{"x":1689,"y":10.5,"dia":5,"dep":15,"far":false},{"x":1945.5,"y":69,"dia":5,"dep":15,"far":false},{"x":1945.5,"y":165,"dia":5,"dep":15,"far":false},{"x":1892.5,"y":187.5,"dia":5,"dep":15,"far":false}],"edges":[]},{"code":"3B","name":"Finished Right End [Bk. Cases]","L":1955,"W":203,"key":"0,270,0","M":[[0,0,-1],[0,1,0],[1,0,0]],"anchor":[1728,-203,72],"outline":[[0,0,1],[1955,0,0],[1955,203,1],[0,203,0]],"faces":[{"x":9.5,"y":134,"dia":5,"dep":15,"far":false},{"x":9.5,"y":38,"dia":5,"dep":15,"far":false},{"x":266,"y":192.5,"dia":5,"dep":15,"far":false},{"x":319,"y":146,"dia":5,"dep":13,"far":false},{"x":351,"y":146,"dia":5,"dep":13,"far":false},{"x":383,"y":146,"dia":5,"dep":13,"far":false},{"x":415,"y":146,"dia":5,"dep":13,"far":false},{"x":447,"y":146,"dia":5,"dep":13,"far":false},{"x":319,"y":43,"dia":5,"dep":13,"far":false},{"x":351,"y":43,"dia":5,"dep":13,"far":false},{"x":383,"y":43,"dia":5,"dep":13,"far":false},{"x":415,"y":43,"dia":5,"dep":13,"far":false},{"x":447,"y":43,"dia":5,"dep":13,"far":false},{"x":650,"y":192.5,"dia":5,"dep":15,"far":false},{"x":780.5,"y":134,"dia":5,"dep":15,"far":false},{"x":780.5,"y":38,"dia":5,"dep":15,"far":false},{"x":911,"y":192.5,"dia":5,"dep":15,"far":false},{"x":1108,"y":146,"dia":5,"dep":13,"far":false},{"x":1140,"y":146,"dia":5,"dep":13,"far":false},{"x":1172,"y":146,"dia":5,"dep":13,"far":false},{"x":1204,"y":146,"dia":5,"dep":13,"far":false},{"x":1236,"y":146,"dia":5,"dep":13,"far":false},{"x":1305,"y":192.5,"dia":5,"dep":15,"far":false},{"x":1454,"y":146,"dia":5,"dep":13,"far":false},{"x":1486,"y":146,"dia":5,"dep":13,"far":false},{"x":1518,"y":146,"dia":5,"dep":13,"far":false},{"x":1550,"y":146,"dia":5,"dep":13,"far":false},{"x":1582,"y":146,"dia":5,"dep":13,"far":false},{"x":1454,"y":43,"dia":5,"dep":13,"far":false},{"x":1486,"y":43,"dia":5,"dep":13,"far":false},{"x":1518,"y":43,"dia":5,"dep":13,"far":false},{"x":1550,"y":43,"dia":5,"dep":13,"far":false},{"x":1582,"y":43,"dia":5,"dep":13,"far":false},{"x":1108,"y":43,"dia":5,"dep":13,"far":false},{"x":1140,"y":43,"dia":5,"dep":13,"far":false},{"x":1172,"y":43,"dia":5,"dep":13,"far":false},{"x":1204,"y":43,"dia":5,"dep":13,"far":false},{"x":1236,"y":43,"dia":5,"dep":13,"far":false},{"x":1689,"y":192.5,"dia":5,"dep":15,"far":false},{"x":1945.5,"y":134,"dia":5,"dep":15,"far":false},{"x":1945.5,"y":38,"dia":5,"dep":15,"far":false},{"x":1892.5,"y":15.5,"dia":5,"dep":15,"far":false}],"edges":[]},{"code":"3C","name":"Interior Back","L":1955,"W":387,"key":"90,270,0","M":[[0,-1,0],[0,0,-1],[1,0,0]],"anchor":[1709,0,72],"outline":[[0,387,0],[0,0,0],[1955,0,0],[1955,387,0]],"faces":[{"x":10,"y":273.5,"dia":3,"dep":19.05,"far":false},{"x":10,"y":113.5,"dia":3,"dep":19.05,"far":false},{"x":780.5,"y":273.5,"dia":3,"dep":19.05,"far":false},{"x":780.5,"y":113.5,"dia":3,"dep":19.05,"far":false},{"x":1945,"y":273.5,"dia":3,"dep":19.05,"far":false},{"x":1945,"y":113.5,"dia":3,"dep":19.05,"far":false},{"x":266,"y":34,"dia":15,"dep":15,"far":false},{"x":266,"y":353,"dia":15,"dep":15,"far":false},{"x":650,"y":353,"dia":15,"dep":15,"far":false},{"x":911,"y":353,"dia":15,"dep":15,"far":false},{"x":911,"y":34,"dia":15,"dep":15,"far":false},{"x":650,"y":34,"dia":15,"dep":15,"far":false},{"x":1305,"y":34,"dia":15,"dep":15,"far":false},{"x":1305,"y":353,"dia":15,"dep":15,"far":false},{"x":1689,"y":353,"dia":15,"dep":15,"far":false},{"x":1689,"y":34,"dia":15,"dep":15,"far":false}],"edges":[{"x":266,"y":387,"dia":8,"dep":34,"hb":270},{"x":650,"y":387,"dia":8,"dep":34,"hb":270},{"x":911,"y":387,"dia":8,"dep":34,"hb":270},{"x":1305,"y":387,"dia":8,"dep":34,"hb":270},{"x":1689,"y":387,"dia":8,"dep":34,"hb":270},{"x":1689,"y":0,"dia":8,"dep":34,"hb":90},{"x":1305,"y":0,"dia":8,"dep":34,"hb":90},{"x":911,"y":0,"dia":8,"dep":34,"hb":90},{"x":650,"y":0,"dia":8,"dep":34,"hb":90},{"x":266,"y":0,"dia":8,"dep":34,"hb":90}]},{"code":"3D","name":"Top [Bk. Cases]","L":387,"W":182,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[1322,-201,2008],"outline":[[0,0,1],[387,0,0],[387,182,0],[0,182,0]],"faces":[{"x":34,"y":133,"dia":15,"dep":15,"far":false},{"x":34,"y":37,"dia":15,"dep":15,"far":false},{"x":353,"y":37,"dia":15,"dep":15,"far":false},{"x":353,"y":133,"dia":15,"dep":15,"far":false},{"x":193.5,"y":14.5,"dia":5,"dep":15,"far":true}],"edges":[{"x":0,"y":133,"dia":8,"dep":34,"hb":0},{"x":0,"y":37,"dia":8,"dep":34,"hb":0},{"x":387,"y":37,"dia":8,"dep":34,"hb":180},{"x":387,"y":133,"dia":8,"dep":34,"hb":180},{"x":273.5,"y":182,"dia":3,"dep":5,"hb":270},{"x":113.5,"y":182,"dia":3,"dep":5,"hb":270}]},{"code":"3G","name":"Deck [Inside Bk. Cases]","L":387,"W":182,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[1322,-201,72],"outline":[[0,182,0],[0,0,0],[387,0,0],[387,182,1]],"faces":[{"x":34,"y":49,"dia":15,"dep":15,"far":false},{"x":34,"y":145,"dia":15,"dep":15,"far":false},{"x":353,"y":145,"dia":15,"dep":15,"far":false},{"x":353,"y":49,"dia":15,"dep":15,"far":false}],"edges":[{"x":0,"y":49,"dia":8,"dep":34,"hb":0},{"x":0,"y":145,"dia":8,"dep":34,"hb":0},{"x":387,"y":145,"dia":8,"dep":34,"hb":180},{"x":387,"y":49,"dia":8,"dep":34,"hb":180},{"x":273.5,"y":0,"dia":3,"dep":5,"hb":90},{"x":113.5,"y":0,"dia":3,"dep":5,"hb":90}]},{"code":"3F","name":"Horizontal Partition","L":387,"W":182,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[1322,-201,843],"outline":[[0,182,0],[0,0,0],[387,0,0],[387,182,1]],"faces":[{"x":34,"y":49,"dia":15,"dep":15,"far":false},{"x":34,"y":145,"dia":15,"dep":15,"far":false},{"x":353,"y":145,"dia":15,"dep":15,"far":false},{"x":353,"y":49,"dia":15,"dep":15,"far":false}],"edges":[{"x":0,"y":49,"dia":8,"dep":34,"hb":0},{"x":0,"y":145,"dia":8,"dep":34,"hb":0},{"x":387,"y":145,"dia":8,"dep":34,"hb":180},{"x":387,"y":49,"dia":8,"dep":34,"hb":180},{"x":273.5,"y":0,"dia":3,"dep":5,"hb":90},{"x":113.5,"y":0,"dia":3,"dep":5,"hb":90}]},{"code":"3E","name":"Valance [Bk. Cases]","L":387,"W":87,"key":"90,0,0","M":[[1,0,0],[0,0,-1],[0,1,0]],"anchor":[1322,-178,1921],"outline":[[0,87,0],[0,0,0],[387,0,0],[387,87,1]],"faces":[{"x":34,"y":43.5,"dia":15,"dep":15,"far":false},{"x":193.5,"y":34,"dia":15,"dep":15,"far":false},{"x":353,"y":43.5,"dia":15,"dep":15,"far":false}],"edges":[{"x":0,"y":43.5,"dia":8,"dep":34,"hb":0},{"x":387,"y":43.5,"dia":8,"dep":34,"hb":180},{"x":193.5,"y":0,"dia":8,"dep":34,"hb":90}]},{"code":"7A","name":"Adjustable Shelf","L":387,"W":177,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[1322,-201,455],"outline":[[0,0,1],[387,0,0],[387,177,0],[0,177,0]],"faces":[],"edges":[{"x":0,"y":88.5,"dia":3,"dep":3,"hb":0}]},{"code":"7A","name":"Adjustable Shelf","L":387,"W":177,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[1322,-201,1244],"outline":[[0,0,1],[387,0,0],[387,177,0],[0,177,0]],"faces":[],"edges":[{"x":0,"y":88.5,"dia":3,"dep":3,"hb":0}]},{"code":"7A","name":"Adjustable Shelf","L":387,"W":177,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[1322,-201,1590],"outline":[[0,0,1],[387,0,0],[387,177,0],[0,177,0]],"faces":[],"edges":[{"x":0,"y":88.5,"dia":3,"dep":3,"hb":0}]},{"code":"4B","name":"Deck Top Right [Exterior of Bk. Cases]","L":425,"W":203,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[1303,-203,2027],"outline":[[0,0,1],[425,0,1],[425,203,1],[0,203,1]],"faces":[{"x":100.496,"y":157.997,"dia":5,"dep":19.05,"far":false},{"x":100.496,"y":44.992,"dia":5,"dep":19.05,"far":false},{"x":324.505,"y":44.992,"dia":5,"dep":19.05,"far":false},{"x":342.006,"y":10.991,"dia":3,"dep":12,"far":false},{"x":399.008,"y":10.991,"dia":3,"dep":12,"far":false},{"x":399.008,"y":150.697,"dia":3,"dep":12,"far":false},{"x":342.006,"y":150.697,"dia":3,"dep":12,"far":false},{"x":324.505,"y":157.997,"dia":5,"dep":19.05,"far":false},{"x":396.008,"y":80.793,"dia":15,"dep":9,"far":false}],"edges":[]},{"code":"4A","name":"Deck Bottom Right [Exterior of Bk. Cases]","L":425,"W":203,"key":"0,0,0","M":[[1,0,0],[0,1,0],[0,0,1]],"anchor":[1303,-203,53],"outline":[[0,0,1],[425,0,1],[425,203,1],[0,203,1]],"faces":[{"x":100.495,"y":44.992,"dia":5,"dep":19.05,"far":true},{"x":100.495,"y":157.997,"dia":5,"dep":19.05,"far":true},{"x":324.504,"y":157.997,"dia":5,"dep":19.05,"far":true},{"x":344,"y":192.009,"dia":3,"dep":12,"far":false},{"x":401,"y":192.009,"dia":3,"dep":12,"far":false},{"x":401,"y":52.303,"dia":3,"dep":12,"far":false},{"x":344,"y":52.303,"dia":3,"dep":12,"far":false},{"x":324.504,"y":44.992,"dia":5,"dep":19.05,"far":true},{"x":398,"y":122.207,"dia":15,"dep":9,"far":false}],"edges":[]}]};</script>
+<script>
+/* Builds the step sections from BOAZ_STEPS and renders them with BoazAsm. */
+(function(){
+"use strict";
+var T=window.THREE,B=window.Boaz3D,A=window.BoazAsm,STEPS=window.BOAZ_STEPS;if(!T||!B||!A||!STEPS)return;
+A.load(window.ASSEMBLY);
+function cssVar(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()||"#888";}
+function C(){return{ink:cssVar("--ink"),ink2:cssVar("--ink-2"),face:cssVar("--face"),edge:cssVar("--edge"),ok:cssVar("--ok"),flag:cssVar("--flag"),bg:cssVar("--panel")};}
+/* instances: code@i sorted by anchor x, then z, then y */
+var byCode={};A.parts().forEach(function(p){(byCode[p.code]=byCode[p.code]||[]).push(p);});
+Object.keys(byCode).forEach(function(k){byCode[k].sort(function(a,b){return (a.anchor[0]-b.anchor[0])||(a.anchor[2]-b.anchor[2])||(a.anchor[1]-b.anchor[1]);});byCode[k].forEach(function(p,i){p.inst=i;p.id=k+"@"+i;});});
+function resolve(ref){var m=/^([0-9][A-Z])(?:@(\d+))?$/.exec(ref);if(!m)return[];var list=byCode[m[1]]||[];return m[2]===undefined?list:list.filter(function(p){return p.inst===+m[2];});}
+function lookup(map,p){if(!map)return null;return map[p.id]!==undefined?map[p.id]:(map[p.code]!==undefined?map[p.code]:null);}
+function screwSel(sel){return function(h){if(sel==="d5")return h.dia===5;if(sel==="d3")return h.dia===3;if(sel==="d8")return h.dia===8;return false;};}
+function boxCentre(o){return new T.Box3().setFromObject(o).getCenter(new T.Vector3());}
+function turnPart(g,axis,p){var c0=boxCentre(g),ax=A.localDir(p,axis==="x"?1:0,axis==="y"?1:0,axis==="z"?1:0).normalize();g.rotateOnWorldAxis(ax,Math.PI);g.updateMatrixWorld(true);var c1=boxCentre(g);g.position.add(c0.sub(c1));}
+
+/* build a step scene into V.root; returns handles for explode/animation */
+function buildScene(V,st,opts){
+  opts=opts||{};var M=A.displayMatrix(st.display),Rinv=new T.Matrix3().setFromMatrix4(M).transpose();
+  var world=new T.Group(),items=[];
+  var parts=[];st.parts.forEach(function(r){resolve(r).forEach(function(p){if(parts.indexOf(p)<0)parts.push(p);});});
+  parts.forEach(function(p){var g=A.buildPart(p);world.add(g);
+    var ex=lookup(st.explode,p),grp=lookup(st.group,p)||0;
+    var off=ex?new T.Vector3(ex[0],ex[1],ex[2]).applyMatrix3(Rinv):new T.Vector3();
+    if(opts.turn&&lookup(opts.turn,p))turnPart(g,lookup(opts.turn,p),p);
+    items.push({obj:g,home:g.position.clone(),off:off,grp:grp,part:p});
+    var hw=st.hw||{},hwOff=function(o){return{obj:o,home:o.position.clone(),off:off.clone(),n:o.userData.n||null,grp:grp,hwGrp:st.hwGroup||0,hwAmt:st.hwExplode||0};};
+    var inSet=function(list){return list&&list.some(function(r){return resolve(r).indexOf(p)>=0;});};
+    if(inSet(hw.cams))A.placeCams(p).forEach(function(o){world.add(o);items.push(hwOff(o));});
+    if(inSet(hw.pins))A.placePins(p,p.code==="1D"||p.code==="1E"?null:null).forEach(function(o){world.add(o);items.push(hwOff(o));});
+    if(inSet(hw.edgeBolts))A.placeEdgeBolts(p).forEach(function(o){world.add(o);items.push(hwOff(o));});
+    if(inSet(hw.dowels))A.placeDowels(p).forEach(function(o){world.add(o);items.push(hwOff(o));});
+    (hw.screws||[]).forEach(function(sc){if(resolve(sc.code).indexOf(p)<0)return;A.placeScrews(p,screwSel(sc.sel),sc.len,sc.r,sc.headR,sc.plain).forEach(function(o){world.add(o);var it=hwOff(o);it.n=o.userData.n;items.push(it);});});
+  });
+  if(st.extras)EXTRAS[st.extras](world,items,st,parts);
+  world.applyMatrix4(M);V.root.add(world);
+  var S={items:items,dir:new T.Vector3(st.dir[0],st.dir[1],st.dir[2]),mx:st.mx,my:st.my,groundY:undefined,M:M,parts:parts};
+  setExplode(S,1,1);return S;
+}
+function setExplode(S,e,eh){S.items.forEach(function(it){var p=it.home.clone().addScaledVector(it.off,e);if(it.n&&it.hwAmt)p.addScaledVector(it.n,it.hwAmt*eh);it.obj.position.copy(p);});}
+/* animation: groups 1..G in sequence; hardware group hwGrp within */
+function animate(S,st,t){var G=1;S.items.forEach(function(it){G=Math.max(G,it.grp||0,it.hwGrp||0);});
+  S.items.forEach(function(it){var g=it.grp||0,p=it.home.clone();
+    if(g>0){var a=Math.max(0,Math.min(1,(t*G-(g-1))));a=a<.5?2*a*a:1-Math.pow(-2*a+2,2)/2;p.addScaledVector(it.off,1-a);}
+    if(it.n&&it.hwAmt){var hg=it.hwGrp||0,b=hg>0?Math.max(0,Math.min(1,(t*G-(hg-1)))):1;b=b<.5?2*b*b:1-Math.pow(-2*b+2,2)/2;p.addScaledVector(it.n,it.hwAmt*(1-b));}
+    it.obj.position.copy(p);
+    if(it.obj.userData.mouthDir&&it.obj.userData.n){/* cams turn in the last slice */var c=Math.max(0,Math.min(1,(t*G-(G-1))));it.obj.rotation.y=(it.obj.userData.baseRotY===undefined?(it.obj.userData.baseRotY=it.obj.rotation.y):it.obj.userData.baseRotY)+Math.PI*c;}
+  });}
+var EXTRAS={
+  brackets:function(world,items,st){var wall=B.wallSlab(2000,2400);wall.position.set(874,515,1200);wall.rotation.x=Math.PI/2;world.add(wall);
+    [300,874,1450].forEach(function(x){var b=B.lBracket();b.rotation.y=Math.PI/2;b.position.set(x,468,2101.4);world.add(b);items.push({obj:b,home:b.position.clone(),off:new T.Vector3(),n:new T.Vector3(0,0,1),grp:0,hwGrp:1,hwAmt:st.hwExplode});});},
+  plates:function(world,items,st,parts){parts.forEach(function(p){if(["4A","4B","4D","4E"].indexOf(p.code)<0)return;var sock=p.faces.filter(function(h){return h.dia===15&&h.dep<10;})[0];if(!sock)return;
+    var Th=A.T(),lz=sock.far?0:Th,n=A.localDir(p,0,0,sock.far?-1:1),pos=A.toWorld(p,sock.x,sock.y,lz).addScaledVector(A.localDir(p,1,0,0),-16);
+    var pl=B.hingePlate();pl.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),n);pl.position.copy(pos);world.add(pl);
+    var ex=lookup(st.explode,p),off=ex?new T.Vector3(ex[0],ex[1],ex[2]).applyMatrix3(new T.Matrix3().setFromMatrix4(A.displayMatrix(st.display)).transpose()):new T.Vector3();
+    items.push({obj:pl,home:pl.position.clone(),off:off,n:n,grp:lookup(st.group,p)||0,hwGrp:1,hwAmt:st.n===17?st.hwExplode:0});});},
+  hinge:function(world,items,st){var h=B.pianoHinge(1829);h.rotation.y=Math.PI/2;h.position.set(425,.6,1017.5);world.add(h);items.push({obj:h,home:h.position.clone(),off:new T.Vector3(),n:new T.Vector3(0,1,0),grp:0,hwGrp:1,hwAmt:st.hwExplode});},
+  magnetsLarge:function(world,items,st){[790,960].forEach(function(x,i){var m=B.magnet(40,10,15);m.position.set(x,9.5,233);world.add(m);items.push({obj:m,home:m.position.clone(),off:new T.Vector3(),n:new T.Vector3(0,0,1),grp:0,hwGrp:1,hwAmt:st.hwExplode});
+    var pl=B.magnet(15,40,2);pl.position.set(x,-1.2,255);world.add(pl);items.push({obj:pl,home:pl.position.clone(),off:new T.Vector3(),n:new T.Vector3(0,-1,0),grp:0,hwGrp:1,hwAmt:st.hwExplode});});},
+  magnetsSmall:function(world,items,st){var m=B.magnet(4,40,15);m.position.set(848,-8,1000);world.add(m);items.push({obj:m,home:m.position.clone(),off:new T.Vector3(),n:new T.Vector3(-1,0,0),grp:0,hwGrp:1,hwAmt:st.hwExplode});
+    var pl=B.magnet(2,15,40);pl.position.set(851.2,-8,1000);world.add(pl);items.push({obj:pl,home:pl.position.clone(),off:new T.Vector3(),n:new T.Vector3(1,0,0),grp:0,hwGrp:1,hwAmt:st.hwExplode});},
+  shelfPins:function(world,items,st,parts){var ends=parts.filter(function(p){return p.code==="3A"||p.code==="3B";}),shelves=parts.filter(function(p){return p.code==="7A";});
+    shelves.forEach(function(sh){var zb=sh.anchor[2];ends.forEach(function(e){var Th=A.T();var lad=e.faces.filter(function(h){return h.dia===5&&A.pinsOf(e).indexOf(h)<0;});
+      var best=null,bd=1e9;lad.forEach(function(h){var w=A.toWorld(e,h.x,h.y,h.far?0:Th);var d=Math.abs(w.z-(zb-2.4));if(d<bd){bd=d;best=h;}});
+      lad.forEach(function(h){if(!best||Math.abs(h.x-best.x)>.5)return;var n=A.localDir(e,0,0,h.far?-1:1),pin=B.shelfPin();pin.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),n);pin.position.copy(A.toWorld(e,h.x,h.y,h.far?0:Th));world.add(pin);
+        items.push({obj:pin,home:pin.position.clone(),off:new T.Vector3(),n:n,grp:0,hwGrp:0,hwAmt:0});});});});}
+};
+function markerPoint(S,mk){var v;if(mk[0]==="W")v=new T.Vector3(mk[1],mk[2],mk[3]);else{var p=resolve(mk[0])[0];if(!p)return null;v=A.toWorld(p,mk[1],mk[2],mk[3]);
+    var it=S.items.filter(function(i){return i.part===p;})[0];if(it)v.add(it.off);}
+  return v.applyMatrix4(S.M);}
+function drawMarkers(svg,V,S,st){var c=C();(st.markers||[]).forEach(function(mk){if(!mk[4])return;var pt=markerPoint(S,mk);if(!pt)return;B.marker(svg,V,pt,mk[4],mk[5],mk[6],c[mk[7]]||c.ink,c.bg);});}
+
+/* ---- page ---- */
+function esc(s){return String(s);}
+function stepHTML(st){var i,h='';
+  h+='<section class="stepsec" id="step-'+st.n+'"><div class="sheet"><div class="sheet-top"><p class="stepnum">Boaz V3 &middot; Step '+st.n+' of 31</p><h1>'+st.title+'</h1><p class="lede">'+st.lede+'</p></div><dl class="tb">';
+  h+='<div><dt>Parts</dt><dd>'+st.parts.map(function(r){return r.replace(/@\d+/,"");}).filter(function(v,i,a){return a.indexOf(v)===i;}).join(" &middot; ")+'</dd></div>';
+  h+='<div><dt>Hardware</dt><dd>'+(st.hardware.length?st.hardware.map(function(x){return x[0]+" &times; "+x[1];}).join("<br>"):"none")+'</dd></div>';
+  h+='<div><dt>People</dt><dd>'+st.people+'</dd></div><div><dt>Tools</dt><dd>'+(st.tools.length?st.tools.join(" &middot; "):"none")+'</dd></div></dl></div>';
+  h+='<h2>Do this</h2><ol class="steps">'+st.steps.map(function(s){return "<li>"+s+"</li>";}).join("")+'</ol>';
+  if(st.parts.length){h+='<h2>Drawing</h2><figure class="fig"><div class="render" data-draw="'+st.n+'" style="aspect-ratio:4/3"><span class="fallback">Drawing needs WebGL.</span></div></figure>';
+    if(st.key&&st.key.length)h+='<div class="key-wrap">'+st.key.map(function(k,i){return '<div class="kitem"><b>'+(i+1)+'</b><span>'+k+'</span></div>';}).join("")+'</div>';
+    if(Object.keys(st.explode||{}).length||st.hwExplode){h+='<h2>Animation</h2><figure class="anim" style="border:1px solid var(--rule);background:var(--panel)"><figcaption>Step '+st.n+' &mdash; '+st.title+'</figcaption><div class="stage" style="padding:6px 18px 0"><div class="render" data-anim="'+st.n+'" style="aspect-ratio:4/3;max-width:820px;margin:0 auto"><span class="fallback">Press Replay to load the animation.</span></div></div><div class="ctl"><button type="button" data-play="'+st.n+'">Replay</button><input type="range" id="rng-'+st.n+'" min="0" max="1000" value="1000" aria-label="Scrub step '+st.n+'"><span class="step" data-step="'+st.n+'"></span></div></figure>';}}
+  if(st.wrong&&st.wrong.length){h+='<h2>Right and wrong</h2><div class="checks">'+st.wrong.map(function(w,i){return '<div class="check '+(w.kind==="ok"?"ok":"bad")+'"><p class="lbl">'+(w.kind==="ok"?"&#10003; ":"&#10007; ")+w.t+'</p>'+(w.turn?'<div class="render sm" data-wrong="'+st.n+'-'+i+'"></div>':'')+'<p>'+w.x+'</p></div>';}).join("")+'</div>';}
+  if(st.notes&&st.notes.length)h+='<h2>Notes for the illustrator</h2><ul class="notes">'+st.notes.map(function(n){return "<li>"+n+"</li>";}).join("")+'</ul>';
+  h+='</section>';return h;}
+var host=document.getElementById("book");
+if(host){host.innerHTML=STEPS.map(stepHTML).join("");
+  var idx=document.getElementById("index");if(idx)idx.innerHTML+=STEPS.map(function(st){return '<a href="#step-'+st.n+'"><b>'+st.n+'</b>'+st.title+'</a>';}).join("");}
+/* drawings */
+STEPS.forEach(function(st){var el=document.querySelector('[data-draw="'+st.n+'"]');if(!el)return;
+  try{B.snapshot(el,function(V){return buildScene(V,st);},function(svg,V,S){B.text(svg,30,58,"Step "+st.n,40,C().ink);drawMarkers(svg,V,S,st);},{w:1500,aspect:4/3});}catch(e){el.querySelector(".fallback").textContent="Drawing failed: "+e.message;}
+  (st.wrong||[]).forEach(function(w,i){if(!w.turn)return;var c=document.querySelector('[data-wrong="'+st.n+'-'+i+'"]');if(!c)return;
+    try{B.snapshot(c,function(V){var S=buildScene(V,st,{turn:w.turn});setExplode(S,0,0);return S;},function(svg,V){B.verdict(svg,V,"bad");},{w:1000,aspect:5/3});}catch(e){}});
+});
+/* one live animation at a time */
+var live=null;
+function startAnim(st){var el=document.querySelector('[data-anim="'+st.n+'"]');if(!el)return;
+  if(live){live.raf&&cancelAnimationFrame(live.raf);live.V.renderer.dispose();live.V.renderer.forceContextLoss();live.el.querySelector("canvas")&&live.el.querySelector("canvas").remove();live.el.classList.remove("ready");}
+  var V=B.view(el,{w:1300,aspect:4/3}),S=buildScene(V,st);V.fit(S.dir,S.mx,S.my,S.groundY);el.appendChild(V.renderer.domElement);el.classList.add("ready");
+  var rng=document.getElementById("rng-"+st.n),stepEl=document.querySelector('[data-step="'+st.n+'"]');
+  live={el:el,V:V,S:S,raf:null};
+  function set(t){animate(S,st,t);V.render();if(rng)rng.value=Math.round(t*1000);if(stepEl)stepEl.textContent=t>=1?"assembled":"assembling";}
+  function play(){var t0=performance.now(),DUR=5000+1500*Object.keys(st.explode||{}).length/4;(function loop(now){var t=Math.min(1,(now-t0)/DUR);set(t);if(t<1)live.raf=requestAnimationFrame(loop);else live.raf=null;})(performance.now());}
+  if(rng)rng.oninput=function(){if(live.raf)cancelAnimationFrame(live.raf);live.raf=null;set(rng.value/1000);};
+  var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;if(reduce)set(1);else play();}
+document.querySelectorAll("[data-play]").forEach(function(btn){btn.addEventListener("click",function(){var st=STEPS.filter(function(s){return String(s.n)===btn.getAttribute("data-play");})[0];if(st)startAnim(st);});});
+window.BoazBook={buildScene:buildScene,setExplode:setExplode};
+})();
+
+</script>
