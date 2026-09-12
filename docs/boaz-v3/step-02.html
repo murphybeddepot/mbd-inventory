@@ -6,6 +6,7 @@
 
 
 
+
 :root{
   --paper:#F2F3EF; --panel:#FBFBF9; --ink:#191C1E; --ink-2:#4C5257; --ink-3:#767D83;
   --rule:#CDD1C9; --rule-2:#E2E5DE;
@@ -216,6 +217,7 @@ ol.steps b{font-weight:600}
 
 
 
+
 </style>
 
 <div class="wrap">
@@ -296,6 +298,10 @@ ol.steps b{font-weight:600}
     <div class="kitem"><b>3</b><span>dowels into the 16-deep bores</span></div>
     <div class="kitem"><b>4</b><span>1D&rsquo;s edge bores: runs for the bolts, sockets for the dowels</span></div>
     <div class="kitem"><b>5</b><span>front edges, banded, in one line</span></div>
+  </div>
+  <div class="checks" style="margin-top:22px">
+    <div class="check info"><p class="lbl">Close-up: cam into 1D</p><div class="render" data-render="detcam" style="aspect-ratio:3/2;margin-bottom:8px"><span class="fallback">Drawing needs WebGL.</span></div><p>Arrow toward the bottom edge. The drum drops in 15 deep; its face sits just below the panel.</p></div>
+    <div class="check info"><p class="lbl">Close-up: bolt and dowel into 1A&rsquo;s top edge</p><div class="render" data-render="detedge" style="aspect-ratio:3/2;margin-bottom:8px"><span class="fallback">Drawing needs WebGL.</span></div><p>&empty;8 bolt into the 13-deep bore to its collar; dowel into the 16-deep bore, 14 proud.</p></div>
   </div>
   <figure class="fig" style="margin-top:22px">
     <div class="render" data-render="layout" style="aspect-ratio:4/3"><span class="fallback">Drawing needs WebGL.</span></div>
@@ -422,7 +428,7 @@ var MAT={
   mouth:function(){return new T.MeshStandardMaterial({color:col(0x2A2723),roughness:1,metalness:0});},
   powder:function(){return new T.MeshStandardMaterial({color:col(0x24272B),roughness:.58,metalness:.22});},
   oxide:function(){return new T.MeshStandardMaterial({color:col(0x2B2E33),roughness:.38,metalness:.55});},
-  zinc:function(){return new T.MeshStandardMaterial({color:col(0xB8BDC2),roughness:.33,metalness:.75});},
+  zinc:function(){return new T.MeshStandardMaterial({color:col(0xD2D6DA),roughness:.3,metalness:.7});},
   nylon:function(){return new T.MeshStandardMaterial({color:col(0x36415A),roughness:.85,metalness:0});},
   wood:function(){return new T.MeshStandardMaterial({color:col(0xC8A46F),roughness:.82,metalness:0});},
   dark:function(){return new T.MeshStandardMaterial({color:col(0x0E0F10),roughness:.9,metalness:0});},
@@ -552,32 +558,38 @@ function view(container,opts){
   var renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:!!opts.snapshot});
   renderer.setPixelRatio(1);renderer.setSize(W,Hh,false);
   renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
-  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFShadowMap;
   var scene=new T.Scene();
-  var hemi=new T.HemisphereLight(0xf4f6ff,0x8a8378,.5);scene.add(hemi);
-  var key=new T.DirectionalLight(0xffffff,1.35);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.bias=-0.0006;key.shadow.normalBias=.6;scene.add(key);
-  var fill=new T.DirectionalLight(0xffffff,.28);scene.add(fill);
-  var rim=new T.DirectionalLight(0xffffff,.3);scene.add(rim);
-  var ground=new T.Mesh(new T.PlaneGeometry(1,1),new T.ShadowMaterial({opacity:.24}));ground.receiveShadow=true;ground.rotation.x=-Math.PI/2;scene.add(ground);
+  var hemi=new T.HemisphereLight(0xf4f6ff,0xa39d92,.72);scene.add(hemi);
+  var key=new T.DirectionalLight(0xffffff,.62);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.bias=-0.0005;key.shadow.normalBias=.8;key.shadow.radius=4;scene.add(key);
+  var keySoft=new T.DirectionalLight(0xffffff,.55);scene.add(keySoft);   /* same direction, no shadow: shadows read as half-tone */
+  var fill=new T.DirectionalLight(0xffffff,.3);scene.add(fill);
+  var rim=new T.DirectionalLight(0xffffff,.26);scene.add(rim);
+  var ground=new T.Mesh(new T.PlaneGeometry(1,1),new T.ShadowMaterial({opacity:.11}));ground.receiveShadow=true;ground.rotation.x=-Math.PI/2;scene.add(ground);
   var cam=new T.OrthographicCamera(-1,1,1,-1,-6000,6000);
   var root=new T.Group();scene.add(root);
-  function fit(dir,mx,my,groundY,box){
-    var all=new T.Box3().setFromObject(root),bb=box||all,c=bb.getCenter(new T.Vector3()),size=all.getSize(new T.Vector3());
-    var d=dir.clone().normalize();cam.position.copy(c).addScaledVector(d,3000);cam.up.set(0,1,0);cam.lookAt(c);cam.updateMatrixWorld();
+  function frustumFor(bb,mx,my){
     var inv=cam.matrixWorldInverse,mn=new T.Vector2(1e9,1e9),mxv=new T.Vector2(-1e9,-1e9);
     for(var i=0;i<8;i++){var v=new T.Vector3(i&1?bb.max.x:bb.min.x,i&2?bb.max.y:bb.min.y,i&4?bb.max.z:bb.min.z).applyMatrix4(inv);mn.x=Math.min(mn.x,v.x);mn.y=Math.min(mn.y,v.y);mxv.x=Math.max(mxv.x,v.x);mxv.y=Math.max(mxv.y,v.y);}
     var w=(mxv.x-mn.x)*(1+2*(mx||.12)),h=(mxv.y-mn.y)*(1+2*(my||.12)),cx=(mn.x+mxv.x)/2,cy=(mn.y+mxv.y)/2,asp=W/Hh;
     if(w/h<asp)w=h*asp;else h=w/asp;
-    cam.left=cx-w/2;cam.right=cx+w/2;cam.top=cy+h/2;cam.bottom=cy-h/2;cam.updateProjectionMatrix();
+    return{l:cx-w/2,r:cx+w/2,t:cy+h/2,b:cy-h/2};
+  }
+  function setFrustum(f){cam.left=f.l;cam.right=f.r;cam.top=f.t;cam.bottom=f.b;cam.updateProjectionMatrix();}
+  function lerpF(a,b,t){return{l:a.l+(b.l-a.l)*t,r:a.r+(b.r-a.r)*t,t:a.t+(b.t-a.t)*t,b:a.b+(b.b-a.b)*t};}
+  function fit(dir,mx,my,groundY,box){
+    var all=new T.Box3().setFromObject(root),bb=box||all,c=bb.getCenter(new T.Vector3()),size=all.getSize(new T.Vector3());
+    var d=dir.clone().normalize();cam.position.copy(c).addScaledVector(d,3000);cam.up.set(0,1,0);cam.lookAt(c);cam.updateMatrixWorld();
+    setFrustum(frustumFor(bb,mx,my));
     /* lights relative to the view */
-    key.position.copy(c).add(new T.Vector3(-.75,1.05,.55).multiplyScalar(Math.max(size.x,size.y,size.z)*1.4));key.target.position.copy(c);scene.add(key.target);
+    key.position.copy(c).add(new T.Vector3(-.75,1.05,.55).multiplyScalar(Math.max(size.x,size.y,size.z)*1.4));key.target.position.copy(c);scene.add(key.target);keySoft.position.copy(key.position);keySoft.target.position.copy(c);scene.add(keySoft.target);
     fill.position.copy(c).add(new T.Vector3(.9,.35,.6).multiplyScalar(2000));fill.target.position.copy(c);scene.add(fill.target);
     rim.position.copy(c).add(new T.Vector3(.2,.5,-1).multiplyScalar(2000));rim.target.position.copy(c);scene.add(rim.target);
     var R=Math.max(size.x,size.y,size.z)*.9;key.shadow.camera.left=-R;key.shadow.camera.right=R;key.shadow.camera.top=R;key.shadow.camera.bottom=-R;key.shadow.camera.near=1;key.shadow.camera.far=8000;key.shadow.camera.updateProjectionMatrix();
     ground.position.set(c.x,groundY!==undefined?groundY:all.min.y-.2,c.z);ground.scale.set(size.x*6+2000,size.z*6+2000,1);
   }
   function px(v){var p=v.clone().project(cam);return[(p.x+1)/2*W,(1-p.y)/2*Hh];}
-  return{renderer:renderer,scene:scene,root:root,cam:cam,fit:fit,px:px,W:W,H:Hh,render:function(){renderer.render(scene,cam);}};
+  return{renderer:renderer,scene:scene,root:root,cam:cam,fit:fit,frustumFor:frustumFor,setFrustum:setFrustum,lerpF:lerpF,px:px,W:W,H:Hh,render:function(){renderer.render(scene,cam);}};
 }
 
 /* ---- label overlay (numbered markers) ---- */
@@ -663,7 +675,7 @@ function panel1D(){return B.panel({L:UP.L,H:UP.H,band:["front"],
     .concat(UP.thru.map(function(p){return{x:p[0],y:p[1],r:4,depth:19.05};})),
   edgeHoles:UP.dowel.concat(UP.cam).map(function(x){return{x:x,y:0,z:9.525,axis:"y",dir:-1,r:4};})});}
 function brace(){var fh=[];BR.py.forEach(function(y){BR.px.forEach(function(x){fh.push({x:x,y:y,r:2.5,depth:19.05});});});return B.panel({L:BR.L,H:BR.H,faceHoles:fh});}
-function cam(x){var c=B.cam15(12.5);c.rotation.set(Math.PI/2,Math.PI/2,0);c.position.set(x,P1.H+UP.camIn,P1.t-12.5);c.userData.base=c.position.clone();return c;}
+function cam(x){var c=B.cam15(12.5);c.rotation.set(Math.PI/2,Math.PI/2,0);c.position.set(x,P1.H+UP.camIn,P1.t-13.8);c.userData.base=c.position.clone();return c;}
 function cbolt(x){var b=B.camBolt(34,13,4);b.position.set(x,P1.H,9.525);b.userData.base=b.position.clone();return b;}
 function dowel(x){var d=B.dowel(8,30);d.position.set(x,P1.H-16,9.525);d.userData.base=d.position.clone();return d;}
 function screw(x,y){var s=B.screwCsk(31.75,1.75,3.45,3.95);s.rotation.x=-Math.PI/2;s.position.set(BR.x0+x,BR.y0+y,2*P1.t+.4);s.userData.base=s.position.clone();return s;}
@@ -707,6 +719,13 @@ if(el)B.snapshot(el,function(V){var A=build(V,{joint:1,hw:1},{noBrace:true});ret
   B.marker(svg,V,W(UP.dowel[2],P1.H+120,9.5),"4",90,20,C.edge,C.bg);
   B.marker(svg,V,W(0,P1.H+120+120,P1.t),"5",-80,20,C.ink,C.bg);
 },{w:1700,aspect:4/3});
+/* close-ups */
+el=document.querySelector('[data-render="detcam"]');
+if(el)B.snapshot(el,function(V){var A=build(V,{joint:0,hw:0},{noBrace:true});A.cams[1].position.copy(A.cams[1].userData.base).add(new T.Vector3(0,0,30));
+  var c=W(UP.cam[1],P1.H+UP.camIn,P1.t);return{A:A,dir:DIR,mx:.05,my:.05,groundY:-.4,box:new T.Box3(c.clone().add(new T.Vector3(-70,-30,-70)),c.clone().add(new T.Vector3(70,70,50)))};},null,{w:1200,aspect:3/2});
+el=document.querySelector('[data-render="detedge"]');
+if(el)B.snapshot(el,function(V){var A=build(V,{joint:1,hw:.45},{noBrace:true});A.upper.visible=false;
+  var c=W(P1.edgeBolt[1]+36,P1.H,9.5);return{A:A,dir:DIR,mx:.05,my:.05,groundY:-.4,box:new T.Box3(c.clone().add(new T.Vector3(-110,-30,-70)),c.clone().add(new T.Vector3(110,70,70)))};},null,{w:1200,aspect:3/2});
 /* B: layout with brace, exploded */
 el=document.querySelector('[data-render="layout"]');
 if(el)B.snapshot(el,function(V){var A=build(V,{brace:1});return{A:A,dir:DIR,mx:.06,my:.1,groundY:-.4,box:wbox(-70,540,-10,700,0,180)};},function(svg,V,S){
@@ -727,13 +746,25 @@ Object.keys(checks).forEach(function(k){var c=document.querySelector('[data-rend
 var an=document.querySelector('[data-render="anim"]');
 if(an){
   var V=B.view(an,{w:1300,aspect:4/3}),A=build(V,{joint:1,hw:0,brace:1});V.fit(DIR,.06,.1,-.4,wbox(-70,540,-10,700,0,180));
+  var F0={l:V.cam.left,r:V.cam.right,t:V.cam.top,b:V.cam.bottom};
+  function fbox(c,r){return V.frustumFor(new T.Box3(c.clone().add(new T.Vector3(-r,-r*.6,-r)),c.clone().add(new T.Vector3(r,r,r))),.05,.05);}
+  var Fedge=fbox(W(P1.edgeBolt[1]+36,P1.H+20,9.5),130),Fcam=fbox(W(UP.cam[1],P1.H+UP.camIn,P1.t+10),110),Fscrew=fbox(W(BR.x0+BR.px[2],BR.y0+BR.py[1],2*P1.t),120);
+  function ramp(t,a,b){return Math.max(0,Math.min(1,(t-a)/(b-a)));}
+  function zoom(t){var f=F0;
+    if(t<.2)f=V.lerpF(F0,Fedge,ramp(t,.02,.08)-ramp(t,.16,.2));
+    else if(t<.46)f=F0;
+    else if(t<.66)f=V.lerpF(F0,Fcam,ramp(t,.46,.5)-ramp(t,.62,.66));
+    else if(t<.84)f=F0;
+    else f=V.lerpF(F0,Fscrew,ramp(t,.84,.88)-ramp(t,.97,1));
+    V.setFrustum(f);}
   an.appendChild(V.renderer.domElement);an.classList.add("ready");
   var svg=B.overlay(an,V.W,V.H),tag=B.text(svg,0,0,"",30,C.ok,600,"middle"),anote=document.getElementById("anote");
-  var steps=[[0,"Bolts and dowels in the top edge"],[.2,"1D down onto 1A"],[.45,"Half turn on each cam"],[.65,"Brace over the seam"],[.85,"Eight 1¼″ screws"]];
+  var steps=[[0,"Bolts and dowels in the top edge"],[.2,"1D down onto 1A"],[.45,"Half turn on each cam"],[.63,"Brace over the seam"],[.84,"Eight 1¼″ screws"]];
   function ph(t,a,b){return Math.max(0,Math.min(1,(t-a)/(b-a)));}function ez(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
   function frame(t){var a=ez(ph(t,.02,.18)),j=ez(ph(t,.2,.42)),c=ez(ph(t,.46,.62)),b=ez(ph(t,.65,.82)),s=ez(ph(t,.84,.98));
     set(A,{hw:1-a,joint:1-j,cam:c,brace:1});
-    A.brace.position.set(BR.x0,BR.y0,P1.t+95*(1-b));A.screws.forEach(function(sc){sc.position.copy(sc.userData.base).add(new T.Vector3(0,0,95*(1-b)+45*(1-s)));});
+    A.brace.visible=t>=.63;A.brace.position.set(BR.x0,BR.y0,P1.t+140*(1-b));A.screws.forEach(function(sc){sc.visible=t>=.63;sc.position.copy(sc.userData.base).add(new T.Vector3(0,0,140*(1-b)+45*(1-s)));});
+    zoom(t);
     if(anote)anote.textContent=t<.2?"⌀8 bolts into the three 13-deep bores, dowels into the three 16-deep bores.":t<.45?"Front edges in line. Lower 1D so the bolts run into its edge and the dowels find their bores.":t<.65?"#3 Phillips: turn each cam clockwise just past half a turn.":t<.85?"Bottom brace over the seam, back edge on the back edge of 1A, above the pivot arm.":"Eight 1¼″ screws through the brace pilots, four into each end.";
     var p=V.px(W(UP.cam[2],P1.H+UP.camIn+40,P1.t+14));tag.setAttribute("x",p[0]);tag.setAttribute("y",p[1]);tag.textContent=(t>.46&&t<.64)?"↻ 180°":"";
     V.render();}

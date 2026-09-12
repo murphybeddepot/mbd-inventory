@@ -15,7 +15,7 @@ function panel1D(){return B.panel({L:UP.L,H:UP.H,band:["front"],
     .concat(UP.thru.map(function(p){return{x:p[0],y:p[1],r:4,depth:19.05};})),
   edgeHoles:UP.dowel.concat(UP.cam).map(function(x){return{x:x,y:0,z:9.525,axis:"y",dir:-1,r:4};})});}
 function brace(){var fh=[];BR.py.forEach(function(y){BR.px.forEach(function(x){fh.push({x:x,y:y,r:2.5,depth:19.05});});});return B.panel({L:BR.L,H:BR.H,faceHoles:fh});}
-function cam(x){var c=B.cam15(12.5);c.rotation.set(Math.PI/2,Math.PI/2,0);c.position.set(x,P1.H+UP.camIn,P1.t-12.5);c.userData.base=c.position.clone();return c;}
+function cam(x){var c=B.cam15(12.5);c.rotation.set(Math.PI/2,Math.PI/2,0);c.position.set(x,P1.H+UP.camIn,P1.t-13.8);c.userData.base=c.position.clone();return c;}
 function cbolt(x){var b=B.camBolt(34,13,4);b.position.set(x,P1.H,9.525);b.userData.base=b.position.clone();return b;}
 function dowel(x){var d=B.dowel(8,30);d.position.set(x,P1.H-16,9.525);d.userData.base=d.position.clone();return d;}
 function screw(x,y){var s=B.screwCsk(31.75,1.75,3.45,3.95);s.rotation.x=-Math.PI/2;s.position.set(BR.x0+x,BR.y0+y,2*P1.t+.4);s.userData.base=s.position.clone();return s;}
@@ -59,6 +59,13 @@ if(el)B.snapshot(el,function(V){var A=build(V,{joint:1,hw:1},{noBrace:true});ret
   B.marker(svg,V,W(UP.dowel[2],P1.H+120,9.5),"4",90,20,C.edge,C.bg);
   B.marker(svg,V,W(0,P1.H+120+120,P1.t),"5",-80,20,C.ink,C.bg);
 },{w:1700,aspect:4/3});
+/* close-ups */
+el=document.querySelector('[data-render="detcam"]');
+if(el)B.snapshot(el,function(V){var A=build(V,{joint:0,hw:0},{noBrace:true});A.cams[1].position.copy(A.cams[1].userData.base).add(new T.Vector3(0,0,30));
+  var c=W(UP.cam[1],P1.H+UP.camIn,P1.t);return{A:A,dir:DIR,mx:.05,my:.05,groundY:-.4,box:new T.Box3(c.clone().add(new T.Vector3(-70,-30,-70)),c.clone().add(new T.Vector3(70,70,50)))};},null,{w:1200,aspect:3/2});
+el=document.querySelector('[data-render="detedge"]');
+if(el)B.snapshot(el,function(V){var A=build(V,{joint:1,hw:.45},{noBrace:true});A.upper.visible=false;
+  var c=W(P1.edgeBolt[1]+36,P1.H,9.5);return{A:A,dir:DIR,mx:.05,my:.05,groundY:-.4,box:new T.Box3(c.clone().add(new T.Vector3(-110,-30,-70)),c.clone().add(new T.Vector3(110,70,70)))};},null,{w:1200,aspect:3/2});
 /* B: layout with brace, exploded */
 el=document.querySelector('[data-render="layout"]');
 if(el)B.snapshot(el,function(V){var A=build(V,{brace:1});return{A:A,dir:DIR,mx:.06,my:.1,groundY:-.4,box:wbox(-70,540,-10,700,0,180)};},function(svg,V,S){
@@ -79,13 +86,25 @@ Object.keys(checks).forEach(function(k){var c=document.querySelector('[data-rend
 var an=document.querySelector('[data-render="anim"]');
 if(an){
   var V=B.view(an,{w:1300,aspect:4/3}),A=build(V,{joint:1,hw:0,brace:1});V.fit(DIR,.06,.1,-.4,wbox(-70,540,-10,700,0,180));
+  var F0={l:V.cam.left,r:V.cam.right,t:V.cam.top,b:V.cam.bottom};
+  function fbox(c,r){return V.frustumFor(new T.Box3(c.clone().add(new T.Vector3(-r,-r*.6,-r)),c.clone().add(new T.Vector3(r,r,r))),.05,.05);}
+  var Fedge=fbox(W(P1.edgeBolt[1]+36,P1.H+20,9.5),130),Fcam=fbox(W(UP.cam[1],P1.H+UP.camIn,P1.t+10),110),Fscrew=fbox(W(BR.x0+BR.px[2],BR.y0+BR.py[1],2*P1.t),120);
+  function ramp(t,a,b){return Math.max(0,Math.min(1,(t-a)/(b-a)));}
+  function zoom(t){var f=F0;
+    if(t<.2)f=V.lerpF(F0,Fedge,ramp(t,.02,.08)-ramp(t,.16,.2));
+    else if(t<.46)f=F0;
+    else if(t<.66)f=V.lerpF(F0,Fcam,ramp(t,.46,.5)-ramp(t,.62,.66));
+    else if(t<.84)f=F0;
+    else f=V.lerpF(F0,Fscrew,ramp(t,.84,.88)-ramp(t,.97,1));
+    V.setFrustum(f);}
   an.appendChild(V.renderer.domElement);an.classList.add("ready");
   var svg=B.overlay(an,V.W,V.H),tag=B.text(svg,0,0,"",30,C.ok,600,"middle"),anote=document.getElementById("anote");
-  var steps=[[0,"Bolts and dowels in the top edge"],[.2,"1D down onto 1A"],[.45,"Half turn on each cam"],[.65,"Brace over the seam"],[.85,"Eight 1¼″ screws"]];
+  var steps=[[0,"Bolts and dowels in the top edge"],[.2,"1D down onto 1A"],[.45,"Half turn on each cam"],[.63,"Brace over the seam"],[.84,"Eight 1¼″ screws"]];
   function ph(t,a,b){return Math.max(0,Math.min(1,(t-a)/(b-a)));}function ez(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}
   function frame(t){var a=ez(ph(t,.02,.18)),j=ez(ph(t,.2,.42)),c=ez(ph(t,.46,.62)),b=ez(ph(t,.65,.82)),s=ez(ph(t,.84,.98));
     set(A,{hw:1-a,joint:1-j,cam:c,brace:1});
-    A.brace.position.set(BR.x0,BR.y0,P1.t+95*(1-b));A.screws.forEach(function(sc){sc.position.copy(sc.userData.base).add(new T.Vector3(0,0,95*(1-b)+45*(1-s)));});
+    A.brace.visible=t>=.63;A.brace.position.set(BR.x0,BR.y0,P1.t+140*(1-b));A.screws.forEach(function(sc){sc.visible=t>=.63;sc.position.copy(sc.userData.base).add(new T.Vector3(0,0,140*(1-b)+45*(1-s)));});
+    zoom(t);
     if(anote)anote.textContent=t<.2?"⌀8 bolts into the three 13-deep bores, dowels into the three 16-deep bores.":t<.45?"Front edges in line. Lower 1D so the bolts run into its edge and the dowels find their bores.":t<.65?"#3 Phillips: turn each cam clockwise just past half a turn.":t<.85?"Bottom brace over the seam, back edge on the back edge of 1A, above the pivot arm.":"Eight 1¼″ screws through the brace pilots, four into each end.";
     var p=V.px(W(UP.cam[2],P1.H+UP.camIn+40,P1.t+14));tag.setAttribute("x",p[0]);tag.setAttribute("y",p[1]);tag.textContent=(t>.46&&t<.64)?"↻ 180°":"";
     V.render();}

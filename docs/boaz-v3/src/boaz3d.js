@@ -10,7 +10,7 @@ var MAT={
   mouth:function(){return new T.MeshStandardMaterial({color:col(0x2A2723),roughness:1,metalness:0});},
   powder:function(){return new T.MeshStandardMaterial({color:col(0x24272B),roughness:.58,metalness:.22});},
   oxide:function(){return new T.MeshStandardMaterial({color:col(0x2B2E33),roughness:.38,metalness:.55});},
-  zinc:function(){return new T.MeshStandardMaterial({color:col(0xB8BDC2),roughness:.33,metalness:.75});},
+  zinc:function(){return new T.MeshStandardMaterial({color:col(0xD2D6DA),roughness:.3,metalness:.7});},
   nylon:function(){return new T.MeshStandardMaterial({color:col(0x36415A),roughness:.85,metalness:0});},
   wood:function(){return new T.MeshStandardMaterial({color:col(0xC8A46F),roughness:.82,metalness:0});},
   dark:function(){return new T.MeshStandardMaterial({color:col(0x0E0F10),roughness:.9,metalness:0});},
@@ -140,32 +140,38 @@ function view(container,opts){
   var renderer=new T.WebGLRenderer({antialias:true,alpha:true,preserveDrawingBuffer:!!opts.snapshot});
   renderer.setPixelRatio(1);renderer.setSize(W,Hh,false);
   renderer.outputEncoding=T.sRGBEncoding;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
-  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;
+  renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFShadowMap;
   var scene=new T.Scene();
-  var hemi=new T.HemisphereLight(0xf4f6ff,0x8a8378,.5);scene.add(hemi);
-  var key=new T.DirectionalLight(0xffffff,1.35);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.bias=-0.0006;key.shadow.normalBias=.6;scene.add(key);
-  var fill=new T.DirectionalLight(0xffffff,.28);scene.add(fill);
-  var rim=new T.DirectionalLight(0xffffff,.3);scene.add(rim);
-  var ground=new T.Mesh(new T.PlaneGeometry(1,1),new T.ShadowMaterial({opacity:.24}));ground.receiveShadow=true;ground.rotation.x=-Math.PI/2;scene.add(ground);
+  var hemi=new T.HemisphereLight(0xf4f6ff,0xa39d92,.72);scene.add(hemi);
+  var key=new T.DirectionalLight(0xffffff,.62);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.bias=-0.0005;key.shadow.normalBias=.8;key.shadow.radius=4;scene.add(key);
+  var keySoft=new T.DirectionalLight(0xffffff,.55);scene.add(keySoft);   /* same direction, no shadow: shadows read as half-tone */
+  var fill=new T.DirectionalLight(0xffffff,.3);scene.add(fill);
+  var rim=new T.DirectionalLight(0xffffff,.26);scene.add(rim);
+  var ground=new T.Mesh(new T.PlaneGeometry(1,1),new T.ShadowMaterial({opacity:.11}));ground.receiveShadow=true;ground.rotation.x=-Math.PI/2;scene.add(ground);
   var cam=new T.OrthographicCamera(-1,1,1,-1,-6000,6000);
   var root=new T.Group();scene.add(root);
-  function fit(dir,mx,my,groundY,box){
-    var all=new T.Box3().setFromObject(root),bb=box||all,c=bb.getCenter(new T.Vector3()),size=all.getSize(new T.Vector3());
-    var d=dir.clone().normalize();cam.position.copy(c).addScaledVector(d,3000);cam.up.set(0,1,0);cam.lookAt(c);cam.updateMatrixWorld();
+  function frustumFor(bb,mx,my){
     var inv=cam.matrixWorldInverse,mn=new T.Vector2(1e9,1e9),mxv=new T.Vector2(-1e9,-1e9);
     for(var i=0;i<8;i++){var v=new T.Vector3(i&1?bb.max.x:bb.min.x,i&2?bb.max.y:bb.min.y,i&4?bb.max.z:bb.min.z).applyMatrix4(inv);mn.x=Math.min(mn.x,v.x);mn.y=Math.min(mn.y,v.y);mxv.x=Math.max(mxv.x,v.x);mxv.y=Math.max(mxv.y,v.y);}
     var w=(mxv.x-mn.x)*(1+2*(mx||.12)),h=(mxv.y-mn.y)*(1+2*(my||.12)),cx=(mn.x+mxv.x)/2,cy=(mn.y+mxv.y)/2,asp=W/Hh;
     if(w/h<asp)w=h*asp;else h=w/asp;
-    cam.left=cx-w/2;cam.right=cx+w/2;cam.top=cy+h/2;cam.bottom=cy-h/2;cam.updateProjectionMatrix();
+    return{l:cx-w/2,r:cx+w/2,t:cy+h/2,b:cy-h/2};
+  }
+  function setFrustum(f){cam.left=f.l;cam.right=f.r;cam.top=f.t;cam.bottom=f.b;cam.updateProjectionMatrix();}
+  function lerpF(a,b,t){return{l:a.l+(b.l-a.l)*t,r:a.r+(b.r-a.r)*t,t:a.t+(b.t-a.t)*t,b:a.b+(b.b-a.b)*t};}
+  function fit(dir,mx,my,groundY,box){
+    var all=new T.Box3().setFromObject(root),bb=box||all,c=bb.getCenter(new T.Vector3()),size=all.getSize(new T.Vector3());
+    var d=dir.clone().normalize();cam.position.copy(c).addScaledVector(d,3000);cam.up.set(0,1,0);cam.lookAt(c);cam.updateMatrixWorld();
+    setFrustum(frustumFor(bb,mx,my));
     /* lights relative to the view */
-    key.position.copy(c).add(new T.Vector3(-.75,1.05,.55).multiplyScalar(Math.max(size.x,size.y,size.z)*1.4));key.target.position.copy(c);scene.add(key.target);
+    key.position.copy(c).add(new T.Vector3(-.75,1.05,.55).multiplyScalar(Math.max(size.x,size.y,size.z)*1.4));key.target.position.copy(c);scene.add(key.target);keySoft.position.copy(key.position);keySoft.target.position.copy(c);scene.add(keySoft.target);
     fill.position.copy(c).add(new T.Vector3(.9,.35,.6).multiplyScalar(2000));fill.target.position.copy(c);scene.add(fill.target);
     rim.position.copy(c).add(new T.Vector3(.2,.5,-1).multiplyScalar(2000));rim.target.position.copy(c);scene.add(rim.target);
     var R=Math.max(size.x,size.y,size.z)*.9;key.shadow.camera.left=-R;key.shadow.camera.right=R;key.shadow.camera.top=R;key.shadow.camera.bottom=-R;key.shadow.camera.near=1;key.shadow.camera.far=8000;key.shadow.camera.updateProjectionMatrix();
     ground.position.set(c.x,groundY!==undefined?groundY:all.min.y-.2,c.z);ground.scale.set(size.x*6+2000,size.z*6+2000,1);
   }
   function px(v){var p=v.clone().project(cam);return[(p.x+1)/2*W,(1-p.y)/2*Hh];}
-  return{renderer:renderer,scene:scene,root:root,cam:cam,fit:fit,px:px,W:W,H:Hh,render:function(){renderer.render(scene,cam);}};
+  return{renderer:renderer,scene:scene,root:root,cam:cam,fit:fit,frustumFor:frustumFor,setFrustum:setFrustum,lerpF:lerpF,px:px,W:W,H:Hh,render:function(){renderer.render(scene,cam);}};
 }
 
 /* ---- label overlay (numbered markers) ---- */

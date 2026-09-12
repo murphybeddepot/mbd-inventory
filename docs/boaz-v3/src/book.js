@@ -70,6 +70,11 @@ function markerPoint(S,mk){var v;if(mk[0]==="W")v=new T.Vector3(mk[1],mk[2],mk[3
   return v.applyMatrix4(S.M);}
 function drawMarkers(svg,V,S,st){var c=C();(st.markers||[]).forEach(function(mk){if(!mk[4])return;var pt=markerPoint(S,mk);if(!pt)return;B.marker(svg,V,pt,mk[4],mk[5],mk[6],c[mk[7]]||c.ink,c.bg);});}
 
+function hasHardware(st){var hw=st.hw||{};return !!((hw.cams&&hw.cams.length)||(hw.pins&&hw.pins.length)||(hw.edgeBolts&&hw.edgeBolts.length)||(hw.dowels&&hw.dowels.length)||(hw.screws&&hw.screws.length)||st.extras);}
+/* the hardware item to zoom on: prefer a cam, then a pin, then a screw, then anything with a normal */
+function focusItem(S){var hw=S.items.filter(function(i){return i.n;});if(!hw.length)return null;
+  var pick=hw.filter(function(i){return i.obj.userData.mouthDir;})[0]||hw.filter(function(i){return i.obj.userData.hole;})[0]||hw[Math.floor(hw.length/2)];return pick;}
+function detailBox(S,it,r){var c=it.home.clone().applyMatrix4(S.M);return new T.Box3(c.clone().add(new T.Vector3(-r,-r*.7,-r)),c.clone().add(new T.Vector3(r,r,r)));}
 /* ---- page ---- */
 function esc(s){return String(s);}
 function stepHTML(st){var i,h='';
@@ -80,6 +85,7 @@ function stepHTML(st){var i,h='';
   h+='<h2>Do this</h2><ol class="steps">'+st.steps.map(function(s){return "<li>"+s+"</li>";}).join("")+'</ol>';
   if(st.parts.length){h+='<h2>Drawing</h2><figure class="fig"><div class="render" data-draw="'+st.n+'" style="aspect-ratio:4/3"><span class="fallback">Drawing needs WebGL.</span></div></figure>';
     if(st.key&&st.key.length)h+='<div class="key-wrap">'+st.key.map(function(k,i){return '<div class="kitem"><b>'+(i+1)+'</b><span>'+k+'</span></div>';}).join("")+'</div>';
+    if(hasHardware(st))h+='<figure class="fig" style="margin-top:22px"><div class="render" data-detail="'+st.n+'" style="aspect-ratio:3/2"><span class="fallback">Drawing needs WebGL.</span></div><figcaption>Close-up: the fastener going in, at one of its holes.</figcaption></figure>';
     if(Object.keys(st.explode||{}).length||st.hwExplode){h+='<h2>Animation</h2><figure class="anim" style="border:1px solid var(--rule);background:var(--panel)"><figcaption>Step '+st.n+' &mdash; '+st.title+'</figcaption><div class="stage" style="padding:6px 18px 0"><div class="render" data-anim="'+st.n+'" style="aspect-ratio:4/3;max-width:820px;margin:0 auto"><span class="fallback">Press Replay to load the animation.</span></div></div><div class="ctl"><button type="button" data-play="'+st.n+'">Replay</button><input type="range" id="rng-'+st.n+'" min="0" max="1000" value="1000" aria-label="Scrub step '+st.n+'"><span class="step" data-step="'+st.n+'"></span></div></figure>';}}
   if(st.wrong&&st.wrong.length){h+='<h2>Right and wrong</h2><div class="checks">'+st.wrong.map(function(w,i){return '<div class="check '+(w.kind==="ok"?"ok":"bad")+'"><p class="lbl">'+(w.kind==="ok"?"&#10003; ":"&#10007; ")+w.t+'</p>'+(w.turn?'<div class="render sm" data-wrong="'+st.n+'-'+i+'"></div>':'')+'<p>'+w.x+'</p></div>';}).join("")+'</div>';}
   if(st.notes&&st.notes.length)h+='<h2>Notes for the illustrator</h2><ul class="notes">'+st.notes.map(function(n){return "<li>"+n+"</li>";}).join("")+'</ul>';
@@ -90,6 +96,8 @@ if(host){host.innerHTML=STEPS.map(stepHTML).join("");
 /* drawings */
 STEPS.forEach(function(st){var el=document.querySelector('[data-draw="'+st.n+'"]');if(!el)return;
   try{B.snapshot(el,function(V){return buildScene(V,st);},function(svg,V,S){B.text(svg,30,58,"Step "+st.n,40,C().ink);drawMarkers(svg,V,S,st);},{w:1500,aspect:4/3});}catch(e){el.querySelector(".fallback").textContent="Drawing failed: "+e.message;}
+  var dl=document.querySelector('[data-detail="'+st.n+'"]');
+  if(dl){try{B.snapshot(dl,function(V){var S=buildScene(V,st);S.items.forEach(function(i){if(i.n)i.hwAmt=Math.max(i.hwAmt||0,40);});setExplode(S,0,1);var it=focusItem(S);if(it){S.box=detailBox(S,it,110);S.mx=.05;S.my=.05;}return S;},null,{w:1400,aspect:3/2});}catch(e){dl.querySelector(".fallback").textContent="Close-up failed: "+e.message;}}
   (st.wrong||[]).forEach(function(w,i){if(!w.turn)return;var c=document.querySelector('[data-wrong="'+st.n+'-'+i+'"]');if(!c)return;
     try{B.snapshot(c,function(V){var S=buildScene(V,st,{turn:w.turn});setExplode(S,0,0);return S;},function(svg,V){B.verdict(svg,V,"bad");},{w:1000,aspect:5/3});}catch(e){}});
 });
@@ -100,7 +108,11 @@ function startAnim(st){var el=document.querySelector('[data-anim="'+st.n+'"]');i
   var V=B.view(el,{w:1300,aspect:4/3}),S=buildScene(V,st);V.fit(S.dir,S.mx,S.my,S.groundY);el.appendChild(V.renderer.domElement);el.classList.add("ready");
   var rng=document.getElementById("rng-"+st.n),stepEl=document.querySelector('[data-step="'+st.n+'"]');
   live={el:el,V:V,S:S,raf:null};
-  function set(t){animate(S,st,t);V.render();if(rng)rng.value=Math.round(t*1000);if(stepEl)stepEl.textContent=t>=1?"assembled":"assembling";}
+  var F0={l:V.cam.left,r:V.cam.right,t:V.cam.top,b:V.cam.bottom},fi=focusItem(S),F1=fi?V.frustumFor(detailBox(S,fi,130),.05,.05):F0;
+  var G=1;S.items.forEach(function(it){G=Math.max(G,it.grp||0,it.hwGrp||0);});var hg=st.hwGroup||0;
+  function zoom(t){if(!fi||!hg)return;var a=(hg-1)/G,b=hg/G,w=(b-a)*.18,z=0;
+    if(t>a&&t<b)z=Math.min(1,(t-a)/w,(b-t)/w);V.setFrustum(V.lerpF(F0,F1,Math.max(0,z)));}
+  function set(t){animate(S,st,t);zoom(t);V.render();if(rng)rng.value=Math.round(t*1000);if(stepEl)stepEl.textContent=t>=1?"assembled":"assembling";}
   function play(){var t0=performance.now(),DUR=5000+1500*Object.keys(st.explode||{}).length/4;(function loop(now){var t=Math.min(1,(now-t0)/DUR);set(t);if(t<1)live.raf=requestAnimationFrame(loop);else live.raf=null;})(performance.now());}
   if(rng)rng.oninput=function(){if(live.raf)cancelAnimationFrame(live.raf);live.raf=null;set(rng.value/1000);};
   var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;if(reduce)set(1);else play();}

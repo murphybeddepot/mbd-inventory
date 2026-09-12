@@ -27,6 +27,10 @@ if(el)B.snapshot(el,function(V){return build(V,1);},function(svg,V){
   B.marker(svg,V,new T.Vector3(PART.thru[3],PART.thruZ-46,PART.t+TUBE.w+136+6.5),"6",80,40,C.ink2,C.bg);
   B.marker(svg,V,new T.Vector3(-TUBE.over+TUBE.pinSet,TUBE.h+TUBE.pinH-46,PART.t+56+TUBE.w/2),"7",-40,80,C.ok,C.bg);
 },{w:1700,aspect:4/3});
+/* close-up at hole 3: bolt through, nut going on */
+var det=document.querySelector('[data-render="detail"]');
+if(det)B.snapshot(det,function(V){var S=build(V,0);S.A.nuts[2].position.copy(S.A.nuts[2].userData.base).add(new T.Vector3(0,0,26));
+  var c=new T.Vector3(PART.thru[2],PART.thruZ,PART.t+TUBE.w/2);return{A:S.A,dir:new T.Vector3(-1,.95,1.15),mx:.06,my:.06,groundY:-.4,box:new T.Box3(c.clone().add(new T.Vector3(-70,-40,-40)),c.clone().add(new T.Vector3(70,60,60)))};},null,{w:1500,aspect:3/2});
 /* right / wrong */
 var checks={
   ok:function(V){V.root.add(panel1A());V.root.add(arm(false,false));return{dir:new T.Vector3(-1,.95,1.15),mx:.08,my:.1,groundY:-.4};},
@@ -40,6 +44,9 @@ Object.keys(checks).forEach(function(k){var c=document.querySelector('[data-rend
 var an=document.querySelector('[data-render="anim"]');
 if(an){
   var V=B.view(an,{w:1300,aspect:4/3}),S=build(V,1);V.fit(S.dir,S.mx,S.my,S.groundY);
+  var F0={l:V.cam.left,r:V.cam.right,t:V.cam.top,b:V.cam.bottom},cz=new T.Vector3(PART.thru[2],PART.thruZ,PART.t+TUBE.w/2),
+      F1=V.frustumFor(new T.Box3(cz.clone().add(new T.Vector3(-90,-60,-50)),cz.clone().add(new T.Vector3(90,80,70))),.05,.05);
+  function zoom(t){var z=0;if(t>.5&&t<.98)z=Math.min(1,(t-.5)/.1);if(t>=.98)z=Math.max(0,1-(t-.98)/.02);V.setFrustum(V.lerpF(F0,F1,z));}
   an.appendChild(V.renderer.domElement);an.classList.add("ready");
   var svg=B.overlay(an,V.W,V.H),tag=B.text(svg,0,0,"",30,cssVar("--ok"),600,"middle"),anote=document.getElementById("anote");
   var steps=[[0,"Arm to the inside face"],[.26,"Bolts in from behind"],[.52,"Nylocks on by hand"],[.76,"Hex key + socket: pull flush"]];
@@ -49,7 +56,7 @@ if(an){
     S.A.bolts.forEach(function(bl){bl.position.copy(bl.userData.base).add(new T.Vector3(0,205*(1-b),-70*(1-b)-6*(1-d)*b));});
     S.A.nuts.forEach(function(n){n.position.copy(n.userData.base).add(new T.Vector3(0,0,80*(1-c)+2*(1-d)));n.rotation.z=c*Math.PI*4+d*Math.PI;});
     if(anote)anote.textContent=t<.26?"Tube flat to the panel, pin end past the front edge.":t<.52?"Bolts through the ⌀8 holes and the tube, from the outside face.":t<.76?"Start each nylock nut by hand.":"Hex key in the bolt, socket on the nut: tighten until the head sits flush in the outside face.";
-    var p=V.px(new T.Vector3(PART.thru[3],PART.thruZ+44,PART.t+TUBE.w+8));tag.setAttribute("x",p[0]);tag.setAttribute("y",p[1]);tag.textContent=(t>.78&&t<.97)?"↻ tighten":(t>=.97?"✓ flush":"");
+    zoom(t);var p=V.px(new T.Vector3(PART.thru[2],PART.thruZ+30,PART.t+TUBE.w+8));tag.setAttribute("x",p[0]);tag.setAttribute("y",p[1]);tag.textContent=(t>.78&&t<.97)?"↻ tighten":(t>=.97?"✓ flush":"");
     V.render();}
   var rng=document.getElementById("rng-step1"),stepEl=document.querySelector('[data-step="step1"]'),btn=document.querySelector('[data-play="step1"]');
   function label(t){var s=steps[0][1];steps.forEach(function(p){if(t>=p[0])s=p[1];});return s;}
